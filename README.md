@@ -1,0 +1,2 @@
+# LooDB
+A SQLite clone
