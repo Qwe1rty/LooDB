@@ -2,4 +2,3 @@ cmake-build-debug/
 CMakeLists.txt
 .idea/
 sqlite/
-proposal/architecture_diagram.drawio

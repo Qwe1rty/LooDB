@@ -9,7 +9,8 @@ DEPENDS = ${OBJECTS:.o=.d}
 
 SQLITE_DIR = sqlite
 SQLITE_BIN = sqlite3
-SQLITE_DB = test.db
+
+QUERY_DIR = queries
 
 
 -include ${DEPENDS}
@@ -39,11 +40,16 @@ clean-exec: clean-build
 #	find ${TEST_DIR} -iregex '.*\.\(out\|out\.my\|diff\|valg\)' -delete
 
 
+# The "sql" set of commands deal with the official SQLite3 database
+
+sql:
+	${SQLITE_DIR}/${SQLITE_BIN}
+
 sql-build:
-	./sqlite.sh ${SQLITE_DIR} ${SQLITE_BIN} ${SQLITE_DB}
+	./sqlite.sh ${SQLITE_DIR} ${SQLITE_BIN}
 
 sql-rm:
 	rm -rf ${SQLITE_DIR}
 
-sql:
-	${SQLITE_DIR}/${SQLITE_BIN}
+sql-gen:
+	./sqlgen.sh ${SQLITE_DIR}/${SQLITE_BIN} ${QUERY_DIR}

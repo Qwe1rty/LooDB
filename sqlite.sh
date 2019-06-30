@@ -2,11 +2,18 @@
 
 # sqlite.sh
 #
+# Downloads the official SQLite3 DB and builds it with extra compilation
+# settings that allow for easier analysis
+#
 # Parameters:
-# $1 is the directory in which the sqlite DB will be built in
-# $2 is the name of the compiled sqlite3 binary
-# $3 is the name of the database file to test on
+# $1 is the directory in which the SQLite DB will be built in
+# $2 is the name of the compiled SQLite binary
 
+
+source "echof.sh"
+
+SQLITE_DIR="$1"
+SQLITE_BIN="$2"
 
 SQLITE_URL_SRC='https://www.sqlite.org/2019/sqlite-amalgamation-3280000.zip'
 SQLITE_ZIP_SRC=$(basename "${SQLITE_URL_SRC}")
@@ -18,21 +25,11 @@ SQLITE_OPTIONS="\
     -DSQLITE_OMIT_BTREECOUNT \
 "
 
-SQLITE_DIR="$1"
-SQLITE_BIN="$2"
-SQLITE_DB="$3"
-
 PREREQUISITES=(
     'unzip'
     'gcc'
 )
 
-
-# Print using echo but with a tag with this scripts' name
-echof() {
-
-    printf "[%s] %s\n" $(basename "${BASH_SOURCE}") "$1"
-}
 
 # Validate parameters and installed prerequisites
 validate() {
@@ -43,9 +40,6 @@ validate() {
     elif [[ -z "${SQLITE_BIN}" ]] ; then
         echof "Parameter for sqlite binary name is undefined"
         exit 2
-    elif [[ -z "${SQLITE_DB}" ]] ; then
-        echof "Parameter for database file is undefined"
-        exit 3
     fi
 
     for (( i = 0; i < ${#PREREQUISITES[@]} ; i++ )) ; do

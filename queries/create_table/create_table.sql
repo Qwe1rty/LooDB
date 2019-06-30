@@ -1,0 +1,3 @@
+EXPLAIN CREATE TABLE basic (
+    item INTEGER
+)
