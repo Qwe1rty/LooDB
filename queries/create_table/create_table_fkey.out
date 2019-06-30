@@ -18,22 +18,24 @@ addr  opcode         p1    p2    p3    p4             p5  comment
 15    Rowid          1     5     0                    00  r[5]=rowid   
 16    IsNull         5     24    0                    00  if r[5]==NULL goto 24
 17    String8        0     6     0     table          00  r[6]='table' 
-18    String8        0     7     0     account        00  r[7]='account'
-19    String8        0     8     0     account        00  r[8]='account'
+18    String8        0     7     0     credit_card    00  r[7]='credit_card'
+19    String8        0     8     0     credit_card    00  r[8]='credit_card'
 20    Copy           2     9     0                    00  r[9]=r[2]    
-21    String8        0     10    0     CREATE TABLE account (
-    user_id INTEGER,
-    username TEXT,
-    email TEXT
-)  00  r[10]='CREATE TABLE account (
-    user_id INTEGER,
-    username TEXT,
-    email TEXT
+21    String8        0     10    0     CREATE TABLE credit_card (
+    account_id INTEGER NOT NULL,
+    card_id INTEGER PRIMARY KEY,
+    card_name TEXT NOT NULL,
+    FOREIGN KEY (account_id) REFERENCES account(user_id)
+)  00  r[10]='CREATE TABLE credit_card (
+    account_id INTEGER NOT NULL,
+    card_id INTEGER PRIMARY KEY,
+    card_name TEXT NOT NULL,
+    FOREIGN KEY (account_id) REFERENCES account(user_id)
 )'
 22    MakeRecord     6     5     11    BBBDB          00  r[11]=mkrec(r[6..10])
 23    Insert         1     11    5                    00  intkey=r[5] data=r[11]
-24    SetCookie      0     1     1                    00               
-25    ParseSchema    0     0     0     tbl_name='account' AND type!='trigger'  00               
+24    SetCookie      0     1     2                    00               
+25    ParseSchema    0     0     0     tbl_name='credit_card' AND type!='trigger'  00               
 26    Halt           0     0     0                    00               
-27    Transaction    0     1     0     0              01  usesStmtJournal=0
+27    Transaction    0     1     1     0              01  usesStmtJournal=0
 28    Goto           0     1     0                    00               

@@ -23,12 +23,12 @@ addr  opcode         p1    p2    p3    p4             p5  comment
 20    Copy           2     9     0                    00  r[9]=r[2]    
 21    String8        0     10    0     CREATE TABLE account (
     user_id INTEGER,
-    username TEXT,
-    email TEXT
+    username TEXT NOT NULL,
+    email TEXT NOT NULL
 )  00  r[10]='CREATE TABLE account (
     user_id INTEGER,
-    username TEXT,
-    email TEXT
+    username TEXT NOT NULL,
+    email TEXT NOT NULL
 )'
 22    MakeRecord     6     5     11    BBBDB          00  r[11]=mkrec(r[6..10])
 23    Insert         1     11    5                    00  intkey=r[5] data=r[11]

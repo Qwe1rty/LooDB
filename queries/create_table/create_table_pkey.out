@@ -22,11 +22,11 @@ addr  opcode         p1    p2    p3    p4             p5  comment
 19    String8        0     8     0     account        00  r[8]='account'
 20    Copy           2     9     0                    00  r[9]=r[2]    
 21    String8        0     10    0     CREATE TABLE account (
-    user_id INTEGER,
+    user_id INTEGER PRIMARY KEY,
     username TEXT,
     email TEXT
 )  00  r[10]='CREATE TABLE account (
-    user_id INTEGER,
+    user_id INTEGER PRIMARY KEY,
     username TEXT,
     email TEXT
 )'
