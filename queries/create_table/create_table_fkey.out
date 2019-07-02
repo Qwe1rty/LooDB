@@ -22,14 +22,14 @@ addr  opcode         p1    p2    p3    p4             p5  comment
 19    String8        0     8     0     credit_card    00  r[8]='credit_card'
 20    Copy           2     9     0                    00  r[9]=r[2]    
 21    String8        0     10    0     CREATE TABLE credit_card (
-    account_id INTEGER NOT NULL,
     card_id INTEGER PRIMARY KEY,
     card_name TEXT NOT NULL,
+    account_id INTEGER NOT NULL,
     FOREIGN KEY (account_id) REFERENCES account(user_id)
 )  00  r[10]='CREATE TABLE credit_card (
-    account_id INTEGER NOT NULL,
     card_id INTEGER PRIMARY KEY,
     card_name TEXT NOT NULL,
+    account_id INTEGER NOT NULL,
     FOREIGN KEY (account_id) REFERENCES account(user_id)
 )'
 22    MakeRecord     6     5     11    BBBDB          00  r[11]=mkrec(r[6..10])

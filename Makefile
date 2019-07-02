@@ -1,5 +1,5 @@
 CXX = g++
-CXX_FLAGS = -g -std=c++14 -Wall -MMD
+CXX_FLAGS = -g -std=c++17 -Wall -MMD
 EXEC = loodb
 OBJECTS = Main.o
 DEPENDS = ${OBJECTS:.o=.d}

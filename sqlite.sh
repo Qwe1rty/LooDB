@@ -26,8 +26,9 @@ SQLITE_OPTIONS="\
 "
 
 PREREQUISITES=(
-    'unzip'
     'gcc'
+    'unzip'
+    'wget'
 )
 
 
