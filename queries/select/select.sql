@@ -10,4 +10,4 @@ VALUES
 
 SELECT * FROM collection;
 
-EXPLAIN SELECT * FROM collection
+EXPLAIN SELECT * FROM collection;
