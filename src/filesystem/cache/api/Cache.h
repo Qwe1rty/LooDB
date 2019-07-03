@@ -23,7 +23,7 @@ public:
 
     virtual ~Cache() = 0;
 
-private:
+protected:
 
     class Impl;
     std::unique_ptr<Impl> impl_;

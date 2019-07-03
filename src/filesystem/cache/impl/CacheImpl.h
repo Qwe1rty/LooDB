@@ -12,6 +12,8 @@ public:
     virtual void update(K, V) = 0;
 
 
+    Impl() = default;
+
     Impl(const Impl&) = delete;
     Impl& operator= (const Impl&) = delete;
 
@@ -20,5 +22,7 @@ public:
 
     virtual ~Impl() = 0;
 };
+
+#include "CacheImpl.cpp"
 
 #endif //LOODB_CACHEIMPL_H

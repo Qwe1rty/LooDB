@@ -16,7 +16,7 @@ std::unique_ptr<V> LRUCache<K, V>::Impl::seek(const K& key) {
 
     if (contains(key)) {
         refresh(key);
-        return std::make_unique<V>(queue_.front()->second);
+        return std::make_unique<V>(queue_.front().second);
     }
 
     return nullptr;
@@ -30,18 +30,18 @@ void LRUCache<K, V>::Impl::update(K key, V value) {
         return;
     }
 
-    if (table_.size >= limit_) {
-        table_.erase(queue_.back()->first);
+    if (table_.size() >= limit_) {
+        table_.erase(queue_.rbegin()->first);
         queue_.pop_back();
     }
 
-    queue_.emplace_front(std::make_pair<K, V>(
+    queue_.emplace_front(std::make_pair(
         key,
         std::move(value)
     ));
-    table_.insert(std::make_pair<K, CacheListEntry>(
+    table_.insert(std::make_pair(
         std::move(key),
-        queue_.front()
+        queue_.begin()
     ));
 }
 
@@ -62,8 +62,7 @@ void LRUCache<K, V>::Impl::refresh(const K& key) {
     queue_.emplace_front(std::move(*entry));
     queue_.erase(entry);
 
-    // entry has been invalidated, so get front();
-    CacheListEntry front = queue_.front();
+    // entry has been invalidated, so get begin();
+    CacheListEntry front = queue_.begin();
     table_.at(key) = front;
-    return front;
 }
