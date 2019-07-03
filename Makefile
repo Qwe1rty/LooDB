@@ -7,9 +7,6 @@ CXX = g++
 CXX_FLAGS = -g -std=c++17 -Wall -MMD
 EXEC = loodb
 
-#TEST_SCRIPT = test.sh
-#TEST_DIR = tests
-
 SQLITE_DIR = sqlite
 SQLITE_BIN = sqlite3
 
