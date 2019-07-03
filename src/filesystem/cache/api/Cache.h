@@ -14,13 +14,6 @@ public:
     // Updates a K-V pair: will insert the new pair if previous mapping is not found
     void update(K, V);
 
-
-    Cache(const Cache&) = delete;
-    Cache& operator= (const Cache&) = delete;
-
-    Cache(Cache&&) noexcept = delete;
-    Cache& operator= (Cache&&) noexcept = delete;
-
     Cache();
     virtual ~Cache() = 0;
 
