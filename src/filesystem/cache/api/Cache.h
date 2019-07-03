@@ -18,19 +18,18 @@ public:
     Cache(const Cache&) = delete;
     Cache& operator= (const Cache&) = delete;
 
-    Cache(Cache&&) noexcept = default;
-    Cache& operator= (Cache&&) noexcept = default;
+    Cache(Cache&&) noexcept = delete;
+    Cache& operator= (Cache&&) noexcept = delete;
 
+    Cache();
     virtual ~Cache() = 0;
 
-protected:
+private:
 
-    class Impl;
-    std::unique_ptr<Impl> impl_;
-
-    explicit Cache(std::unique_ptr<Impl>);
+    virtual std::unique_ptr<V> seek_impl(const K&) = 0;
+    virtual void update_impl(K, V) = 0;
 };
 
-#include "Cache.cpp"
+#include "../impl/Cache.cpp"
 
 #endif //LOODB_CACHE_H

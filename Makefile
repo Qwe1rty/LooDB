@@ -25,7 +25,7 @@ clean:
 	rm ${OBJECTS} ${DEPENDS}
 
 run:
-	./${EXEC}
+	@./${EXEC}
 
 ${EXEC}: ${OBJECTS}
 	${CXX} ${CXX_FLAGS} ${OBJECTS} -o ${EXEC}

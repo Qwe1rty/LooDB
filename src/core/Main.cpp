@@ -3,8 +3,9 @@
 
 #include <iostream>
 
-std::ostream& operator<< (std::ostream& os, std::nullptr_t ptr) {
-    return os << "nullptr";
+std::ostream& operator<< (std::ostream& out, const std::unique_ptr<int>& ptr) {
+    out << (ptr ? std::to_string(*ptr) : "nullptr");
+    return out;
 }
 
 int main() {
@@ -21,9 +22,9 @@ int main() {
     std::unique_ptr<V> test;
 
     test = cache->seek(1);
-    std::cout << *test << std::endl;
+    std::cout << test << std::endl;
     test = cache->seek(3);
-    std::cout << *test << std::endl;
+    std::cout << test << std::endl;
 
     cache->update(3, 300);
     cache->update(4, 400);
@@ -31,6 +32,11 @@ int main() {
     cache->update(6, 600);
 
     test = cache->seek(2);
-    std::cout << *test << std::endl;
+    std::cout << test << std::endl;
+    test = cache->seek(1);
+    std::cout << test << std::endl;
 
+    cache->update(6, 60000);
+    test = cache->seek(6);
+    std::cout << test << std::endl;
 }
