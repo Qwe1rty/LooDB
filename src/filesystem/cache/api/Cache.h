@@ -1,6 +1,8 @@
 #ifndef LOODB_CACHE_H
 #define LOODB_CACHE_H
 
+#include "CacheStrategy.h"
+
 #include <memory>
 
 template<typename K, typename V>
@@ -14,13 +16,24 @@ public:
     // Updates a K-V pair: will insert the new pair if previous mapping is not found
     void update(K, V);
 
-    Cache();
-    virtual ~Cache() = 0;
+    // Swaps two caches
+    void swap(Cache&) noexcept;
+
+
+    Cache(const CacheStrategy<K, V>&);
+    Cache(CacheStrategy<K, V>&&);
+
+    Cache(const Cache&);
+    Cache(Cache&&) noexcept;
+
+    Cache& operator= (const Cache&);
+    Cache& operator= (Cache&&) noexcept;
+
+    ~Cache();
 
 private:
 
-    virtual std::unique_ptr<V> seek_impl(const K&) = 0;
-    virtual void update_impl(K, V) = 0;
+    std::unique_ptr<CacheStrategy<K, V>> strategy_;
 };
 
 #include "../impl/Cache.cpp"
