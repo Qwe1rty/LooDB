@@ -61,7 +61,10 @@ std::unique_ptr<CacheStrategy<K, V>> LRUCacheStrategy<K, V>::move() noexcept {
     return std::unique_ptr<LRUCacheStrategy<K, V>>(new LRUCacheStrategy<K, V>(std::move(*this)));
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> Major cache refactoring, now supports all copy/move operations and can be instantiated on stack
 template<typename K, typename V>
 LRUCacheStrategy<K, V>::LRUCacheStrategy(const LRUCacheStrategy& src) :
     impl_(std::unique_ptr<Impl>(new Impl(*src.impl_)))
