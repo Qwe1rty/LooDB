@@ -1,13 +1,14 @@
 #include "../api/Pager.h"
 #include "../../../cache/api/Cache.h"
-#include "../../../cache/api/LRUCache.h"
+#include "../../../cache/api/LRUCacheStrategy.h"
 #include "../../page/PageCodec.h"
 
 #include <fstream>
 
 class Pager::Impl final {
 
-    using PageCache = LRUCache<uint64_t, Page>;
+    using PageCache         = Cache<uint64_t, Page>;
+    using PageCacheStrategy = LRUCacheStrategy<uint64_t, Page>;
 
 public:
 
@@ -23,6 +24,23 @@ private:
     std::string filename_;
     std::fstream stream_;
 };
+
+
+/*
+ * Pager.h header class implementations
+ */
+
+Page Pager::read(uint64_t index) {
+    return impl_->read(index);
+}
+
+void Pager::write(uint64_t index, Page page) {
+    impl_->write(index, page);
+}
+
+Pager::Pager(std::string filename, uint64_t limit) :
+    impl_{std::make_unique<Impl>(filename, limit)}
+{}
 
 
 /*
@@ -60,7 +78,7 @@ void Pager::Impl::write(uint64_t index, Page page) {
  */
 
 Pager::Impl::Impl(std::string filename, uint64_t limit) :
-    cache_{PageCache(limit)},
+    cache_{PageCache{PageCacheStrategy{limit}}},
     filename_{std::move(filename)},
     stream_{}
 {
@@ -70,20 +88,3 @@ Pager::Impl::Impl(std::string filename, uint64_t limit) :
 Pager::Impl::~Impl() {
     stream_.close();
 }
-
-
-/*
- * PIMPL boilerplate
- */
-
-Page Pager::read(uint64_t index) {
-    return impl_->read(index);
-}
-
-void Pager::write(uint64_t index, Page page) {
-    impl_->write(index, page);
-}
-
-Pager::Pager(std::string filename, uint64_t limit) :
-    impl_{std::make_unique<Impl>(filename, limit)}
-{}
