@@ -58,13 +58,13 @@ Page Pager::Impl::read(uint64_t index) {
     stream_.seekg(index * Page::PAGE_SIZE);
     stream_.read(disk_result.get(), Page::PAGE_SIZE);
 
-    return PageCodec::decode(std::move(disk_result));
+    return PageCodec{}.decode(std::move(disk_result));
 }
 
 void Pager::Impl::write(uint64_t index, Page page) {
 
      // Try to write to disk first, in case of errors
-     auto page_bytes = PageCodec::encode(page);
+     auto page_bytes = PageCodec{}.encode(page);
      stream_.seekg(index * Page::PAGE_SIZE);
      stream_.write(page_bytes.get(), Page::PAGE_SIZE);
 

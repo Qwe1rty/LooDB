@@ -1,12 +1,18 @@
 #ifndef LOODB_PAGE_H
 #define LOODB_PAGE_H
 
-class Page {
-// PAGE_SIZE: This is the constant size of all our pages  
- public:
+#include <cstdint>
+#include <memory>
 
-  const static int PAGE_SIZE = 4096;
-  virtual ~ Page() = 0;  
+
+class Page {
+
+public:
+
+  // PAGE_SIZE: This is the constant size of all our pages
+  const static uint64_t PAGE_SIZE = 4096;
+
+  virtual ~ Page() = 0;
 };
 
 #endif //LOODB_PAGE_H
