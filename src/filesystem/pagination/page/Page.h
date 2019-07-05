@@ -1,15 +1,13 @@
 #ifndef LOODB_PAGE_H
 #define LOODB_PAGE_H
 
-#include <cstdint>
-
 class Page {
 
-    friend class PageCodec;
 
-public:
+  
+ public:
 
-    const static uint64_t PAGE_SIZE = 4096;
+    const static int PAGE_SIZE = 4096;
 
     // TODO: stuff here
 };
