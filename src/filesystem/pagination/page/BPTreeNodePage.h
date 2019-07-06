@@ -1,16 +1,19 @@
 #ifndef LOODB_BPTREENODEPAGE_H
 #define LOODB_BPTREENODEPAGE_H
 
-template <typename Entry>
+#include "CellBP.h"
 
 class BPTreeNodePage : public Page {
+// right_: This is the page number of the leaf node to our right
+// node_: The list of leaf cells in our node
 
  public:
   uint64_t right_;
-  std::vector<Entry> value_;
+  std::vector<CellBP> node_;
+  const static int order = 5;
 
-  BPTreeInternalNode(uint64_t right, std::vector<Cell> node);
-  ~ BPTreeInternalNode() {}
+  BPTreeNode(uint64_t right, std::vector<CellBP> node_);
+  ~ BPTreeNode() {}
 }
 
 #endif
