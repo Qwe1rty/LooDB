@@ -1,6 +1,8 @@
 #ifndef LOODB_PAGE_H
 #define LOODB_PAGE_H
 
+#include "PageCodec.h"
+
 #include <cstdint>
 #include <memory>
 
@@ -10,9 +12,12 @@ class Page {
 public:
 
   // PAGE_SIZE: This is the constant size of all our pages
-  const static uint64_t PAGE_SIZE = 4096;
+  const static uint32_t PAGE_SIZE;
 
-  virtual ~ Page() = 0;
+  // PAGE_CODEC: Global converter interface
+  const static PageCodec PAGE_CODEC;
+
+  virtual ~Page() = 0;
 };
 
 #endif //LOODB_PAGE_H

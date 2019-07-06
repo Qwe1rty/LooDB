@@ -1,9 +1,12 @@
 #ifndef LOODB_PAGECODEC_H
 #define LOODB_PAGECODEC_H
 
-#include "Page.h"
-#include "../../../util/Codec.h"
+#include "../../../../util/Codec.h"
 
+#include <memory>
+
+
+class Page;
 
 template<typename Object, typename Serial>
 class Codec;

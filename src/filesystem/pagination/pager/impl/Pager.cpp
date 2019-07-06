@@ -1,7 +1,7 @@
 #include "../api/Pager.h"
+#include "../../page/api/PageCodec.h"
 #include "../../../cache/api/Cache.h"
 #include "../../../cache/api/LRUCacheStrategy.h"
-#include "../../page/PageCodec.h"
 
 #include <fstream>
 
@@ -58,7 +58,7 @@ Page Pager::Impl::read(uint64_t index) {
     stream_.seekg(index * Page::PAGE_SIZE);
     stream_.read(disk_result.get(), Page::PAGE_SIZE);
 
-    return PageCodec{}.decode(std::move(disk_result));
+    return Page::PAGE_CODEC.decode(std::move(disk_result));
 }
 
 void Pager::Impl::write(uint64_t index, Page page) {

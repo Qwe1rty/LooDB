@@ -1,4 +1,5 @@
 #ifndef LOODB_CODEC_H
+
 #define LOODB_CODEC_H
 
 template<typename Object, typename Serial>
