@@ -1,7 +1,7 @@
 #ifndef LOODB_COLUMN_H
 #define LOODB_COLUMN_H
 
-#include "../Entry.h"
+#include "../Entry/Entry.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
 
 class Column {

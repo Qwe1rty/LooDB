@@ -2,7 +2,7 @@
 #define LOODB_COLUMNRESTRICTION_H
 
 #include "Column.h"
-#include "../Entry.h"
+#include "../Entry/Entry.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
 #include <memory>
 

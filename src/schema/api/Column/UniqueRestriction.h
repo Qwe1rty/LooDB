@@ -2,7 +2,7 @@
 #define LOODB_UNIQUERESTRICTION_H
 
 #include "ColumnRestriction.h"
-#include "../Entry.h"
+#include "../Entry/Entry.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
 
 // Decoration for Column

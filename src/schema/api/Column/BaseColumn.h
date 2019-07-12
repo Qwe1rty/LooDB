@@ -2,8 +2,8 @@
 #define LOODB_BASECOLUMN_H
 
 #include "Column.h"
-#include "../Entry.h"
-#include "../EntryType.h"
+#include "../Entry/Entry.h"
+#include "../Entry/EntryType.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
 #include "../../../filesystem/pagination/interface/api/Pager.h"
 #include <memory>

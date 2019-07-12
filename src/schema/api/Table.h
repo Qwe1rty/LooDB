@@ -3,7 +3,7 @@
 
 #include "Column/Column.h"
 #include "Cursor.h"
-#include "Entry.h"
+#include "Entry/Entry.h"
 #include <memory>
 #include <string>
 #include <map>

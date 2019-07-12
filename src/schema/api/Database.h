@@ -2,7 +2,7 @@
 #define LOODB_DATABASE_H
 
 #include "Table.h"
-#include "Entry.h"
+#include "Entry/Entry.h"
 #include <memory>
 #include <string>
 #include <map>
