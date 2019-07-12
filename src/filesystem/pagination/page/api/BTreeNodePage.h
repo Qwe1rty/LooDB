@@ -11,6 +11,7 @@ class BTreeNodePage : public Page {
 
   public:
 
+    // ORDER: number of cells per node
     const static int ORDER = 4;
 
     // right_: page number of our right node
