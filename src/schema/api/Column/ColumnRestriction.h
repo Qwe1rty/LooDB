@@ -17,11 +17,11 @@ class ColumnRestriction : public Column  {
     // pImpl for Column Restriction
     std::unique_ptr<ColumnRestrictionImpl> impl_;
 
-    virtual bool valid_(Entry);
+    virtual bool valid_(Entry) override;
 
-    virtual Page read_(Entry);
+    virtual Page read_(Entry) override;
 
-    virtual void write_(Entry, Page);
+    virtual void write_(Entry, Page) override;
 
   public:
 
