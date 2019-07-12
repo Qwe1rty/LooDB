@@ -1,7 +1,8 @@
 #ifndef LOODB_PAGE_H
 #define LOODB_PAGE_H
 
-#include "PageCodec.h"
+#include "../../interface/api/PageCodec.h"
+#include "../../interface/api/PageType.h"
 
 #include <cstdint>
 #include <memory>
@@ -18,6 +19,14 @@ public:
   const static PageCodec PAGE_CODEC;
 
   virtual ~Page() = 0;
+
+protected:
+
+  Page(PageType);
+
+private:
+
+  const PageType type_;
 };
 
 #endif //LOODB_PAGE_H
