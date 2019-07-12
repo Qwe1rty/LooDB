@@ -1,5 +1,5 @@
-#ifndef LOODB_BPTREEINTERNALNODEPAGE_H
-#define LOODB_BPTREEINTERNALNODEPAGE_H
+#ifndef LOODB_BPTREEINTERNALPAGE_H
+#define LOODB_BPTREEINTERNALPAGE_H
 
 #include "Cell.h"
 #include "Page.h"
@@ -7,7 +7,7 @@
 #include <vector>
 
 
-class BPTreeInternalNodePage : public Page {
+class BPTreeInternalPage : public Page {
 
   public:
 
@@ -19,12 +19,7 @@ class BPTreeInternalNodePage : public Page {
     uint64_t right_;
     std::vector<Cell> node_;
 
-    BPTreeInternalNodePage(uint64_t right, std::vector<Cell> node) :
-      right_{right},
-      node_{std::move(node)}
-    {}
-
-  // TODO: more to come
+    BPTreeInternalPage(uint64_t, std::vector<Cell>);
 };
 
 #endif

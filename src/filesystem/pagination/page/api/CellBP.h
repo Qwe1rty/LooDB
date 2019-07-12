@@ -11,17 +11,12 @@ class CellBP {
 
   public:
 
-    // key_: A value, integer or string, representing a primary key
+    // key_: The page number referring to the primary key (index)
     // values_: The page numbers of the items stored in the row corresponding to our key
-    Entry key_;
+    uint64_t key_;
     std::vector<uint64_t> values_;
 
-    CellBP(Entry k, std::vector<uint64_t> v) :
-      key_{k},
-      values_{std::move(v)}
-    {}
-
-  // TODO: more to come
+    CellBP(uint64_t, std::vector<uint64_t>);
 };
 
 #endif

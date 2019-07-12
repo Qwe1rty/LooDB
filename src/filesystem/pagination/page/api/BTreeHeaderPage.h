@@ -8,14 +8,10 @@ class BTreeHeaderPage : public Page {
 
   public:
 
-    // tree_root_: Has the page number of the root node in our BTree
-    uint64_t tree_root_;
+    // root_: Has the page number of the root node in our BTree
+    uint64_t root_;
 
-    explicit BTreeHeaderPage(uint64_t root) :
-      tree_root_{root}
-    {}
-
-  // TODO: more to come
+    explicit BTreeHeaderPage(uint64_t);
 };
 
 #endif
