@@ -2,7 +2,7 @@
 #define LOODB_ENTRYTYPE_H
 
 enum EntryType {
-  NULL,
+  NULL_,
   INTEGER,
   TEXT
 };
