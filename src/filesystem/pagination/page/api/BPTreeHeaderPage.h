@@ -8,14 +8,10 @@ class BPTreeHeaderPage : public Page {
 
   public:
 
-    // tree_root_: has the page number of the root node of our B+ Tree
-    uint64_t tree_root_;
+    // root_: has the page number of the root node of our B+ Tree
+    uint64_t root_;
 
-    explicit BPTreeHeaderPage(uint64_t root) :
-      tree_root_{root}
-    {}
-
-  // TODO: more to come
+    explicit BPTreeHeaderPage(uint64_t);
 };
 
 #endif
