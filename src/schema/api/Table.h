@@ -8,14 +8,14 @@
 #include <string>
 #include <map>
 
-// Private members of Table
-struct TableImpl {
-  std::string name_;
-  std::map<std::string, Column> columns_;
-  std::string pkey_column_;
-};
-
 class Table {
+
+    // Private members of Table
+    struct TableImpl {
+      std::string name_;
+      std::map<std::string, Column> columns_;
+      std::string pkey_column_;
+    };
 
     // pImpl for Table
     std::unique_ptr<TableImpl> impl_;

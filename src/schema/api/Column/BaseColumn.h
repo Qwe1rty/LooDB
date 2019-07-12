@@ -3,19 +3,20 @@
 
 #include "Column.h"
 #include "../Entry.h"
+#include "../EntryType.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
 #include "../../../filesystem/pagination/interface/api/Pager.h"
 #include <memory>
 #include <string>
 
-// Private members of Base Column
-struct BaseColumnImpl{
-  std::string name_;
-  // EntryType type_;
-  std::unique_ptr<Pager> file_;
-};
-
 class BaseColumn : public Column  {
+
+    // Private members of Base Column
+    struct BaseColumnImpl{
+      std::string name_;
+      EntryType type_;
+      std::unique_ptr<Pager> file_;
+    };
 
     // pImpl for Base Column
     std::unique_ptr<BaseColumnImpl> impl_;

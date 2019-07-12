@@ -8,13 +8,13 @@
 #include <map>
 #include <vector>
 
-// Private members of Database
-struct DatabaseImpl {
-  std::string name_;
-  std::map<std::string, Table> tables_;
-};
-
 class Database {
+
+    // Private members of Database
+    struct DatabaseImpl {
+      std::string name_;
+      std::map<std::string, Table> tables_;
+    };
 
     // pImpl for Database
     std::unique_ptr<DatabaseImpl> impl_;

@@ -6,13 +6,13 @@
 #include "../../../filesystem/pagination/page/api/Page.h"
 #include <memory>
 
-// Private members of Column Restriction
-struct ColumnRestrictionImpl{
-  std::unique_ptr<Column> base_;
-};
-
 // Decorator for Column
 class ColumnRestriction : public Column  {
+
+    // Private members of Column Restriction
+    struct ColumnRestrictionImpl{
+      std::unique_ptr<Column> base_;
+    };
 
     // pImpl for Column Restriction
     std::unique_ptr<ColumnRestrictionImpl> impl_;

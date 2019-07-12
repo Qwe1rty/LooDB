@@ -7,16 +7,16 @@
 #include <string>
 #include <map>
 
-// Private members of Cursor
-struct CursorImpl {
-  // TODO: Figure out how Cursor is implemented
-  // std::map<std::string, Column::Iterator> row_;
-};
-
 class Cursor {
 
     // Declare Table a friend of Cursor
     friend class Table;
+
+    // Private members of Cursor
+    struct CursorImpl {
+      // TODO: Figure out how Cursor is implemented
+      // std::map<std::string, Column::Iterator> row_;
+    };
 
     // pImpl for Cursor
     std::unique_ptr<CursorImpl> impl_;

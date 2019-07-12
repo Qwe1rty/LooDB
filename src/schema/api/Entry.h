@@ -4,12 +4,12 @@
 #include "EntryType.h"
 #include <memory>
 
-// Private members of Entry
-struct EntryImpl {
-  EntryType type_;
-};
-
 class Entry {
+
+    // Private members of Entry
+    struct EntryImpl {
+      EntryType type_;
+    };
 
     // pImpl for Entry
     std::unique_ptr<EntryImpl> impl_;
