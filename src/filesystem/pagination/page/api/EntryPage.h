@@ -1,5 +1,5 @@
-#ifndef PAYLOADPAGE_H
-#define PAYLOADPAGE_H
+#ifndef LOODB_PAYLOADPAGE_H
+#define LOODB_PAYLOADPAGE_H
 
 #include  "Page.h"
 
