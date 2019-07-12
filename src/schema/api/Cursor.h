@@ -29,8 +29,8 @@ class Cursor {
     // Check if this is equal to other
     bool operator!=(const Cursor&);
 
-    // Dereference and return a Page
-    Page operator*();
+    // Dereference and return a Page pointer
+    std::unique_ptr<Page> operator*();
 
     // Increment cursor
     Cursor& operator++();

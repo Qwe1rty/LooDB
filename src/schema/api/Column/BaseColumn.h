@@ -25,9 +25,9 @@ class BaseColumn : public Column  {
 
     bool valid_(Entry) override;
 
-    Page read_(Entry) override;
+    std::unique_ptr<Page> read_(Entry) override;
 
-    void write_(Entry, Page) override;
+    void write_(Entry, Page&) override;
 
     bool empty_() override;
 

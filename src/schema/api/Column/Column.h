@@ -3,6 +3,7 @@
 
 #include "../Entry/Entry.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
+#include <memory>
 
 class Column {
 
@@ -12,10 +13,10 @@ class Column {
     virtual bool valid_(Entry) = 0;
 
     // TODO: Figure out how read works
-    virtual Page read_(Entry) = 0;
+    virtual std::unique_ptr<Page> read_(Entry) = 0;
 
     // Write to Column
-    virtual void write_(Entry, Page) = 0;
+    virtual void write_(Entry, Page&) = 0;
 
     // Check if Column is empty
     virtual bool empty_() = 0;

@@ -4,15 +4,16 @@
 #include "ColumnRestriction.h"
 #include "../Entry/Entry.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
+#include <memory>
 
 // Decoration for Column
 class UniqueRestriction : public ColumnRestriction  {
 
     bool valid_(Entry) override;
 
-    Page read_(Entry) override;
+    std::unique_ptr<Page> read_(Entry) override;
 
-    void write_(Entry, Page) override;
+    void write_(Entry, Page&) override;
 
   public:
 

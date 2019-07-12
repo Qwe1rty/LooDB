@@ -19,9 +19,9 @@ class ColumnRestriction : public Column  {
 
     virtual bool valid_(Entry) override;
 
-    virtual Page read_(Entry) override;
+    virtual std::unique_ptr<Page> read_(Entry) override;
 
-    virtual void write_(Entry, Page) override;
+    virtual void write_(Entry, Page&) override;
 
   public:
 
