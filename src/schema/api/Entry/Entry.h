@@ -17,26 +17,26 @@ class Entry {
   public:
 
     // Constructor
-    Entry( /* params */ );
+    Entry(EntryType);
 
     // Overload less than operator
-    bool operator<(const Entry&);
+    virtual bool operator<(const Entry&) = 0;
 
     // Overload less than or equals operator
-    bool operator<=(const Entry&);
+    virtual bool operator<=(const Entry&) = 0;
 
     // Overload greater than operator
-    bool operator>(const Entry&);
+    virtual bool operator>(const Entry&) = 0;
 
     // Overload greater than or equals operator
-    bool operator>=(const Entry&);
+    virtual bool operator>=(const Entry&) = 0;
 
     // Overload equals operator
-    bool operator==(const Entry&);
+    virtual bool operator==(const Entry&) = 0;
 
     // Overload not equals operator
-    bool operator!=(const Entry&);
+    virtual bool operator!=(const Entry&) = 0;
 
 };
 
-#endif //LOODB_ENTRY_H
+#endif // LOODB_ENTRY_H
