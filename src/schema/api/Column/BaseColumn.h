@@ -4,7 +4,7 @@
 #include "Column.h"
 #include "../Entry.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
-#include "../../../filesystem/pagination/pager/api/Pager.h"
+#include "../../../filesystem/pagination/interface/api/Pager.h"
 #include <memory>
 #include <string>
 
