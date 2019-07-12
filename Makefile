@@ -19,7 +19,7 @@ QUERY_DIR = queries
 build: ${EXEC} clean
 
 clean:
-	rm ${OBJECTS} ${DEPENDS}
+	@rm ${OBJECTS} ${DEPENDS}
 
 run:
 	@./${EXEC}

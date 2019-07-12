@@ -1,9 +1,12 @@
 #include "../api/Pager.h"
-#include "../../page/api/PageCodec.h"
+#include "../api/PageCodec.h"
 #include "../../../cache/api/Cache.h"
 #include "../../../cache/api/LRUCacheStrategy.h"
 
+#include "../../page/impl/Page.cpp"
+
 #include <fstream>
+
 
 class Pager::Impl final {
 
@@ -64,7 +67,7 @@ Page Pager::Impl::read(uint64_t index) {
 void Pager::Impl::write(uint64_t index, Page page) {
 
      // Try to write to disk first, in case of errors
-     auto page_bytes = PageCodec{}.encode(page);
+     auto page_bytes = Page::PAGE_CODEC.encode(page);
      stream_.seekg(index * Page::PAGE_SIZE);
      stream_.write(page_bytes.get(), Page::PAGE_SIZE);
 
