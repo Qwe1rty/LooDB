@@ -1,4 +1,4 @@
-#ifndef LOODB_CELL_H
+#ifndef LOODB_CELL_HC
 #define LOODB_CELL_H
 
 #include <cstdint>

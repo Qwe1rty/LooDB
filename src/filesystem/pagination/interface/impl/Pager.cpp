@@ -53,8 +53,8 @@ Pager::Pager(std::string filename, uint64_t limit) :
 Page Pager::Impl::read(uint64_t index) {
 
     // First check the cache
-    auto cache_result{cache_.seek(index)};
-    if (cache_result) return std::move(*cache_result);
+//    auto cache_result{cache_.seek(index)};
+//    if (cache_result) return std::move(*cache_result);
 
     // Next do a disk seek
     auto disk_result = std::unique_ptr<char[]>{new char[Page::PAGE_SIZE]};
@@ -72,7 +72,7 @@ void Pager::Impl::write(uint64_t index, Page page) {
      stream_.write(page_bytes.get(), Page::PAGE_SIZE);
 
      // Now update the cache
-     cache_.update(index, std::move(page));
+//     cache_.update(index, std::move(page));
 }
 
 

@@ -13,10 +13,12 @@ class Page {
 public:
 
   // PAGE_SIZE: This is the constant size of all our pages
-  // PAGE_CODEC: Global converter interface
-  
-  const static uint32_t PAGE_SIZE;
-  const static PageCodec PAGE_CODEC;
+  // PAGE_CODEC: Converter interface
+
+  const static uint32_t PAGE_SIZE = 4096;
+  constexpr static PageCodec PAGE_CODEC = PageCodec{};
+
+  PageType type() const;
 
   virtual ~Page() = 0;
 

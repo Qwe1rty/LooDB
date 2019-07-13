@@ -2,17 +2,25 @@
 #define LOODB_PAGECODEC_H
 
 #include "../../../../util/Codec.h"
+#include "../../page/api/Page.h"
+
 #include <memory>
+
 
 class Page;
 
 template<typename Object, typename Serial>
 class Codec;
 
-class PageCodec : public Codec<Page, std::unique_ptr<char[]>> {
+class PageCodec : public Codec<std::unique_ptr<Page>,
+                               std::unique_ptr<char[]>> {
   public:
-    std::unique_ptr<char[]> encode(Page&) const override;
-    std::unique_ptr<Page> decode(std::unique_ptr<char[]>) const override;
+
+    using Object = std::unique_ptr<Page>;
+    using Serial = std::unique_ptr<char[]>;
+
+    Serial encode(const Object&) const override;
+    Object decode(const Serial&) const override;
 };
 
 #endif //LOODB_PAGECODEC_H
