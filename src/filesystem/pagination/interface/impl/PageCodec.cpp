@@ -13,6 +13,7 @@
 enum Offset {
 
   PAGE_HEADER_OFFSET = 0,
+  CELL_OFFSET = sizeof(Cell),
 
   // BPTreeHeaderPage offsets
   BPTH_ROOT_OFFSET = PAGE_HEADER_OFFSET + 4,
@@ -57,6 +58,31 @@ namespace {
       BP_TREE_INTERNAL_PAGE,
       [](const ByteWriter& writer, const Object& obj) -> Serial {
 
+        const auto page = dynamic_cast<BPTreeInternalPage*>(obj.get());
+
+        writer.write(Offset::BPTI_ORDER_OFFSET, BPTreeInternalPage::ORDER);
+        writer.write(Offset::BPTI_CELL_NUM_OFFSET, page->node_.size());
+
+        for (uint32_t i = 0; i < page->node_.size(); ++i) {
+
+          const auto& cell = page->node_.at(i);
+          writer.write(
+            BPTI_CELL_DATA_OFFSET + (i * CELL_OFFSET),
+            cell.key_
+          );
+          writer.write(
+            BPTI_CELL_DATA_OFFSET + (i * CELL_OFFSET) + sizeof(cell.key_),
+            cell.value_
+          );
+          writer.write(
+            BPTI_CELL_DATA_OFFSET + (i * CELL_OFFSET) + sizeof(cell.key_) + sizeof(cell.value_),
+            cell.left_
+          );
+        }
+        writer.write(
+          BPTI_CELL_DATA_OFFSET + (page->node_.size() * CELL_OFFSET),
+          page->right_
+        );
       }
     },
     {
@@ -130,12 +156,13 @@ namespace {
 
 Serial PageCodec::encode(const Object& page) const {
 
-  // Allocate array, and write in the page header
+  // Allocate array, writer wrapper, and write in the page header
   Serial bytes{new char[Page::PAGE_SIZE]};
-  bytes[PAGE_HEADER_OFFSET] = static_cast<char>(page->type());
-
-  // Encode the rest of the page's data depending on its type
   ByteWriter writer{bytes};
+
+  // Encode the page data, starting with the header and then the
+  // rest depending on the underlying page type
+  writer.write(PAGE_HEADER_OFFSET, static_cast<uint32_t>(page->type()));
   encode_functions.at(page->type())(writer, page);
 
   return bytes;
