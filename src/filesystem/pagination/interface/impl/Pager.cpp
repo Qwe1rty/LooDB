@@ -55,19 +55,19 @@ std::unique_ptr<Page> Pager::Impl::read(uint64_t index) {
 //    if (cache_result) return std::move(*cache_result);
 
     // Next do a disk seek
-    auto disk_result = std::unique_ptr<char[]>{new char[Page::PAGE_SIZE]};
-    stream_.seekg(index * Page::PAGE_SIZE);
-    stream_.read(disk_result.get(), Page::PAGE_SIZE);
+    auto disk_result = std::array<char, Page::SIZE>{};
+    stream_.seekg(index * Page::SIZE);
+    stream_.read(disk_result.data(), Page::SIZE);
 
-    return PageCodec::PAGE_CODEC.decode(disk_result);
+    return PageCodec::CODEC.decode(disk_result);
 }
 
 void Pager::Impl::write(uint64_t index, const std::unique_ptr<Page>& page) {
 
      // Try to write to disk first, in case of errors
-     auto page_bytes = PageCodec::PAGE_CODEC.encode(page);
-     stream_.seekg(index * Page::PAGE_SIZE);
-     stream_.write(page_bytes.get(), Page::PAGE_SIZE);
+     auto page_bytes = PageCodec::CODEC.encode(page);
+     stream_.seekg(index * Page::SIZE);
+     stream_.write(page_bytes.data(), Page::SIZE);
 
      // Now update the cache
 //     cache_.update(index, std::move(page));

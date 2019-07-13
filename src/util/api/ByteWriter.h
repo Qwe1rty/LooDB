@@ -6,6 +6,7 @@
 #include <limits>
 
 
+template<typename Datatype>
 class ByteWriter {
 
 public:
@@ -38,13 +39,7 @@ public:
    */
   operator bool() const;
 
-  explicit ByteWriter(char* const&,
-                      uint32_t limit = std::numeric_limits<uint32_t>::max(),
-                      uint32_t offset = 0);
-  explicit ByteWriter(const std::unique_ptr<char*>&,
-                      uint32_t limit = std::numeric_limits<uint32_t>::max(),
-                      uint32_t offset = 0);
-  explicit ByteWriter(const std::unique_ptr<char[]>&,
+  explicit ByteWriter(Datatype&,
                       uint32_t limit = std::numeric_limits<uint32_t>::max(),
                       uint32_t offset = 0);
 
@@ -53,5 +48,8 @@ private:
   class Impl;
   const std::unique_ptr<Impl> impl_;
 };
+
+
+#include "ByteWriter.cpp"
 
 #endif //LOODB_BYTEWRITER_H

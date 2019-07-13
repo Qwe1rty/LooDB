@@ -9,7 +9,7 @@
 
 
 class PageCodec : public Codec<std::unique_ptr<Page>,
-                               std::array<char, Page::PAGE_SIZE>> {
+                               std::array<char, Page::SIZE>> {
 
   public:
 
@@ -17,7 +17,7 @@ class PageCodec : public Codec<std::unique_ptr<Page>,
     const static PageCodec CODEC;
 
     using Object = std::unique_ptr<Page>;
-    using Serial = std::array<char, Page::PAGE_SIZE>;
+    using Serial = std::array<char, Page::SIZE>;
 
     Serial encode(const Object&) const override;
     Object decode(const Serial&) const override;

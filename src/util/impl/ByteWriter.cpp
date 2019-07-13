@@ -1,7 +1,8 @@
 #include "../api/ByteWriter.h"
 
 
-class ByteWriter::Impl {
+template<typename Datatype>
+class ByteWriter<Datatype>::Impl {
 
 public:
 
@@ -13,67 +14,65 @@ public:
   uint32_t limit() const;
   uint32_t offset() const;
 
-  Impl(char* const&, uint32_t limit, uint32_t offset);
+  Impl(Datatype&, uint32_t limit, uint32_t offset);
 
 private:
 
-  char* const bytes_;
+  Datatype& bytes_;
   const uint32_t limit_;
   uint32_t offset_;
-  // TODO: possible vectorization?
 };
 
 
 /*
- * ByteWriter.h constructors
+ * ByteWriter.h implementation
  */
 
-ByteWriter::ByteWriter(char* const& bytes, uint32_t limit, uint32_t offset) :
+template<typename Datatype>
+ByteWriter<Datatype>::ByteWriter(Datatype& bytes, uint32_t limit, uint32_t offset) :
   impl_{std::make_unique<Impl>(bytes, limit, offset)}
-
 {}
 
-ByteWriter::ByteWriter(const std::unique_ptr<char[]>& bytes, uint32_t limit, uint32_t offset) :
-  impl_{std::make_unique<Impl>(bytes.get(), limit, offset)}
-{}
+// Explanation for:
+// impl_->template write<...>
+//
+// https://stackoverflow.com/questions/3786360/confusing-template-error
 
-ByteWriter::ByteWriter(const std::unique_ptr<char*>& bytes, uint32_t limit, uint32_t offset) :
-  impl_{std::make_unique<Impl>(*bytes, limit, offset)}
-{}
-
-
-/*
- * ByteWriter.h public methods
- */
-
-ByteWriter& ByteWriter::operator<<(const char& item) {
-  impl_->write<unsigned char>(item);
+template<typename Datatype>
+ByteWriter<Datatype>& ByteWriter<Datatype>::operator<<(const char& item) {
+  impl_->template write<unsigned char>(item);
   return *this;
 }
 
-ByteWriter& ByteWriter::operator<<(const uint32_t& item) {
-  impl_->write<uint32_t>(item);
+template<typename Datatype>
+ByteWriter<Datatype>& ByteWriter<Datatype>::operator<<(const uint32_t& item) {
+  impl_->template write<uint32_t>(item);
   return *this;
 }
 
-ByteWriter& ByteWriter::operator<<(const uint64_t& item) {
-  impl_->write<uint64_t>(item);
+template<typename Datatype>
+ByteWriter<Datatype>& ByteWriter<Datatype>::operator<<(const uint64_t& item) {
+  impl_->template write<uint64_t>(item);
   return *this;
 }
 
-void ByteWriter::seek(uint32_t offset) {
+template<typename Datatype>
+void ByteWriter<Datatype>::seek(uint32_t offset) {
   impl_->seek(offset);
 }
 
-uint32_t ByteWriter::limit() const {
+template<typename Datatype>
+uint32_t ByteWriter<Datatype>::limit() const {
   return impl_->limit();
 }
 
-uint32_t ByteWriter::offset() const {
+template<typename Datatype>
+uint32_t ByteWriter<Datatype>::offset() const {
   return impl_->offset();
 }
 
-ByteWriter::operator bool() const {
+template<typename Datatype>
+ByteWriter<Datatype>::operator bool() const {
   return (limit() - offset()) > 1;
 }
 
@@ -82,7 +81,8 @@ ByteWriter::operator bool() const {
  * Implementations
  */
 
-ByteWriter::Impl::Impl(char* const& bytes, uint32_t limit, uint32_t offset) :
+template<typename Datatype>
+ByteWriter<Datatype>::Impl::Impl(Datatype& bytes, uint32_t limit, uint32_t offset) :
   bytes_{bytes},
   limit_{limit},
   offset_{offset}
@@ -95,8 +95,9 @@ ByteWriter::Impl::Impl(char* const& bytes, uint32_t limit, uint32_t offset) :
   }
 }
 
+template<typename Datatype>
 template<typename Numeric>
-void ByteWriter::Impl::write(const Numeric& item) {
+void ByteWriter<Datatype>::Impl::write(const Numeric& item) {
 
   auto item_size{sizeof(item)};
 
@@ -115,7 +116,8 @@ void ByteWriter::Impl::write(const Numeric& item) {
   }
 }
 
-void ByteWriter::Impl::seek(uint32_t offset) {
+template<typename Datatype>
+void ByteWriter<Datatype>::Impl::seek(uint32_t offset) {
 
   if (offset < limit_) offset_ = offset;
   throw std::out_of_range("Offset value " +
@@ -124,10 +126,12 @@ void ByteWriter::Impl::seek(uint32_t offset) {
                           std::to_string(limit_));
 }
 
-uint32_t ByteWriter::Impl::limit() const {
+template<typename Datatype>
+uint32_t ByteWriter<Datatype>::Impl::limit() const {
   return limit_;
 }
 
-uint32_t ByteWriter::Impl::offset() const {
+template<typename Datatype>
+uint32_t ByteWriter<Datatype>::Impl::offset() const {
   return offset_;
 }

@@ -19,7 +19,7 @@ namespace {
   using Object = PageCodec::Object;
   using Serial = PageCodec::Serial;
 
-  using EncodeWriter = std::function<void(ByteWriter&, const Object&)>;
+  using EncodeWriter = std::function<void(ByteWriter<Serial>&, const Object&)>;
   using DecodeReader = std::function<Object(const Serial&)>;
 
   /*
@@ -35,7 +35,7 @@ namespace {
     {
       BP_TREE_HEADER_PAGE,
 
-      [](ByteWriter& writer, const Object& obj) {
+      [](ByteWriter<Serial>& writer, const Object& obj) {
 
         const auto page = dynamic_cast<BPTreeHeaderPage*>(obj.get());
 
@@ -44,7 +44,7 @@ namespace {
     },
     {
       BP_TREE_INTERNAL_PAGE,
-      [](ByteWriter& writer, const Object& obj) {
+      [](ByteWriter<Serial>& writer, const Object& obj) {
 
         const auto page = dynamic_cast<BPTreeInternalPage*>(obj.get());
 
@@ -63,7 +63,7 @@ namespace {
     },
     {
       BP_TREE_LEAF_PAGE,
-      [](ByteWriter& writer, const Object& obj) {
+      [](ByteWriter<Serial>& writer, const Object& obj) {
 
         const auto page = dynamic_cast<BPTreeLeafPage*>(obj.get());
 
@@ -86,7 +86,7 @@ namespace {
     },
     {
       B_TREE_HEADER_PAGE,
-      [](ByteWriter& writer, const Object& obj) {
+      [](ByteWriter<Serial>& writer, const Object& obj) {
 
         const auto page = dynamic_cast<BTreeHeaderPage*>(obj.get());
 
@@ -95,7 +95,7 @@ namespace {
     },
     {
       B_TREE_NODE_PAGE,
-      [](ByteWriter& writer, const Object& obj) {
+      [](ByteWriter<Serial>& writer, const Object& obj) {
 
         const auto page = dynamic_cast<BTreeNodePage*>(obj.get());
 
@@ -114,7 +114,7 @@ namespace {
     },
     {
       ENTRY_PAGE,
-      [](ByteWriter& writer, const Object& obj) {
+      [](ByteWriter<Serial>& writer, const Object& obj) {
 
         const auto page = dynamic_cast<EntryPage*>(obj.get());
 
@@ -176,7 +176,7 @@ Serial PageCodec::encode(const Object& page) const {
 
   // Allocate array, writer wrapper, and write in the page header
   Serial bytes{};
-  ByteWriter writer{bytes.data()};
+  ByteWriter<Serial> writer{bytes, sizeof(bytes)};
 
   // Encode the page data, starting with the header and then the
   // rest depending on the underlying page type

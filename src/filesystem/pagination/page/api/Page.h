@@ -11,8 +11,8 @@ class Page {
 
 public:
 
-  // PAGE_SIZE: This is the constant size of all our pages
-  constexpr static uint32_t PAGE_SIZE = 4096;
+  // SIZE: This is the constant size of all our pages
+  constexpr static uint32_t SIZE = 4096;
 
   PageType type() const;
 
