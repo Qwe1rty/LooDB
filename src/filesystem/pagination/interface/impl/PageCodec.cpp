@@ -2,9 +2,12 @@
 #include "../api/PageType.h"
 #include "../../page/api/Cell.h"
 #include "../../page/api/CellBP.h"
+#include "../../page/api/BTreeHeaderPage.h"
 #include "../../page/api/BPTreeInternalPage.h"
 #include "../../page/api/BPTreeHeaderPage.h"
+#include "../../page/api/BPTreeLeafPage.h"
 #include "../../../../util/ByteWriter.h"
+#include "../../page/api/BTreeNodePage.h"
 
 #include <functional>
 #include <map>
@@ -24,6 +27,9 @@ enum Offset {
   BPTI_CELL_DATA_OFFSET = BPTI_CELL_NUM_OFFSET + sizeof(std::vector<Cell>::size_type),
 
   // BPTreeLeafPage offsets
+  BPTL_ORDER_OFFSET = PAGE_HEADER_OFFSET + 4,
+  BPTL_CELL_NUM_OFFSET = BPTL_ORDER_OFFSET + sizeof(BPTreeLeafPage::ORDER),
+  BPTL_CELL_DATA_OFFSET = BPTL_CELL_NUM_OFFSET + sizeof(std::vector<CellBP>::size_type),
 
   // BTreeHeaderPage offsets
 
@@ -39,73 +45,100 @@ namespace {
   using Object = PageCodec::Object;
   using Serial = PageCodec::Serial;
 
-  using EncodeWriter = std::function<void(const ByteWriter&, const Object&)>;
+  using EncodeWriter = std::function<void(ByteWriter&, const Object&)>;
   using DecodeReader = std::function<Object(const Serial&)>;
 
+  /*
+   * Implementation of the PageCodec class is similar to a more traditional
+   * visitor pattern, but makes use of the PageType enum to differentiate the
+   * dynamic page type.
+   */
 
   std::map<PageType, EncodeWriter> encode_functions
   {
     {
       BP_TREE_HEADER_PAGE,
-      [](const ByteWriter& writer, const Object& obj) -> Serial {
+      [](ByteWriter& writer, const Object& obj) {
 
         const auto page = dynamic_cast<BPTreeHeaderPage*>(obj.get());
 
-        writer.write(Offset::BPTH_ROOT_OFFSET, page->root_);
+        writer << page->root_;
       }
     },
     {
       BP_TREE_INTERNAL_PAGE,
-      [](const ByteWriter& writer, const Object& obj) -> Serial {
+      [](ByteWriter& writer, const Object& obj) {
 
         const auto page = dynamic_cast<BPTreeInternalPage*>(obj.get());
 
-        writer.write(Offset::BPTI_ORDER_OFFSET, BPTreeInternalPage::ORDER);
-        writer.write(Offset::BPTI_CELL_NUM_OFFSET, page->node_.size());
+        writer << BPTreeInternalPage::ORDER;
+        writer << page->node_.size();
 
-        for (uint32_t i = 0; i < page->node_.size(); ++i) {
-
-          const auto& cell = page->node_.at(i);
-          writer.write(
-            BPTI_CELL_DATA_OFFSET + (i * CELL_OFFSET),
-            cell.key_
-          );
-          writer.write(
-            BPTI_CELL_DATA_OFFSET + (i * CELL_OFFSET) + sizeof(cell.key_),
-            cell.value_
-          );
-          writer.write(
-            BPTI_CELL_DATA_OFFSET + (i * CELL_OFFSET) + sizeof(cell.key_) + sizeof(cell.value_),
-            cell.left_
-          );
+        for (const auto& cell : page->node_) {
+          
+          writer << cell.key_;
+          writer << cell.value_;
+          writer << cell.left_;          
         }
-        writer.write(
-          BPTI_CELL_DATA_OFFSET + (page->node_.size() * CELL_OFFSET),
-          page->right_
-        );
+
+        writer << page->right_;
       }
     },
     {
       BP_TREE_LEAF_PAGE,
-      [](const ByteWriter& writer, const Object& obj) -> Serial {
+      [](ByteWriter& writer, const Object& obj) {
 
+        const auto page = dynamic_cast<BPTreeLeafPage*>(obj.get());
+
+        writer << BPTreeLeafPage::ORDER;
+        writer << page->node_.size();
+
+        for (const auto& cell : page->node_) {
+          
+          writer << cell.key_;
+          writer << cell.values_.size();
+
+          for (const auto& value : cell.values_) {
+            
+            writer << value;
+          }
+        }
+
+        writer << page->right_;
       }
     },
     {
       B_TREE_HEADER_PAGE,
-      [](const ByteWriter& writer, const Object& obj) -> Serial {
+      [](ByteWriter& writer, const Object& obj) {
 
+        const auto page = dynamic_cast<BTreeHeaderPage*>(obj.get());
+
+        writer << page->root_;
       }
     },
     {
       B_TREE_NODE_PAGE,
-      [](const ByteWriter& writer, const Object& obj) -> Serial {
+      [](ByteWriter& writer, const Object& obj) {
 
+        const auto page = dynamic_cast<BTreeNodePage*>(obj.get());
+
+        writer << BTreeNodePage::ORDER;
+        writer << page->node_.size();
+
+        for (const auto& cell : page->node_) {
+
+          writer << cell.key_;
+          writer << cell.value_;
+          writer << cell.left_;
+        }
+
+        writer << page->right_;
       }
     },
     {
       ENTRY_PAGE,
-      [](const ByteWriter& writer, const Object& obj) -> Serial {
+      [](ByteWriter& writer, const Object& obj) {
+
 
       }
     }
@@ -162,7 +195,7 @@ Serial PageCodec::encode(const Object& page) const {
 
   // Encode the page data, starting with the header and then the
   // rest depending on the underlying page type
-  writer.write(PAGE_HEADER_OFFSET, static_cast<uint32_t>(page->type()));
+  writer << static_cast<uint32_t>(page->type());
   encode_functions.at(page->type())(writer, page);
 
   return bytes;

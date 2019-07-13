@@ -6,13 +6,17 @@ class ByteWriter::Impl {
 public:
 
   template<typename Numeric>
-  void write(const uint32_t& offset, const Numeric&) const;
+  void write(const Numeric&);
 
-  explicit Impl(char* const&);
+  void seek(uint32_t);
+
+  Impl(char* const&, uint32_t);
 
 private:
 
   char* const bytes_;
+  uint32_t offset_;
+  // TODO: implement limits + possible vectorization?
 };
 
 
@@ -20,16 +24,17 @@ private:
  * ByteWriter.h constructors
  */
 
-ByteWriter::ByteWriter(char* const& bytes) :
-  impl_{std::make_unique<Impl>(bytes)}
+ByteWriter::ByteWriter(char* const& bytes, uint32_t offset) :
+  impl_{std::make_unique<Impl>(bytes, offset)}
+
 {}
 
-ByteWriter::ByteWriter(const std::unique_ptr<char[]>& bytes) :
-  impl_{std::make_unique<Impl>(bytes.get())}
+ByteWriter::ByteWriter(const std::unique_ptr<char[]>& bytes, uint32_t offset) :
+  impl_{std::make_unique<Impl>(bytes.get(), offset)}
 {}
 
-ByteWriter::ByteWriter(const std::unique_ptr<char*>& bytes) :
-  impl_{std::make_unique<Impl>(*bytes)}
+ByteWriter::ByteWriter(const std::unique_ptr<char*>& bytes, uint32_t offset) :
+  impl_{std::make_unique<Impl>(*bytes, offset)}
 {}
 
 
@@ -37,16 +42,23 @@ ByteWriter::ByteWriter(const std::unique_ptr<char*>& bytes) :
  * ByteWriter.h public methods
  */
 
-void ByteWriter::write(const uint32_t& offset, const char& item) const {
-  impl_->write<unsigned char>(offset, item);
+ByteWriter& ByteWriter::operator<<(const char& item) {
+  impl_->write<unsigned char>(item);
+  return *this;
 }
 
-void ByteWriter::write(const uint32_t& offset, const uint32_t& item) const {
-  impl_->write<uint32_t>(offset, item);
+ByteWriter& ByteWriter::operator<<(const uint32_t& item) {
+  impl_->write<uint32_t>(item);
+  return *this;
 }
 
-void ByteWriter::write(const uint32_t& offset, const uint64_t& item) const {
-  impl_->write<uint64_t>(offset, item);
+ByteWriter& ByteWriter::operator<<(const uint64_t& item) {
+  impl_->write<uint64_t>(item);
+  return *this;
+}
+
+void ByteWriter::seek(uint32_t offset) {
+  impl_->seek(offset);
 }
 
 
@@ -54,13 +66,19 @@ void ByteWriter::write(const uint32_t& offset, const uint64_t& item) const {
  * Implementations
  */
 
-ByteWriter::Impl::Impl(char* const& bytes) :
-  bytes_{bytes}
+ByteWriter::Impl::Impl(char* const& bytes, uint32_t offset) :
+  bytes_{bytes},
+  offset_{offset}
 {}
 
 template<typename Numeric>
-void ByteWriter::Impl::write(const uint32_t& offset, const Numeric& item) const {
+void ByteWriter::Impl::write(const Numeric& item) {
   for (uint32_t i = 0; i < sizeof(item); ++i) {
-    bytes_[offset + i] = (item >> i * 8);
+    bytes_[offset_ + i] = (item >> i * 8);
   }
+  offset_ += sizeof(item);
+}
+
+void ByteWriter::Impl::seek(uint32_t offset) {
+  offset_ = offset;
 }
