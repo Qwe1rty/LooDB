@@ -33,7 +33,7 @@ ByteWriter<Datatype>::ByteWriter(Datatype& bytes, uint32_t limit, uint32_t offse
   impl_{std::make_unique<Impl>(bytes, limit, offset)}
 {}
 
-// Explanation for:
+// Note: explanation for the syntax
 // impl_->template write<...>
 //
 // https://stackoverflow.com/questions/3786360/confusing-template-error
