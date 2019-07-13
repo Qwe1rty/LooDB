@@ -3,8 +3,6 @@
 #include "../../../cache/api/Cache.h"
 #include "../../../cache/api/LRUCacheStrategy.h"
 
-#include "../../page/impl/Page.cpp"
-
 #include <fstream>
 
 
@@ -61,13 +59,13 @@ std::unique_ptr<Page> Pager::Impl::read(uint64_t index) {
     stream_.seekg(index * Page::PAGE_SIZE);
     stream_.read(disk_result.get(), Page::PAGE_SIZE);
 
-    return Page::PAGE_CODEC.decode(disk_result);
+    return PageCodec::PAGE_CODEC.decode(disk_result);
 }
 
 void Pager::Impl::write(uint64_t index, const std::unique_ptr<Page>& page) {
 
      // Try to write to disk first, in case of errors
-     auto page_bytes = Page::PAGE_CODEC.encode(page);
+     auto page_bytes = PageCodec::PAGE_CODEC.encode(page);
      stream_.seekg(index * Page::PAGE_SIZE);
      stream_.write(page_bytes.get(), Page::PAGE_SIZE);
 

@@ -6,9 +6,9 @@
 #include "../../page/api/BPTreeInternalPage.h"
 #include "../../page/api/BPTreeHeaderPage.h"
 #include "../../page/api/BPTreeLeafPage.h"
-#include "../../../../util/ByteWriter.h"
 #include "../../page/api/BTreeNodePage.h"
 #include "../../page/api/EntryPage.h"
+#include "../../../../util/api/ByteWriter.h"
 
 #include <functional>
 #include <map>
@@ -26,6 +26,8 @@ namespace {
    * Implementation of the PageCodec class is similar to a more traditional
    * visitor pattern, but makes use of the PageType enum to differentiate the
    * dynamic page type.
+   *
+   * TODO expand on this note
    */
 
   std::map<PageType, EncodeWriter> encode_functions
@@ -173,8 +175,8 @@ namespace {
 Serial PageCodec::encode(const Object& page) const {
 
   // Allocate array, writer wrapper, and write in the page header
-  Serial bytes{new char[Page::PAGE_SIZE]};
-  ByteWriter writer{bytes};
+  Serial bytes{};
+  ByteWriter writer{bytes.data()};
 
   // Encode the page data, starting with the header and then the
   // rest depending on the underlying page type
@@ -186,5 +188,5 @@ Serial PageCodec::encode(const Object& page) const {
 
 Object PageCodec::decode(const Serial& bytes) const {
 
-  // TODO
+  //
 }
