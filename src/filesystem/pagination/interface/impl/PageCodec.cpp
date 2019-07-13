@@ -8,36 +8,10 @@
 #include "../../page/api/BPTreeLeafPage.h"
 #include "../../../../util/ByteWriter.h"
 #include "../../page/api/BTreeNodePage.h"
+#include "../../page/api/EntryPage.h"
 
 #include <functional>
 #include <map>
-
-
-enum Offset {
-
-  PAGE_HEADER_OFFSET = 0,
-  CELL_OFFSET = sizeof(Cell),
-
-  // BPTreeHeaderPage offsets
-  BPTH_ROOT_OFFSET = PAGE_HEADER_OFFSET + 4,
-
-  // BPTreeInternalPage offsets
-  BPTI_ORDER_OFFSET = PAGE_HEADER_OFFSET + 4,
-  BPTI_CELL_NUM_OFFSET = BPTI_ORDER_OFFSET + sizeof(BPTreeInternalPage::ORDER),
-  BPTI_CELL_DATA_OFFSET = BPTI_CELL_NUM_OFFSET + sizeof(std::vector<Cell>::size_type),
-
-  // BPTreeLeafPage offsets
-  BPTL_ORDER_OFFSET = PAGE_HEADER_OFFSET + 4,
-  BPTL_CELL_NUM_OFFSET = BPTL_ORDER_OFFSET + sizeof(BPTreeLeafPage::ORDER),
-  BPTL_CELL_DATA_OFFSET = BPTL_CELL_NUM_OFFSET + sizeof(std::vector<CellBP>::size_type),
-
-  // BTreeHeaderPage offsets
-
-  // BTreeNodePage offsets
-
-  // EntryPage offsets
-
-};
 
 
 namespace {
@@ -58,6 +32,7 @@ namespace {
   {
     {
       BP_TREE_HEADER_PAGE,
+
       [](ByteWriter& writer, const Object& obj) {
 
         const auto page = dynamic_cast<BPTreeHeaderPage*>(obj.get());
@@ -139,7 +114,15 @@ namespace {
       ENTRY_PAGE,
       [](ByteWriter& writer, const Object& obj) {
 
+        const auto page = dynamic_cast<EntryPage*>(obj.get());
 
+        writer << page->overflow_;
+        writer << page->value_.size();
+
+        for (uint32_t i = 0; i < page->value_.size() && writer; ++i) {
+
+          writer << page->value_.at(i);
+        }
       }
     }
   };
@@ -203,7 +186,5 @@ Serial PageCodec::encode(const Object& page) const {
 
 Object PageCodec::decode(const Serial& bytes) const {
 
-  // Read in the page header, and decode
-//  auto type = static_cast<PageType>(bytes[PAGE_HEADER_OFFSET]);
-//  return decode_functions.at(type)(bytes);
+  // TODO
 }

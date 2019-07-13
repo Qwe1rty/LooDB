@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <limits>
 
 
 class ByteWriter {
@@ -25,9 +26,27 @@ public:
   // Set the offset counter to a desired offset
   void seek(uint32_t);
 
-  explicit ByteWriter(char* const&, uint32_t offset = 0);
-  explicit ByteWriter(const std::unique_ptr<char*>&, uint32_t offset = 0);
-  explicit ByteWriter(const std::unique_ptr<char[]>&, uint32_t offset = 0);
+  // Value getters for the writer's current offset, and defined limit
+  uint32_t limit() const;
+  uint32_t offset() const;
+
+  /*
+   * Implicit conversion operator that checks whether the writer can continue writing.
+   *
+   * If any more bytes are attempted to be written if this returns false, then an
+   * out of bounds exception may be thrown. Useful for continuous byte stream writing
+   */
+  operator bool() const;
+
+  explicit ByteWriter(char* const&,
+                      uint32_t limit = std::numeric_limits<uint32_t>::max(),
+                      uint32_t offset = 0);
+  explicit ByteWriter(const std::unique_ptr<char*>&,
+                      uint32_t limit = std::numeric_limits<uint32_t>::max(),
+                      uint32_t offset = 0);
+  explicit ByteWriter(const std::unique_ptr<char[]>&,
+                      uint32_t limit = std::numeric_limits<uint32_t>::max(),
+                      uint32_t offset = 0);
 
 private:
 
