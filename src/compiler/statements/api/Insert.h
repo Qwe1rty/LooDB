@@ -14,6 +14,7 @@ class SQLInsert : public SQLStatement {
  public:
 
   SQLInsert(std::string table_name, std::vector<std::vector<Entry>>);
+  ~ SQLInsert();
   std::unique_ptr<Command> generateQuery() const;
 };
 

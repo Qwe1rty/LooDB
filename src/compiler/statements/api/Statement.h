@@ -2,7 +2,7 @@
 #define LOODB_SQLSTMT_H
 
 #include <memory>
-#include "../commands/Command.h"
+#include "../../commands/api/Command.h"
 #include "StatementType.h"
 
 /** This is the ABC for out sequel statements*/
@@ -12,13 +12,12 @@ class SQLStatement {
   StatementType type_;
     /// evaluate the complete expression tree and return the subsequent command
   virtual std::unique_ptr<Command> query() const = 0;
- 
- public:
-  
-  virtual ~SQLStatement();
-    /// evaluate the complete expression tree and return the subsequent command
-  virtual std::unique_ptr<Command> generateQuery() const;
 
+ protected:
+  SQLStatement(std::string, StatementType);  
+ public:
+
+  virtual ~SQLStatement();
 };
 
 
