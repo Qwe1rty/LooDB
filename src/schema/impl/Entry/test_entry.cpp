@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <vector>
+#include <utility>
 
 using namespace std;
 
@@ -29,4 +31,25 @@ int main() {
   cout << "null1 == null2: " << (*null1 == *null2) << endl;
 
   cout << "int1 == null1: " << (*int1 == *null1) << endl;
+
+  vector<unique_ptr<Entry>> entries;
+
+  entries.emplace_back(move(int1));
+  entries.emplace_back(move(int2));
+  entries.emplace_back(move(text1));
+  entries.emplace_back(move(text2));
+  entries.emplace_back(move(null1));
+  entries.emplace_back(move(null2));
+
+  for (int i = 0; i < entries.size(); ++i) {
+    cout << entries[i]->getType() << endl;
+  }
+
+  vector<vector<unique_ptr<Entry>>> entries2;
+
+  entries2.emplace_back(move(entries));
+
+  vector<vector<unique_ptr<Entry>>> entries3;
+
+  entries3 = move(entries2);
 }
