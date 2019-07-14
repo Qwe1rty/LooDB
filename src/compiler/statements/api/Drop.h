@@ -1,16 +1,18 @@
-#ifndef LOODB_SQLDROP_H
+#fndef LOODB_SQLDROP_H
 #define LOODB_SQLDROP_H
 
 #include "Statement.h"
 #include <vector>
 
 
-class SQLSelect : public SQLStatement {
+class SQLDrop : public SQLStatement {
  
   std::unique_ptr<Command> query() const override;
 
  public:
   
+  SQLDrop(std::string);
+  ~ SQLDrop();
   std::unique_ptr<Command> generateQuery() const;
 
 };

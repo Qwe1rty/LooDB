@@ -12,7 +12,9 @@ class SQLCreate : public SQLStatement {
   std::unique_ptr<Impl> impl_;
   std::unique_ptr<Command> query() const override;
  public:
-    
+  
+  SQLCreate(std::string, std::vector<std::string, std::string>, std::vector<std::string, std::string>);
+  ~ SQLCreate();  
   std::unique_ptr<Command> generateQuery() const;
 
 };

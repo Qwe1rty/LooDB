@@ -15,6 +15,8 @@ class SQLSelect : public SQLStatement {
   std::unique_ptr<Command> query() const override;
  public:
   
+  SQLSelect(std::string);
+  ~ SQLSelect();
   bool isWhere();
   std::unique_ptr<Command> generateQuery() const;
 
