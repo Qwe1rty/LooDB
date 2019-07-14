@@ -2,42 +2,63 @@
 #define LOODB_NULLENTRY_H
 
 #include "Entry.h"
-#include "EntryType.h"
-#include <memory>
 
 class NullEntry : public Entry {
 
-    // Private members of NullEntry
-    struct NullEntryImpl {
-      EntryType type_;
-      const int val_ = 0;
-    };
+    const int val_ = 0;
 
-    // pImpl for Entry
-    std::unique_ptr<NullEntryImpl> impl_;
+    // Override private less than operator
+    // First, checks if types are equivalent
+    // If so, return true
+    // Otherwise, return false
+    // Invariance: other will be of type
+    // NULL_, INTEGER or TEXT
+    bool less(const Entry&) const override;
+
+    // Override private less than or equals operator
+    // First, checks if types are equivalent
+    // If so, return true
+    // Otherwise, return false
+    // Invariance: other will be of type
+    // NULL_, INTEGER or TEXT
+    bool lesseq(const Entry&) const override;
+
+    // Override private greater than operator
+    // First, checks if types are equivalent
+    // If so, return true
+    // Otherwise, return false
+    // Invariance: other will be of type
+    // NULL_, INTEGER or TEXT
+    bool greater(const Entry&) const override;
+
+    // Override private greater than or equals operator
+    // First, checks if types are equivalent
+    // If so, return true
+    // Otherwise, return false
+    // Invariance: other will be of type
+    // NULL_, INTEGER or TEXT
+    bool greatereq(const Entry&) const override;
+
+    // Override private equals operator
+    // First, checks if types are equivalent
+    // If so, return true
+    // Otherwise, return false
+    // Invariance: other will be of type
+    // NULL_, INTEGER or TEXT
+    bool equal(const Entry&) const override;
+
+    // Override private not equals operator
+    // First, checks if types are equivalent
+    // If so, return true
+    // Otherwise, return false
+    // Invariance: other will be of type
+    // NULL_, INTEGER or TEXT
+    bool notequal(const Entry&) const override;
 
   public:
 
     // Constructor
-    NullEntry(EntryType, int);
-
-    // Overload less than operator
-    bool operator<(const Entry&) override;
-
-    // Overload less than or equals operator
-    bool operator<=(const Entry&) override;
-
-    // Overload greater than operator
-    bool operator>(const Entry&) override;
-
-    // Overload greater than or equals operator
-    bool operator>=(const Entry&) override;
-
-    // Overload equals operator
-    bool operator==(const Entry&) override;
-
-    // Overload not equals operator
-    bool operator!=(const Entry&) override;
+    NullEntry();
 
 };
 
