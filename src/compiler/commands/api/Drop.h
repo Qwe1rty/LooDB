@@ -6,13 +6,15 @@
 
 class COMDrop : public Command {
  
-  bool isValid() const override;
+  bool valid() const override;
   void execute() override;
 
  public:
   
   COMDrop(std::string);
   ~ COMDrop();
+  bool isValid() const;
+  void executeCommand();
 
 };
 

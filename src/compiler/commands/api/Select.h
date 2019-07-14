@@ -5,13 +5,15 @@
 
 class COMSelect : public Command {
  
-  bool isValid() const override;
+  bool valid() const override;
   void execute() override;
 
  public:
   
   COMSelect(std::string);
   ~ COMSelect();
+  bool isValid() const;
+  void executeCommand();
 
 };
 

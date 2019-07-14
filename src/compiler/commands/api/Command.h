@@ -4,7 +4,7 @@
 #include <string>
 class Command {
 
-  virtual bool isValid() const = 0;
+  virtual bool valid() const = 0;
   virtual void execute() = 0;
   std::string table_;
  

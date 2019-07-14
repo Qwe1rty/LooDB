@@ -5,13 +5,15 @@
 
 class COMCreate : public Command {
  
-  bool isValid() const override;
+  bool valid() const override;
   void execute() override;
 
  public:
   
   COMCreate(std::string);
   ~ COMCreate();
+  bool isValid() const;
+  void executeCommand();
 
 };
 
