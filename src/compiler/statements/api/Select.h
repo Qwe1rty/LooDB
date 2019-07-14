@@ -13,13 +13,13 @@ class SQLSelect : public SQLStatement {
   // isWhere_: a boolean flag to determine the existence of a where clause
   class Impl;
   std::unique_ptr<Impl> impl_;
-  std::unique_ptr<Command> query() const override;
+  std::unique_ptr<Command> query() override;
  public:
   
-  SQLSelect(std::string, vector<std::string>, vector<std::string, Entry>, vector<std::string>);
+  SQLSelect(std::string, std::vector<std::string>, std::vector<std::string, Entry>, std::vector<std::string>);
   ~ SQLSelect();
   bool isWhere();
-  std::unique_ptr<Command> generateQuery() const;
+  std::unique_ptr<Command> generateQuery();
 
 };
 

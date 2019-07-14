@@ -5,13 +5,13 @@
 
 class SQLDrop : public SQLStatement {
  
-  std::unique_ptr<Command> query() const override;
+  std::unique_ptr<Command> query() override;
 
  public:
   
   SQLDrop(std::string);
   ~ SQLDrop();
-  std::unique_ptr<Command> generateQuery() const;
+  std::unique_ptr<Command> generateQuery();
 
 };
 

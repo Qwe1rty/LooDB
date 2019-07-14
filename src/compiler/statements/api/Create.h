@@ -10,12 +10,12 @@ class SQLCreate : public SQLStatement {
   // modifications_: a vector of columns names and modifications to their type
   class Impl;
   std::unique_ptr<Impl> impl_;
-  std::unique_ptr<Command> query() const override;
+  std::unique_ptr<Command> query() override;
  public:
   
   SQLCreate(std::string, std::vector<std::string, std::string>, std::vector<std::string, std::string>);
   ~ SQLCreate();  
-  std::unique_ptr<Command> generateQuery() const;
+  std::unique_ptr<Command> generateQuery();
 
 };
 

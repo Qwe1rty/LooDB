@@ -1,5 +1,6 @@
 #include "../api/Insert.h"
 #include <string>
+#include "../../commands/api/Insert.h"
 #include "../../../schema/api/Entry/Entry.h"
 using namespace std;
 
@@ -16,6 +17,10 @@ SQLInsert::SQLInsert(string table_name, std::vector<std::vector<Entry>> e) :
 
 SQLInsert::~ SQLInsert() = default;
 
-SQLInsert::unique_ptr<Command> generateQuery() const {
-  return make_unique();
+unique_ptr<Command> SQLInsert::generateQuery() {
+  return query();
+}
+
+std::unique_ptr<Command> SQLInsert::query() {
+  return make_unique<COMInsert(table_name_)>;
 }

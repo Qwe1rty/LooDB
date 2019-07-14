@@ -7,14 +7,15 @@
 
 /** This is the ABC for out sequel statements*/
 class SQLStatement {
-
-  std::string table_name_;
-  StatementType type_;
     /// evaluate the complete expression tree and return the subsequent command
-  virtual std::unique_ptr<Command> query() const = 0;
+  virtual std::unique_ptr<Command> query() = 0;
 
  protected:
+
   SQLStatement(std::string, StatementType);  
+  std::string table_name_;
+  StatementType type_;
+
  public:
 
   virtual ~SQLStatement();
