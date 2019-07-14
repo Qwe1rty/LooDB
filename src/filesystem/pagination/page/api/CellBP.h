@@ -1,8 +1,6 @@
 #ifndef LOODB_CELLBP_H
 #define LOODB_CELLBP_H
 
-#include "../../../../schema/Entry.h"
-
 #include <cstdint>
 #include <vector>
 

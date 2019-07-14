@@ -12,11 +12,10 @@ class BTreeNodePage : public Page {
   public:
 
     // ORDER: number of cells per node
-    const static int ORDER = 4;
+    constexpr static uint32_t ORDER = 4;
 
     // right_: page number of our right node
     // node_: the cells our node (a cell a key, value, pointer trio)
-    // order: the max number of cells per node
     uint64_t right_;
     std::vector<Cell> node_;
 
