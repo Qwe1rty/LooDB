@@ -3,6 +3,7 @@
 
 #include "Statement.h"
 #include <vector>
+#include <memory>
 #include "../../../schema/api/Entry/Entry.h"
 
 class SQLInsert : public SQLStatement {
@@ -12,7 +13,7 @@ class SQLInsert : public SQLStatement {
 
  public:
 
-  SQLInsert(std::string table_name, std::vector<std::vector<Entry>>);
+  SQLInsert(std::string table_name, std::vector<std::vector<std::unique_ptr<Entry>>>);
 };
 
 #endif
