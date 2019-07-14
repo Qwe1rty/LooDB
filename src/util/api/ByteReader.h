@@ -18,6 +18,9 @@ public:
   uint32_t limit() const;
   uint32_t offset() const;
 
+  // Increment the offset counter
+  void skip(uint32_t);
+
   explicit ByteReader(const Datatype&,
                       uint32_t limit = std::numeric_limits<uint32_t>::max(),
                       uint32_t offset = 0);

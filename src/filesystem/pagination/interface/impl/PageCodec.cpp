@@ -28,6 +28,9 @@ namespace {
    * visitor pattern, but makes use of the PageType enum to differentiate the
    * dynamic page type.
    *
+   * static_cast<...> is guaranteed due to the association between the page's
+   * enum type and the class type
+   *
    * TODO expand on this note
    */
 
@@ -37,7 +40,7 @@ namespace {
       BP_TREE_HEADER_PAGE,
       [](ByteWriter<Serial>& writer, const Object& obj) {
 
-        const auto page = dynamic_cast<BPTreeHeaderPage*>(obj.get());
+        const auto page = static_cast<BPTreeHeaderPage*>(obj.get());
 
         writer << page->root_;
       }
@@ -46,7 +49,7 @@ namespace {
       BP_TREE_INTERNAL_PAGE,
       [](ByteWriter<Serial>& writer, const Object& obj) {
 
-        const auto page = dynamic_cast<BPTreeInternalPage*>(obj.get());
+        const auto page = static_cast<BPTreeInternalPage*>(obj.get());
 
         writer << BPTreeInternalPage::ORDER;
         writer << page->node_.size();
@@ -65,7 +68,7 @@ namespace {
       BP_TREE_LEAF_PAGE,
       [](ByteWriter<Serial>& writer, const Object& obj) {
 
-        const auto page = dynamic_cast<BPTreeLeafPage*>(obj.get());
+        const auto page = static_cast<BPTreeLeafPage*>(obj.get());
 
         writer << BPTreeLeafPage::ORDER;
         writer << page->node_.size();
@@ -88,7 +91,7 @@ namespace {
       B_TREE_HEADER_PAGE,
       [](ByteWriter<Serial>& writer, const Object& obj) {
 
-        const auto page = dynamic_cast<BTreeHeaderPage*>(obj.get());
+        const auto page = static_cast<BTreeHeaderPage*>(obj.get());
 
         writer << page->root_;
       }
@@ -97,7 +100,7 @@ namespace {
       B_TREE_NODE_PAGE,
       [](ByteWriter<Serial>& writer, const Object& obj) {
 
-        const auto page = dynamic_cast<BTreeNodePage*>(obj.get());
+        const auto page = static_cast<BTreeNodePage*>(obj.get());
 
         writer << BTreeNodePage::ORDER;
         writer << page->node_.size();
@@ -116,7 +119,7 @@ namespace {
       ENTRY_PAGE,
       [](ByteWriter<Serial>& writer, const Object& obj) {
 
-        const auto page = dynamic_cast<EntryPage*>(obj.get());
+        const auto page = static_cast<EntryPage*>(obj.get());
 
         writer << page->overflow_;
         writer << page->value_.size();
@@ -145,12 +148,62 @@ namespace {
       BP_TREE_INTERNAL_PAGE,
       [](ByteReader<Serial>& reader) -> Object {
 
+        reader.skip(sizeof(BPTreeInternalPage::ORDER));
+
+        std::vector<Cell>::size_type size;
+        std::vector<Cell> cells;
+        reader >> size;
+        cells.reserve(size);
+
+        for (int i = 0; i < size; ++i) {
+
+          uint64_t key, value, left;
+          reader >> key >> value >> left;
+          cells.emplace_back(key, value, left);
+        }
+
+        uint64_t right;
+        reader >> right;
+
+        return std::make_unique<BPTreeInternalPage>(right, std::move(cells));
       }
     },
     {
       BP_TREE_LEAF_PAGE,
       [](ByteReader<Serial>& reader) -> Object {
 
+        reader.skip(sizeof(BPTreeLeafPage::ORDER));
+
+        std::vector<CellBP>::size_type cells_size;
+        std::vector<CellBP> cells;
+        reader >> cells_size;
+        cells.reserve(cells_size);
+
+        for (int i = 0; i < cells_size; ++i) {
+
+          uint64_t key;
+          reader >> key;
+
+          std::vector<uint64_t>::size_type values_size;
+          std::vector<uint64_t> values;
+          reader >> values_size;
+          values.reserve(values_size);
+
+          for (int i = 0; i < values_size; ++i) {
+
+            uint64_t value;
+            reader >> value;
+
+            values.emplace_back(value);
+          }
+
+          cells.emplace_back(key, std::move(values));
+        }
+
+        uint64_t right;
+        reader >> right;
+
+        return std::make_unique<BPTreeLeafPage>(right, std::move(cells));
       }
     },
     {
@@ -167,12 +220,44 @@ namespace {
       B_TREE_NODE_PAGE,
       [](ByteReader<Serial>& reader) -> Object {
 
+        reader.skip(sizeof(BTreeNodePage::ORDER));
+
+        std::vector<Cell>::size_type size;
+        std::vector<Cell> cells;
+        reader >> size;
+        cells.reserve(size);
+
+        for (int i = 0; i < size; ++i) {
+
+          uint64_t key, value, left;
+          reader >> key >> value >> left;
+          cells.emplace_back(key, value, left);
+        }
+
+        uint64_t right;
+        reader >> right;
+
+        return std::make_unique<BTreeNodePage>(right, std::move(cells));
       }
     },
     {
       ENTRY_PAGE,
       [](ByteReader<Serial>& reader) -> Object {
 
+        uint64_t overflow;
+        reader >> overflow;
+
+        std::vector<char>::size_type size;
+        std::vector<char> bytes;
+        reader >> size;
+        bytes.reserve(size);
+
+        for (int i = 0; i < size; ++i) {
+
+          reader >> bytes[i];
+        }
+
+        return std::make_unique<EntryPage>(overflow, std::move(bytes));
       }
     }
   };

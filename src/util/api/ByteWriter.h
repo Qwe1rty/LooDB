@@ -27,6 +27,9 @@ public:
   // Set the offset counter to a desired offset
   void seek(uint32_t);
 
+  // Increment the offset counter
+  void skip(uint32_t);
+
   // Value getters for the writer's current offset, and defined limit
   uint32_t limit() const;
   uint32_t offset() const;

@@ -10,6 +10,7 @@ public:
   void write(const Numeric&);
 
   void seek(uint32_t);
+  void skip(uint32_t);
 
   uint32_t limit() const;
   uint32_t offset() const;
@@ -62,6 +63,11 @@ void ByteWriter<Datatype>::seek(uint32_t offset) {
 }
 
 template<typename Datatype>
+void ByteWriter<Datatype>::skip(uint32_t skip) {
+  impl_->increment(skip);
+}
+
+template<typename Datatype>
 uint32_t ByteWriter<Datatype>::limit() const {
   return impl_->limit();
 }
@@ -73,7 +79,7 @@ uint32_t ByteWriter<Datatype>::offset() const {
 
 template<typename Datatype>
 ByteWriter<Datatype>::operator bool() const {
-  return (limit() - offset()) > 1;
+  return offset() < limit();
 }
 
 
@@ -117,12 +123,24 @@ void ByteWriter<Datatype>::Impl::write(const Numeric& item) {
 }
 
 template<typename Datatype>
-void ByteWriter<Datatype>::Impl::seek(uint32_t offset) {
+void ByteWriter<Datatype>::Impl::seek(uint32_t skip) {
 
-  if (offset < limit_) offset_ = offset;
+  if (skip < limit_) offset_ = skip;
   throw std::out_of_range("Offset value " +
-                          std::to_string(offset) +
+                          std::to_string(skip) +
                           " is not below the limit: " +
+                          std::to_string(limit_));
+}
+
+template<typename Datatype>
+void ByteWriter<Datatype>::Impl::skip(uint32_t skip) {
+
+  if (offset_ + skip < limit_) offset_ += skip;
+  throw std::out_of_range("Current offset value " +
+                          std::to_string(offset_) +
+                          " cannot be incremented by " +
+                          std::to_string(skip) +
+                          ", as it will surpass the limit: " +
                           std::to_string(limit_));
 }
 
