@@ -2,17 +2,14 @@
 #define LOODB_VM_H
 
 #include "../../statements/api/Statement.h"
+#include "../../../schema/api/Database.h"
 #include <memory>
 
 class VM {
 
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-
  public:
 
-  VM(std::unique_ptr<SQLStatement> );
-  void execute();
+  void execute(std::unique_ptr<SQLStatement>, Database &);
 };
 
 #endif
