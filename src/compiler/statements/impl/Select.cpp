@@ -1,5 +1,4 @@
 #include "../api/Select.h"
-#include "../../commands/api/Select.h"
 using namespace std;
 
 class SQLSelect::Impl{
@@ -15,21 +14,8 @@ class SQLSelect::Impl{
   Impl(std::vector<std::string> c, std::vector<std::string, Entry> wC,
    std::vector<std::string> wO, bool w)
    : columns_(c), whereClause_(wC), whereOps_(wO), where_(w) {}
-  ~ Impl();
 };
 
 SQLSelect::SQLSelect(string table_name, std::vector<std::string> c, 
   std::vector<std::string, Entry> wC, std::vector<std::string> wO, bool w) : 
   SQLStatement(table_name, stmtSelect), impl_{make_unique<Impl>(c, wC, wO, w)} {}
-
-SQLSelect::~ SQLSelect() = default;
-
-SQLSelect::Impl::~Impl() = default;
-
-unique_ptr<Command> SQLSelect::generateQuery() {
-  return query();
-}
-
-std::unique_ptr<Command> SQLSelect::query() {
-  return make_unique<COMSelect>(table_name_);
-}
