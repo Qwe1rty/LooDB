@@ -10,16 +10,14 @@ class SQLSelect : public SQLStatement {
   // columns_: vector of column names
   // whereClause__: a vector of columns names and their respective entries
   // whereOps_: vector of operations acting on whereClause_
-  // isWhere_: a boolean flag to determine the existence of a where clause
+  // where_: a boolean flag to determine the existence of a where clause
   class Impl;
   std::unique_ptr<Impl> impl_;
-  std::unique_ptr<Command> query() const override;
+  
  public:
   
-  SQLSelect(std::string, vector<std::string>, vector<std::string, Entry>, vector<std::string>);
-  ~ SQLSelect();
+  SQLSelect(std::string, std::vector<std::string>, std::vector<std::string, Entry>, std::vector<std::string>, bool);
   bool isWhere();
-  std::unique_ptr<Command> generateQuery() const;
 
 };
 
