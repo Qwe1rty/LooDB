@@ -5,7 +5,7 @@ using namespace std;
 class SQLInsert::Impl{
   // entries_: vector of rows to be entred; each row being a vector of entries
   vector<vector<unique_ptr<Entry>>> entries_;
-  
+
  public:
   Impl(vector<vector<unique_ptr<Entry>>> e) : entries_(move(e)) {}
 };
