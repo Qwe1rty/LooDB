@@ -2,6 +2,7 @@
 #define LOODB_SQLSELECT_H
 
 #include "Statement.h"
+#include "../../../schema/api/Entry/Entry.h"
 #include <vector>
 
 
@@ -15,7 +16,7 @@ class SQLSelect : public SQLStatement {
   std::unique_ptr<Command> query() const override;
  public:
   
-  SQLSelect(std::string);
+  SQLSelect(std::string, vector<std::string>, vector<std::string, Entry>, vector<std::string>);
   ~ SQLSelect();
   bool isWhere();
   std::unique_ptr<Command> generateQuery() const;

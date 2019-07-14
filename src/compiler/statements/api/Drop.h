@@ -1,9 +1,7 @@
-#fndef LOODB_SQLDROP_H
+#ifndef LOODB_SQLDROP_H
 #define LOODB_SQLDROP_H
 
 #include "Statement.h"
-#include <vector>
-
 
 class SQLDrop : public SQLStatement {
  
