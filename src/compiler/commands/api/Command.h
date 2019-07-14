@@ -1,6 +1,7 @@
-#ifndef LOODB_COMMAND_H
-#define LOODB_COMMAND_H
+#ifndef LOODB_COMMAD_H
+#define LOODB_COMMAD_H
 
+#include <string>
 class Command {
 
   virtual bool isValid() const = 0;
