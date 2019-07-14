@@ -3,7 +3,7 @@
 
 #include "Statement.h"
 #include <vector>
-
+#include <tuple>
 
 class SQLCreate : public SQLStatement {
   // columns_: vector of column names and their repective type
@@ -13,7 +13,7 @@ class SQLCreate : public SQLStatement {
   std::unique_ptr<Command> query() override;
  public:
   
-  SQLCreate(std::string, std::vector<std::string, std::string>, std::vector<std::string, std::string>);
+  SQLCreate(std::string, std::vector<std::tuple<std::string, std::string, std::string>>);
   ~ SQLCreate();  
   std::unique_ptr<Command> generateQuery();
 
