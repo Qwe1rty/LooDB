@@ -1,9 +1,10 @@
 #include "../api/Page.h"
 
 
-const PageCodec Page::PAGE_CODEC{PageCodec{}};
-const uint32_t Page::PAGE_SIZE{4096};
-
 Page::Page(PageType type) :
   type_{type}
 {}
+
+PageType Page::type() const {
+  return type_;
+}

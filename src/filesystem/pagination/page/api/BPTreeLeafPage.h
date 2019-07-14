@@ -12,7 +12,7 @@ class BPTreeLeafPage : public Page {
  public:
 
     // ORDER: number of cells per node
-    const static uint32_t ORDER = 4;
+    constexpr static uint32_t ORDER = 4;
 
     // right_: This is the page number of the leaf node to our right
     // node_: The list of leaf cells in our node

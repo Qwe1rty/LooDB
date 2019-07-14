@@ -15,8 +15,8 @@ public:
 
     explicit Pager(std::string, uint64_t = DEFAULT_CACHE_LIMIT);
 
-    Page read(uint64_t);
-    void write(uint64_t, Page);
+    std::unique_ptr<Page> read(uint64_t);
+    void write(uint64_t, const std::unique_ptr<Page>&);
 
 private:
 
