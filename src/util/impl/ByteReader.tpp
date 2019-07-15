@@ -35,7 +35,7 @@ ByteReader<Datatype>::ByteReader(const Datatype& bytes, uint32_t limit, uint32_t
 
 template<typename Datatype>
 ByteReader<Datatype>& ByteReader<Datatype>::operator>>(char& item) {
-  impl_->template read<unsigned char>(item);
+  impl_->template read<char>(item);
   return *this;
 }
 
@@ -109,7 +109,7 @@ void ByteReader<Datatype>::Impl::read(Numeric& item) {
 template<typename Datatype>
 void ByteReader<Datatype>::Impl::skip(uint32_t skip) {
 
-  if (offset_ + skip < limit_) offset_ +    = skip;
+  if (offset_ + skip < limit_) offset_ += skip;
   throw std::out_of_range("Current offset value " +
                           std::to_string(offset_) +
                           " cannot be incremented by " +

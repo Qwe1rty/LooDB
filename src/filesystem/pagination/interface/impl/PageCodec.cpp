@@ -21,7 +21,7 @@ namespace {
   using Serial = PageCodec::Serial;
 
   using EncodeWriter = std::function<void(ByteWriter<Serial>&, const Object&)>;
-  using DecodeReader = std::function<Object(ByteReader<Serial>&)>;
+  using DecodeReader = std::function<Object(ByteReader<const Serial>&)>;
 
   /*
    * Implementation of the PageCodec class is similar to a more traditional
@@ -136,7 +136,7 @@ namespace {
   {
     {
       BP_TREE_HEADER_PAGE,
-      [](ByteReader<Serial>& reader) -> Object {
+      [](ByteReader<const Serial>& reader) -> Object {
         
         uint32_t root;
         reader >> root;
@@ -146,7 +146,7 @@ namespace {
     },
     {
       BP_TREE_INTERNAL_PAGE,
-      [](ByteReader<Serial>& reader) -> Object {
+      [](ByteReader<const Serial>& reader) -> Object {
 
         reader.skip(sizeof(BPTreeInternalPage::ORDER));
 
@@ -170,7 +170,7 @@ namespace {
     },
     {
       BP_TREE_LEAF_PAGE,
-      [](ByteReader<Serial>& reader) -> Object {
+      [](ByteReader<const Serial>& reader) -> Object {
 
         reader.skip(sizeof(BPTreeLeafPage::ORDER));
 
@@ -208,7 +208,7 @@ namespace {
     },
     {
       B_TREE_HEADER_PAGE,
-      [](ByteReader<Serial>& reader) -> Object {
+      [](ByteReader<const Serial>& reader) -> Object {
 
         uint32_t root;
         reader >> root;
@@ -218,7 +218,7 @@ namespace {
     },
     {
       B_TREE_NODE_PAGE,
-      [](ByteReader<Serial>& reader) -> Object {
+      [](ByteReader<const Serial>& reader) -> Object {
 
         reader.skip(sizeof(BTreeNodePage::ORDER));
 
@@ -242,7 +242,7 @@ namespace {
     },
     {
       ENTRY_PAGE,
-      [](ByteReader<Serial>& reader) -> Object {
+      [](ByteReader<const Serial>& reader) -> Object {
 
         uint64_t overflow;
         reader >> overflow;
@@ -257,13 +257,15 @@ namespace {
           reader >> bytes[i];
         }
 
-        return std::make_unique<EntryPage>(overflow, std::move(bytes));
+        return std::make_unique<EntryPage>(std::move(bytes), overflow);
       }
     }
   };
 
 }
 
+
+const PageCodec PageCodec::CODEC{};
 
 Serial PageCodec::encode(const Object& page) const {
 
@@ -282,7 +284,7 @@ Serial PageCodec::encode(const Object& page) const {
 Object PageCodec::decode(const Serial& bytes) const {
 
   // Establish reader wrapper
-  ByteReader<Serial> reader{bytes, sizeof(bytes)};
+  ByteReader<const Serial> reader{bytes, sizeof(bytes)};
 
   // Determine what the type of the page the data is, then decode accordingly
   uint32_t type;

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+
 class Pager final {
 
     const static uint64_t DEFAULT_CACHE_LIMIT = 2000;
@@ -21,7 +22,11 @@ public:
 private:
 
     class Impl;
-    std::unique_ptr<Impl> impl_;
+    struct ImplDeleter {
+      void operator()(Impl*);
+    };
+
+    std::unique_ptr<Impl, ImplDeleter> impl_;
 };
 
 

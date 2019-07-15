@@ -11,7 +11,7 @@ class EntryPage : public Page {
   public:
 
     // CAPACITY: The maximum amount of bytes that can be stored
-    constexpr static uint32_t CAPACITY = 2048;
+    const static uint32_t CAPACITY;
 
     // value_: Row value to be stored; pointed to by cell in B+Tree leaf node
     // overflow_: In the case that our values don't fit in one page, we can store the rest in this

@@ -12,7 +12,7 @@ class BTreeNodePage : public Page {
   public:
 
     // ORDER: number of cells per node
-    constexpr static uint32_t ORDER = 4;
+    const static uint32_t ORDER;
 
     // right_: page number of our right node
     // node_: the cells our node (a cell a key, value, pointer trio)

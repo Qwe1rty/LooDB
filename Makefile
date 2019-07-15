@@ -1,7 +1,6 @@
-SRC_DIR = $(wildcard src/**/)
-SOURCES = $(wildcard $(addsuffix *.cpp,$(SRC_DIR)))
+SOURCES = $(shell find src/ -name "*.cpp")
 OBJECTS = $(patsubst %.cpp,%.o,$(SOURCES))
-DEPENDS = ${OBJECTS:.o=.d}
+#DEPENDS = ${OBJECTS:.o=.d}
 
 CXX = g++
 CXX_FLAGS = -g -std=c++17 -Wall -MMD
@@ -14,19 +13,23 @@ QUERY_DIR = queries
 
 
 -include ${DEPENDS}
-.PHONY: build clean
+.PHONY: build clean test
 
 build: ${EXEC} clean
 
 clean:
-	@rm ${OBJECTS} ${DEPENDS}
+	@rm ${OBJECTS}
 
 run:
 	@./${EXEC}
 
 ${EXEC}: ${OBJECTS}
-	${CXX} ${CXX_FLAGS} ${OBJECTS} -o ${EXEC}
+	@${CXX} ${CXX_FLAGS} ${OBJECTS} -o ${EXEC}
 
+test:
+	echo ${SRC_DIR}
+	echo ${SOURCES}
+	echo ${OBJECTS}
 
 # The "sql" set of commands deal with the official SQLite3 database
 

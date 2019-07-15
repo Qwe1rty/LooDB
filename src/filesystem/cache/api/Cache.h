@@ -36,6 +36,6 @@ private:
     std::unique_ptr<CacheStrategy<K, V>> strategy_;
 };
 
-#include "../impl/Cache.cpp"
+#include "../impl/Cache.tpp"
 
 #endif //LOODB_CACHE_H

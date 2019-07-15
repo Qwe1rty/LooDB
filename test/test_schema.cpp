@@ -1,7 +1,7 @@
 #include "api/Database.h"
 
 int main() {
-    Database db;
+  Database db;
 
-    return 0;
+  return 0;
 }

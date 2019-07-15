@@ -8,8 +8,8 @@
 
 class Pager::Impl final {
 
-    using PageCache         = Cache<uint64_t, Page>;
-    using PageCacheStrategy = LRUCacheStrategy<uint64_t, Page>;
+//    using PageCache         = Cache<uint64_t, std::unique_ptr<Page>>;
+//    using PageCacheStrategy = LRUCacheStrategy<uint64_t, std::unique_ptr<Page>>;
 
 public:
 
@@ -21,10 +21,14 @@ public:
 
 private:
 
-    PageCache cache_;
+//    PageCache cache_;
     std::string filename_;
     std::fstream stream_;
 };
+
+void Pager::ImplDeleter::operator()(Pager::Impl* impl) {
+  delete impl;
+}
 
 
 /*
@@ -40,7 +44,7 @@ void Pager::write(uint64_t index, const std::unique_ptr<Page>& page) {
 }
 
 Pager::Pager(std::string filename, uint64_t limit) :
-    impl_{std::make_unique<Impl>(filename, limit)}
+    impl_{std::unique_ptr<Impl, ImplDeleter>(new Impl(filename, limit))}
 {}
 
 
@@ -79,7 +83,7 @@ void Pager::Impl::write(uint64_t index, const std::unique_ptr<Page>& page) {
  */
 
 Pager::Impl::Impl(std::string filename, uint64_t limit) :
-    cache_{PageCache{PageCacheStrategy{limit}}},
+//    cache_{PageCache{PageCacheStrategy{limit}}},
     filename_{std::move(filename)},
     stream_{}
 {
