@@ -2,7 +2,7 @@
 #define LOODB_ENTRYCODEC_H
 
 #include "Entry.h"
-#include "../../../util/Codec.h"
+#include "../../../util/api/Codec.h"
 #include <memory>
 
 class EntryCodec : public Codec<Entry, std::unique_ptr<char[]>> {

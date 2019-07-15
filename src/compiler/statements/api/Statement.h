@@ -1,7 +1,6 @@
 #ifndef LOODB_SQLSTMT_H
 #define LOODB_SQLSTMT_H
 
-#include <memory>
 #include "StatementType.h"
 #include <string>
 
@@ -11,6 +10,9 @@ class SQLStatement {
  protected:
 
   SQLStatement(std::string, StatementType);  
+
+ public:
+
   std::string table_name_;
   StatementType type_;
   

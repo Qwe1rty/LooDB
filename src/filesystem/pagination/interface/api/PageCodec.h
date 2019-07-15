@@ -1,18 +1,26 @@
 #ifndef LOODB_PAGECODEC_H
 #define LOODB_PAGECODEC_H
 
-#include "../../../../util/Codec.h"
+#include "../../../../util/api/Codec.h"
+#include "../../page/api/Page.h"
+
+#include <array>
 #include <memory>
 
-class Page;
 
-template<typename Object, typename Serial>
-class Codec;
+class PageCodec : public Codec<std::unique_ptr<Page>,
+                               std::array<char, Page::SIZE>> {
 
-class PageCodec : public Codec<Page, std::unique_ptr<char[]>> {
   public:
-    std::unique_ptr<char[]> encode(Page&) const override;
-    std::unique_ptr<Page> decode(std::unique_ptr<char[]>) const override;
+
+    // PAGE_CODEC: Converter interface (similar to singleton)
+    const static PageCodec CODEC;
+
+    using Object = std::unique_ptr<Page>;
+    using Serial = std::array<char, Page::SIZE>;
+
+    Serial encode(const Object&) const override;
+    Object decode(const Serial&) const override;
 };
 
 #endif //LOODB_PAGECODEC_H

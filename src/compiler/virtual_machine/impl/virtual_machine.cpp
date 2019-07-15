@@ -1,12 +1,17 @@
 #include "../api/virtual_machine.h"
+#include "../../../schema/api/Database.h"
 using namespace std;
 
-class VM::Impl{
-  // stmt_: pointer to a statement object
-  unique_ptr<SQLStatement> stmt_;
- public:
-  Impl(unique_ptr<SQLStatement> s) : stmt_(std::move(s)) {}
-  ~ Impl();
-};
-
-VM::VM(unique_ptr<SQLStatement> s) : impl_{make_unique<Impl>(std::move(s))}  {}
+void VM::execute(unique_ptr<SQLStatement> s, Database & db) {
+  switch (s->type_) {
+    case stmtCreate: db.create_table();
+                     break;
+    case stmtInsert: db.drop_table();
+                     break;
+    case stmtDrop: db.drop_table();
+                   break;
+    case stmtSelect:
+                     break;
+    default: break;
+  }
+}

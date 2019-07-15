@@ -12,10 +12,10 @@ class BPTreeInternalPage : public Page {
   public:
 
     // ORDER: the number of children a node has
-    const static uint32_t ORDER = 4;
+    constexpr static uint32_t ORDER = 4;
 
     // right_: The page number of our child to the right of node
-    // Node_: A list of cells in our node, each node with order 4 (4 cells each)
+    // node_: A list of cells in our node, each node with order 4 (4 cells each)
     uint64_t right_;
     std::vector<Cell> node_;
 
