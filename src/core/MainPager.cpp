@@ -15,8 +15,8 @@ int main() {
 
   const auto* cast = dynamic_cast<BPTreeHeaderPage*>(read.get());
 
-  std::cout << cast->type() << std::endl;
-  std::cout << cast->root_ << std::endl;
+  std::cout << cast->type() << std::endl; // 0
+  std::cout << cast->root_ << std::endl; // 123
 
   return 0;
 }

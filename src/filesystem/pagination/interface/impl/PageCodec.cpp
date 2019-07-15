@@ -14,8 +14,6 @@
 #include <functional>
 #include <map>
 
-#include <iostream>
-
 
 namespace {
 
@@ -291,8 +289,5 @@ Object PageCodec::decode(const Serial& bytes) const {
   // Determine what the type of the page the data is, then decode accordingly
   uint32_t type;
   reader >> type;
-
-  std::cout << type << std::endl;
-
   return decode_functions.at(static_cast<PageType>(type))(reader);
 }

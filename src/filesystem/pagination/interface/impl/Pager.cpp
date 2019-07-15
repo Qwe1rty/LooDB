@@ -4,7 +4,6 @@
 #include "../../../cache/api/LRUCacheStrategy.h"
 
 #include <fstream>
-#include <iostream>
 
 
 class Pager::Impl final {

@@ -100,8 +100,9 @@ void ByteReader<Datatype>::Impl::read(Numeric& item) {
                             std::to_string(limit_));
   }
 
+  item = 0;
   for (uint32_t i = 0; i < item_size; ++i) {
-    item |= (bytes_[offset_] << i * 8);
+    item |= (bytes_[offset_] << (i * 8));
     ++offset_;
   }
 }
