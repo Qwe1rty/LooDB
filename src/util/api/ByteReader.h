@@ -32,4 +32,6 @@ private:
 };
 
 
+#include "../impl/ByteReader.tpp"
+
 #endif //LOODB_BYTEREADER_H

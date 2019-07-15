@@ -53,6 +53,6 @@ private:
 };
 
 
-#include "ByteWriter.cpp"
+#include "../impl/ByteWriter.tpp"
 
 #endif //LOODB_BYTEWRITER_H
