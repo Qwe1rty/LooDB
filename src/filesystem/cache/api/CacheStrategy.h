@@ -35,6 +35,6 @@ private:
     friend Cache<K, V>;
 };
 
-#include "../impl/CacheStrategy.cpp"
+#include "../impl/CacheStrategy.tpp"
 
 #endif //LOODB_CACHESTRATEGY_H

@@ -13,7 +13,7 @@ class PageCodec : public Codec<std::unique_ptr<Page>,
 
   public:
 
-    // PAGE_CODEC: Converter interface (similar to singleton)
+    // CODEC: Converter interface (similar to singleton)
     const static PageCodec CODEC;
 
     using Object = std::unique_ptr<Page>;

@@ -45,7 +45,7 @@ std::unique_ptr<V> LRUCacheStrategy<K, V>::seek(const K& key) {
 
 template<typename K, typename V>
 void LRUCacheStrategy<K, V>::update(K key, V value) {
-    impl_->update(key, value);
+    impl_->update(key, std::move(value));
 }
 
 
@@ -99,7 +99,7 @@ void LRUCacheStrategy<K, V>::Impl::update(K key, V value) {
 
     if (contains(key)) {
         refresh(key);
-        queue_.front().second = std::move(value);
+        queue_.front().second = value;
         return;
     }
 
