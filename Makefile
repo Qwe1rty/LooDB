@@ -23,13 +23,17 @@ clean:
 run:
 	@./${EXEC}
 
+debug:
+	@gdb ./${EXEC}
+
+dry-run:
+	@echo ${SRC_DIR}
+	@echo ${SOURCES}
+	@echo ${OBJECTS}
+
 ${EXEC}: ${OBJECTS}
 	@${CXX} ${CXX_FLAGS} ${OBJECTS} -o ${EXEC}
 
-test:
-	echo ${SRC_DIR}
-	echo ${SOURCES}
-	echo ${OBJECTS}
 
 # The "sql" set of commands deal with the official SQLite3 database
 

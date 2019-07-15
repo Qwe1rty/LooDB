@@ -10,23 +10,23 @@
 
 class Pager final {
 
-    const static uint64_t DEFAULT_CACHE_LIMIT = 2000;
+  const static uint64_t DEFAULT_CACHE_LIMIT = 2000;
 
 public:
 
-    explicit Pager(std::string, uint64_t = DEFAULT_CACHE_LIMIT);
+  explicit Pager(const std::string&, uint64_t = DEFAULT_CACHE_LIMIT);
 
-    std::unique_ptr<Page> read(uint64_t);
-    void write(uint64_t, const std::unique_ptr<Page>&);
+  std::unique_ptr<Page> read(uint64_t);
+  void write(uint64_t, const std::unique_ptr<Page>&);
 
 private:
 
-    class Impl;
-    struct ImplDeleter {
-      void operator()(Impl*);
-    };
+  class Impl;
+  struct ImplDeleter {
+    void operator()(Impl*);
+  };
 
-    std::unique_ptr<Impl, ImplDeleter> impl_;
+  std::unique_ptr<Impl, ImplDeleter> impl_;
 };
 
 

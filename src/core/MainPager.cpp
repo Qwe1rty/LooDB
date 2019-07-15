@@ -6,7 +6,7 @@
 
 int main() {
 
-  Pager pager{"toast"};
+  Pager pager{"toast.txt"};
 
   std::unique_ptr<Page> page = std::make_unique<BPTreeHeaderPage>(123);
 

@@ -14,6 +14,8 @@
 #include <functional>
 #include <map>
 
+#include <iostream>
+
 
 namespace {
 
@@ -34,7 +36,7 @@ namespace {
    * TODO expand on this note
    */
 
-  std::map<PageType, EncodeWriter> encode_functions
+  const std::map<PageType, EncodeWriter> encode_functions
   {
     {
       BP_TREE_HEADER_PAGE,
@@ -132,7 +134,7 @@ namespace {
     }
   };
 
-  std::map<PageType, DecodeReader> decode_functions
+  const std::map<PageType, DecodeReader> decode_functions
   {
     {
       BP_TREE_HEADER_PAGE,
@@ -289,5 +291,8 @@ Object PageCodec::decode(const Serial& bytes) const {
   // Determine what the type of the page the data is, then decode accordingly
   uint32_t type;
   reader >> type;
+
+  std::cout << type << std::endl;
+
   return decode_functions.at(static_cast<PageType>(type))(reader);
 }
