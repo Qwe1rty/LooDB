@@ -18,6 +18,7 @@ public:
 
   std::unique_ptr<Page> read(uint64_t);
   void write(uint64_t, const std::unique_ptr<Page>&);
+  uint32_t length();
 
 private:
 
@@ -44,8 +45,16 @@ void Pager::write(uint64_t index, const std::unique_ptr<Page>& page) {
   impl_->write(index, page);
 }
 
+uint32_t Pager::length() const {
+  return impl_->length();
+}
+
+uint32_t Pager::size() const {
+  return length() / Page::SIZE;
+}
+
 Pager::Pager(const std::string& filename, uint64_t limit) :
-  impl_{std::unique_ptr<Impl, ImplDeleter>(new Impl(std::move(filename), limit))}
+  impl_{std::unique_ptr<Impl, ImplDeleter>(new Impl(filename, limit))}
 {}
 
 
@@ -78,6 +87,17 @@ void Pager::Impl::write(uint64_t index, const std::unique_ptr<Page>& page) {
 //   cache_.update(index, std::move(page));
 }
 
+uint32_t Pager::Impl::length() {
+
+  const uint32_t prev = stream_.tellg();
+
+  stream_.seekg(0, std::fstream::end);
+  const uint32_t size = stream_.tellg();
+  stream_.seekg(prev, std::fstream::beg);
+
+  return size;
+}
+
 
 /*
  * Constructors/Destructors
@@ -86,7 +106,9 @@ void Pager::Impl::write(uint64_t index, const std::unique_ptr<Page>& page) {
 Pager::Impl::Impl(const std::string& filename, uint64_t limit) :
 //  cache_{PageCache{PageCacheStrategy{limit}}},
   filename_{filename},
-  stream_{filename}
+  stream_{filename, std::fstream::in |
+                    std::fstream::out |
+                    std::fstream::binary}
 {
   // If the file does NOT exist, then the .good() function will return false.
   // If the file does exist, the stream will already be initialized with the two-way
@@ -98,7 +120,7 @@ Pager::Impl::Impl(const std::string& filename, uint64_t limit) :
     stream_.open(filename, std::fstream::out | std::fstream::binary);
     stream_.close();
 
-    // Open with std::fstream::in flag, preventing overwriting of old data
+    // Try and open with std::fstream::in flag, preventing overwriting of old data
     stream_.open(filename, std::fstream::in |
                            std::fstream::out |
                            std::fstream::binary);

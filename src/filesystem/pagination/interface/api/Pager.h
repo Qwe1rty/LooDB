@@ -19,6 +19,10 @@ public:
   std::unique_ptr<Page> read(uint64_t);
   void write(uint64_t, const std::unique_ptr<Page>&);
 
+  uint32_t length() const; // Returns number of bytes the file contains
+  uint32_t size() const;   // Returns number of pages the file contains
+
+
 private:
 
   class Impl;

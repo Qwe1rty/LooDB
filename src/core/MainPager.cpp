@@ -10,13 +10,17 @@ int main() {
 
   std::unique_ptr<Page> page = std::make_unique<BPTreeHeaderPage>(124);
 
-  pager.write(0, page);
-  const auto read = pager.read(0);
+  pager.write(1, page);
+  const auto read = pager.read(1);
 
   const auto* cast = dynamic_cast<BPTreeHeaderPage*>(read.get());
 
   std::cout << cast->type() << std::endl; // 0
   std::cout << cast->root_ << std::endl; // 124, or seen as a pipe character in the file
+
+  std::cout << '\n';
+  std::cout << pager.length() << std::endl;
+  std::cout << pager.size() << std::endl;
 
   return 0;
 }
