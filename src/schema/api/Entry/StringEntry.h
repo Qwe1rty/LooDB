@@ -61,6 +61,9 @@ class StringEntry : public Entry {
     // Constructor
     StringEntry(std::string);
 
+    // Get value
+    std::string getVal() const;
+
 };
 
 #endif // LOODB_STRINGENTRY_H

@@ -60,6 +60,9 @@ class IntEntry : public Entry {
     // Constructor
     IntEntry(int);
 
+    // Get value
+    int getVal() const;
+
 };
 
 #endif // LOODB_INTENTRY_H

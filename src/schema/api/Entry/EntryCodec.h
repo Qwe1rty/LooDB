@@ -4,11 +4,16 @@
 #include "Entry.h"
 #include "../../../util/api/Codec.h"
 #include <memory>
+#include <vector>
 
-class EntryCodec : public Codec<Entry, std::unique_ptr<char[]>> {
+class EntryCodec : public Codec<std::unique_ptr<Entry>, std::vector<char>> {
   public:
-    std::unique_ptr<char[]> encode(Entry&) const override;
-    std::unique_ptr<Entry> decode(std::unique_ptr<char[]>) const override;
+
+    using Object = std::unique_ptr<Entry>;
+    using Serial = std::vector<char>;
+
+    Serial encode(const Object&) const override;
+    Object decode(const Serial&) const override;
 };
 
 #endif // LOODB_ENTRYCODEC_H

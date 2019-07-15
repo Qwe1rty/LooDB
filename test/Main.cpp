@@ -1,5 +1,5 @@
-#include "../src/filesystem/cache/api/Cache.h"
-#include "../src/filesystem/cache/api/LRUCacheStrategy.h"
+#include "../filesystem/cache/api/Cache.h"
+#include "../filesystem/cache/api/LRUCacheStrategy.h"
 
 #include <iostream>
 

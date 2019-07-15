@@ -1,6 +1,8 @@
 #include "../api/EntryPage.h"
 
 
+const uint32_t EntryPage::CAPACITY = 2048;
+
 EntryPage::EntryPage(std::vector<char> value, uint64_t overflow) :
   Page(PageType::ENTRY_PAGE),
   value_{std::move(value)},
