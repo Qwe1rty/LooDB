@@ -4,6 +4,11 @@
 // Constructor
 IntEntry::IntEntry(int val) : Entry(EntryType::INTEGER), val_(val) {}
 
+// Get value
+int IntEntry::getVal() const {
+  return this->val_;
+}
+
 // Override private less than operator
 // First, checks if types are equivalent
 // If so, compare values
