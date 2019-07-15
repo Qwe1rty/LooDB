@@ -10,7 +10,6 @@
 
 using Object = std::unique_ptr<Entry>;
 using Serial = std::vector<char>;
-using namespace std;
 
 // Convert an Entry object to vector<char>
 Serial EntryCodec::encode(const Object& entry) const {
