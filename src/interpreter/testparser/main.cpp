@@ -16,7 +16,9 @@ int main () {
     std::cout << std::endl;
 
     if (p.result->type_ == StatementType::stmtSelect) {
-      static_cast<SQLSelect*>(p.result.get())->printWhere();
+      if (static_cast<SQLSelect*>(p.result.get())->hasWhere()) {
+        static_cast<SQLSelect*>(p.result.get())->printWhere();
+      }
     }
   }
 
