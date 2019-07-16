@@ -4,13 +4,13 @@ using namespace std;
 
 void VM::execute(unique_ptr<SQLStatement> s, Database & db) {
   switch (s->type_) {
-    case stmtCreate: db.create_table();
+    case stmtCreate: db.create_table(move(s));
                      break;
-    case stmtInsert: db.drop_table();
+    case stmtInsert: db.insert(move(s));
                      break;
-    case stmtDrop: db.drop_table();
+    case stmtDrop: db.drop_table(move(s));
                    break;
-    case stmtSelect:
+    case stmtSelect: db.select(move(s));
                      break;
     default: break;
   }
