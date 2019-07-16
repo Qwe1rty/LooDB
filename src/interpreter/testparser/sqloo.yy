@@ -6,8 +6,13 @@
 %define api.value.type variant
 
 %code requires {
+  #include "../../schema/api/Entry/Entry.h"
+  #include "../../schema/api/Entry/NullEntry.h"
+  #include "../../schema/api/Entry/IntEntry.h"
+  #include "../../schema/api/Entry/StringEntry.h"
   #include <iostream>
   #include <string>
+  #include <memory>
   class Parser;
 }
 
@@ -15,7 +20,7 @@
 %param { Parser& p }
 
 %code {
-# include "Parser.h"
+  #include "Parser.h"
 }
 
 %define api.token.prefix {TOK_}
@@ -37,8 +42,6 @@
 
 %token <int> INT
 %token <std::string> STRING
-
-%printer { yyo << $$; } <*>;
 
 %%
 
@@ -67,29 +70,47 @@ drop:
   };
 
 insert:
-  INSERT INTO STRING VALUES rows SEMI {
+  INSERT INTO STRING VALUES row SEMI {
     std::cout << "inserting " << std::endl;
   };
 
-rows:
-  rows COMMA row {}
-| row {};
-
+%type <std::vector<std::shared_ptr<Entry>>> row;
 row:
-  LPAREN values RPAREN {};
+  LPAREN values RPAREN {
+    $$ = $2;
+  };
 
+%type <std::vector<std::shared_ptr<Entry>>> values;
 values:
-  values COMMA value {}
-| value {};
+  values COMMA value {
+    std::cout << "inserting " << $3->getType() << " into values" << std::endl;
+    $$.emplace_back($3);
+  }
+| value {
+    std::cout << "inserting " << $1->getType() << " into values" << std::endl;
+    $$.emplace_back($1);
+  };
 
+%type <std::shared_ptr<Entry>> value;
 value:
-  NULL_ {}
-| INT {}
-| text {};
+  NULL_ {
+    $$ = std::make_shared<NullEntry>();
+    std::cout << "value null: " << $$->getType() << std::endl;
+  }
+| INT {
+    $$ = std::make_shared<IntEntry>($1);
+    std::cout << "value int: " << $$->getType() << std::endl;
+  }
+| text {
+    $$ = std::make_shared<StringEntry>($1);
+    std::cout << "value text: " << $$->getType() << std::endl;
+  };
 
+%type <std::string> text;
 text:
   DASH STRING DASH {
-    std::cout << "StringEntry: " << $2 << std::endl;
+    std::cout << "text: " << $2 << std::endl;
+    $$ = $2;
   };
 
 %%

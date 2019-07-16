@@ -8,7 +8,7 @@
 # include "sqloo.tab.hh"
 %}
 
-%option noyywrap nounput noinput batch
+%option noyywrap batch
 
 blank [ \t\r]
 int [0-9]+

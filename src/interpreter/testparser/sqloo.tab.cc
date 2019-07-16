@@ -49,9 +49,9 @@
 
 #line 51 "sqloo.tab.cc" // lalr1.cc:412
 // Unqualified %code blocks.
-#line 17 "sqloo.yy" // lalr1.cc:413
+#line 22 "sqloo.yy" // lalr1.cc:413
 
-# include "Parser.h"
+  #include "Parser.h"
 
 #line 57 "sqloo.tab.cc" // lalr1.cc:413
 
@@ -198,8 +198,18 @@ namespace yy {
         value.move< int > (that.value);
         break;
 
+      case 26: // value
+        value.move< std::shared_ptr<Entry> > (that.value);
+        break;
+
       case 16: // STRING
+      case 27: // text
         value.move< std::string > (that.value);
+        break;
+
+      case 24: // row
+      case 25: // values
+        value.move< std::vector<std::shared_ptr<Entry>> > (that.value);
         break;
 
       default:
@@ -221,8 +231,18 @@ namespace yy {
         value.copy< int > (that.value);
         break;
 
+      case 26: // value
+        value.copy< std::shared_ptr<Entry> > (that.value);
+        break;
+
       case 16: // STRING
+      case 27: // text
         value.copy< std::string > (that.value);
+        break;
+
+      case 24: // row
+      case 25: // values
+        value.copy< std::vector<std::shared_ptr<Entry>> > (that.value);
         break;
 
       default:
@@ -257,26 +277,7 @@ namespace yy {
       std::abort ();
     yyo << (yytype < yyntokens_ ? "token" : "nterm")
         << ' ' << yytname_[yytype] << " (";
-    switch (yytype)
-    {
-            case 15: // INT
-
-#line 41 "sqloo.yy" // lalr1.cc:636
-        { yyo << yysym.value.template as< int > (); }
-#line 267 "sqloo.tab.cc" // lalr1.cc:636
-        break;
-
-      case 16: // STRING
-
-#line 41 "sqloo.yy" // lalr1.cc:636
-        { yyo << yysym.value.template as< std::string > (); }
-#line 274 "sqloo.tab.cc" // lalr1.cc:636
-        break;
-
-
-      default:
-        break;
-    }
+    YYUSE (yytype);
     yyo << ')';
   }
 #endif
@@ -471,8 +472,18 @@ namespace yy {
         yylhs.value.build< int > ();
         break;
 
+      case 26: // value
+        yylhs.value.build< std::shared_ptr<Entry> > ();
+        break;
+
       case 16: // STRING
+      case 27: // text
         yylhs.value.build< std::string > ();
+        break;
+
+      case 24: // row
+      case 25: // values
+        yylhs.value.build< std::vector<std::shared_ptr<Entry>> > ();
         break;
 
       default:
@@ -488,123 +499,129 @@ namespace yy {
           switch (yyn)
             {
   case 2:
-#line 48 "sqloo.yy" // lalr1.cc:859
+#line 51 "sqloo.yy" // lalr1.cc:859
     {}
-#line 494 "sqloo.tab.cc" // lalr1.cc:859
+#line 505 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 3:
-#line 51 "sqloo.yy" // lalr1.cc:859
+#line 54 "sqloo.yy" // lalr1.cc:859
     {}
-#line 500 "sqloo.tab.cc" // lalr1.cc:859
+#line 511 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 4:
-#line 52 "sqloo.yy" // lalr1.cc:859
+#line 55 "sqloo.yy" // lalr1.cc:859
     {}
-#line 506 "sqloo.tab.cc" // lalr1.cc:859
+#line 517 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 5:
-#line 55 "sqloo.yy" // lalr1.cc:859
+#line 58 "sqloo.yy" // lalr1.cc:859
     {}
-#line 512 "sqloo.tab.cc" // lalr1.cc:859
+#line 523 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 6:
-#line 56 "sqloo.yy" // lalr1.cc:859
+#line 59 "sqloo.yy" // lalr1.cc:859
     {}
-#line 518 "sqloo.tab.cc" // lalr1.cc:859
+#line 529 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 7:
-#line 57 "sqloo.yy" // lalr1.cc:859
+#line 60 "sqloo.yy" // lalr1.cc:859
     {}
-#line 524 "sqloo.tab.cc" // lalr1.cc:859
+#line 535 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 8:
-#line 60 "sqloo.yy" // lalr1.cc:859
+#line 63 "sqloo.yy" // lalr1.cc:859
     {
     std::cout << "creating table " << yystack_[1].value.as< std::string > () << std::endl;
   }
-#line 532 "sqloo.tab.cc" // lalr1.cc:859
+#line 543 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 9:
-#line 65 "sqloo.yy" // lalr1.cc:859
+#line 68 "sqloo.yy" // lalr1.cc:859
     {
     std::cout << "dropping table " << yystack_[1].value.as< std::string > () << std::endl;
   }
-#line 540 "sqloo.tab.cc" // lalr1.cc:859
+#line 551 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 10:
-#line 70 "sqloo.yy" // lalr1.cc:859
+#line 73 "sqloo.yy" // lalr1.cc:859
     {
     std::cout << "inserting " << std::endl;
   }
-#line 548 "sqloo.tab.cc" // lalr1.cc:859
+#line 559 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 11:
-#line 75 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 554 "sqloo.tab.cc" // lalr1.cc:859
+#line 79 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::vector<std::shared_ptr<Entry>> > () = yystack_[1].value.as< std::vector<std::shared_ptr<Entry>> > ();
+  }
+#line 567 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 12:
-#line 76 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 560 "sqloo.tab.cc" // lalr1.cc:859
+#line 85 "sqloo.yy" // lalr1.cc:859
+    {
+    std::cout << "inserting " << yystack_[0].value.as< std::shared_ptr<Entry> > ()->getType() << " into values" << std::endl;
+    yylhs.value.as< std::vector<std::shared_ptr<Entry>> > ().emplace_back(yystack_[0].value.as< std::shared_ptr<Entry> > ());
+  }
+#line 576 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 13:
-#line 79 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 566 "sqloo.tab.cc" // lalr1.cc:859
+#line 89 "sqloo.yy" // lalr1.cc:859
+    {
+    std::cout << "inserting " << yystack_[0].value.as< std::shared_ptr<Entry> > ()->getType() << " into values" << std::endl;
+    yylhs.value.as< std::vector<std::shared_ptr<Entry>> > ().emplace_back(yystack_[0].value.as< std::shared_ptr<Entry> > ());
+  }
+#line 585 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 14:
-#line 82 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 572 "sqloo.tab.cc" // lalr1.cc:859
+#line 96 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::shared_ptr<Entry> > () = std::make_shared<NullEntry>();
+    std::cout << "value null: " << yylhs.value.as< std::shared_ptr<Entry> > ()->getType() << std::endl;
+  }
+#line 594 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 15:
-#line 83 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 578 "sqloo.tab.cc" // lalr1.cc:859
+#line 100 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::shared_ptr<Entry> > () = std::make_shared<IntEntry>(yystack_[0].value.as< int > ());
+    std::cout << "value int: " << yylhs.value.as< std::shared_ptr<Entry> > ()->getType() << std::endl;
+  }
+#line 603 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 16:
-#line 86 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 584 "sqloo.tab.cc" // lalr1.cc:859
+#line 104 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::shared_ptr<Entry> > () = std::make_shared<StringEntry>(yystack_[0].value.as< std::string > ());
+    std::cout << "value text: " << yylhs.value.as< std::shared_ptr<Entry> > ()->getType() << std::endl;
+  }
+#line 612 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 17:
-#line 87 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 590 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 18:
-#line 88 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 596 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 19:
-#line 91 "sqloo.yy" // lalr1.cc:859
+#line 111 "sqloo.yy" // lalr1.cc:859
     {
-    std::cout << "StringEntry: " << yystack_[1].value.as< std::string > () << std::endl;
+    std::cout << "text: " << yystack_[1].value.as< std::string > () << std::endl;
+    yylhs.value.as< std::string > () = yystack_[1].value.as< std::string > ();
   }
-#line 604 "sqloo.tab.cc" // lalr1.cc:859
+#line 621 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
 
-#line 608 "sqloo.tab.cc" // lalr1.cc:859
+#line 625 "sqloo.tab.cc" // lalr1.cc:859
             default:
               break;
             }
@@ -765,17 +782,17 @@ namespace yy {
   }
 
 
-  const signed char parser::yypact_ninf_ = -14;
+  const signed char parser::yypact_ninf_ = -12;
 
   const signed char parser::yytable_ninf_ = -1;
 
   const signed char
   parser::yypact_[] =
   {
-      -6,   -11,    -2,     1,    13,    -6,   -14,   -14,   -14,   -14,
-      -1,     0,     3,   -14,   -14,    11,    14,     7,   -14,   -14,
-      16,    -7,     2,   -14,     6,   -14,   -14,     5,   -14,   -14,
-     -14,    16,    17,    -7,   -14,   -14,   -14,   -14
+      -6,   -11,    -2,    -5,    12,    -6,   -12,   -12,   -12,   -12,
+      -3,    -1,     0,   -12,   -12,     2,    11,     4,   -12,   -12,
+      13,    -7,    16,     6,   -12,   -12,     5,   -12,   -12,   -12,
+      14,    -7,   -12,   -12,   -12
   };
 
   const unsigned char
@@ -783,38 +800,38 @@ namespace yy {
   {
        0,     0,     0,     0,     0,     2,     4,     5,     6,     7,
        0,     0,     0,     1,     3,     0,     0,     0,     8,     9,
-       0,     0,     0,    12,     0,    16,    17,     0,    15,    18,
-      10,     0,     0,     0,    13,    11,    19,    14
+       0,     0,     0,     0,    14,    15,     0,    13,    16,    10,
+       0,     0,    11,    17,    12
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-     -14,   -14,   -14,    18,   -14,   -14,   -14,   -14,   -13,   -14,
-      -8,   -14
+     -12,   -12,   -12,    15,   -12,   -12,   -12,   -12,   -12,    -8,
+     -12
   };
 
   const signed char
   parser::yydefgoto_[] =
   {
-      -1,     4,     5,     6,     7,     8,     9,    22,    23,    27,
-      28,    29
+      -1,     4,     5,     6,     7,     8,     9,    22,    26,    27,
+      28
   };
 
   const unsigned char
   parser::yytable_[] =
   {
-      24,    10,     1,     2,     3,    30,    31,    25,    26,    33,
-      11,    34,    12,    13,    18,    15,    16,    19,    35,    17,
-      20,    21,    32,    14,    36,    37
+      23,    10,     1,     2,     3,    18,    12,    24,    25,    31,
+      11,    32,    13,    15,    19,    16,    17,    20,    21,    29,
+      14,    33,    30,    34
   };
 
   const unsigned char
   parser::yycheck_[] =
   {
-       7,    12,     8,     9,    10,     3,     4,    14,    15,     4,
-      12,     6,    11,     0,     3,    16,    16,     3,    31,    16,
-      13,     5,    16,     5,     7,    33
+       7,    12,     8,     9,    10,     3,    11,    14,    15,     4,
+      12,     6,     0,    16,     3,    16,    16,    13,     5,     3,
+       5,     7,    16,    31
   };
 
   const unsigned char
@@ -822,22 +839,22 @@ namespace yy {
   {
        0,     8,     9,    10,    18,    19,    20,    21,    22,    23,
       12,    12,    11,     0,    20,    16,    16,    16,     3,     3,
-      13,     5,    24,    25,     7,    14,    15,    26,    27,    28,
-       3,     4,    16,     4,     6,    25,     7,    27
+      13,     5,    24,     7,    14,    15,    25,    26,    27,     3,
+      16,     4,     6,     7,    26
   };
 
   const unsigned char
   parser::yyr1_[] =
   {
        0,    17,    18,    19,    19,    20,    20,    20,    21,    22,
-      23,    24,    24,    25,    26,    26,    27,    27,    27,    28
+      23,    24,    25,    25,    26,    26,    26,    27
   };
 
   const unsigned char
   parser::yyr2_[] =
   {
        0,     2,     1,     2,     1,     1,     1,     1,     4,     4,
-       6,     3,     1,     3,     3,     1,     1,     1,     1,     3
+       6,     3,     3,     1,     1,     1,     1,     3
   };
 
 
@@ -850,16 +867,16 @@ namespace yy {
   "\"EOF\"", "error", "$undefined", "\";\"", "\",\"", "\"(\"", "\")\"",
   "\"'\"", "\"create\"", "\"drop\"", "\"insert\"", "\"into\"", "\"table\"",
   "\"values\"", "\"null\"", "INT", "STRING", "$accept", "sqloo",
-  "statements", "statement", "create", "drop", "insert", "rows", "row",
-  "values", "value", "text", YY_NULLPTR
+  "statements", "statement", "create", "drop", "insert", "row", "values",
+  "value", "text", YY_NULLPTR
   };
 
 
   const unsigned char
   parser::yyrline_[] =
   {
-       0,    48,    48,    51,    52,    55,    56,    57,    60,    65,
-      70,    75,    76,    79,    82,    83,    86,    87,    88,    91
+       0,    51,    51,    54,    55,    58,    59,    60,    63,    68,
+      73,    79,    85,    89,    96,   100,   104,   111
   };
 
   // Print the state stack on the debug stream.
@@ -894,8 +911,8 @@ namespace yy {
 
 
 } // yy
-#line 898 "sqloo.tab.cc" // lalr1.cc:1167
-#line 95 "sqloo.yy" // lalr1.cc:1168
+#line 915 "sqloo.tab.cc" // lalr1.cc:1167
+#line 116 "sqloo.yy" // lalr1.cc:1168
 
 
 void yy::parser::error (const std::string& m) {
