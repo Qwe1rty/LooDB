@@ -7,22 +7,74 @@
 #include <tuple>
 #include <vector>
 
+using namespace std;
 
 class SQLSelect : public SQLStatement {
-  // columns_: vector of column names
-  // whereClause__: a vector of columns names and their respective entries
-  // whereOps_: vector of operations acting on whereClause_
-  // where_: a boolean flag to determine the existence of a where clause
-  class Impl;
-  std::unique_ptr<Impl> impl_;
+  // Place public first so Impl
+  // can recognize WhereTree
+  public:
+    // Public class representing where tree
+    class WhereTree {
+      public:
+        friend class SQLSelect;
+
+        // leaf: is a leaf
+        bool leaf_;
+
+        // op: "AND" or "OR" if leaf == false
+        std::string op_;
+
+        // operands if leaf == false
+        std::unique_ptr<WhereTree> where1_;
+        std::unique_ptr<WhereTree> where2_;
+
+        // column name and entry if leaf == true
+        std::tuple<std::string, std::unique_ptr<Entry>> expr_;
+
+        // Lead constructor
+        WhereTree(std::string, std::unique_ptr<Entry>);
+
+        // Non leaf constructor
+        // Takes in operation and two operands
+        WhereTree(std::string, std::unique_ptr<WhereTree>, std::unique_ptr<WhereTree>);
+    };
+
+    // Constructor
+    SQLSelect(std::string, std::vector<std::string>, bool, unique_ptr<SQLSelect::WhereTree>);
+
+    // Return if statement has a where
+    bool hasWhere();
+
+    void printWhere();
   
- public:
-  
-  SQLSelect(std::string, std::vector<std::string>, 
-            std::vector<std::tuple< std::string, std::unique_ptr<Entry>> >, 
-            std::vector<std::string>, 
-            bool);
-  bool isWhere();
+  private:
+    // Private members of SQLSelect
+    class Impl{
+        // columns_: vector of column names
+        vector<string> columns_;
+
+        // where_: has a where clause
+        bool where_;
+
+        // whereTree_: a parse tree of where clause
+        unique_ptr<SQLSelect::WhereTree> whereTree_;
+
+        // Print whereTreeHelper_
+        void printWhereTreeHelper(std::unique_ptr<SQLSelect::WhereTree>&);
+      public:
+
+        // Impl Constructor
+        Impl(vector<string> columns, bool where, unique_ptr<SQLSelect::WhereTree> whereTree);
+
+        // Get where_
+        bool getWhere();
+
+        // Print whereTree_
+        void printWhereTree();
+    };
+
+    // Private pImpl for SQLSelect
+    std::unique_ptr<Impl> impl_;
 };
 
 #endif

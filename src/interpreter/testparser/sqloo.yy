@@ -10,6 +10,7 @@
   #include "../statements/api/Create.h"
   #include "../statements/api/Drop.h"
   #include "../statements/api/Insert.h"
+  #include "../statements/api/Select.h"
   #include "../../schema/api/Entry/Entry.h"
   #include "../../schema/api/Entry/EntryType.h"
   #include "../../schema/api/Entry/NullEntry.h"
@@ -31,23 +32,35 @@
 
 %define api.token.prefix {TOK_}
 %token
-  END  0  "EOF"
-  SEMI  ";"
-  COMMA   ","
-  LPAREN    "("
-  RPAREN    ")"
-  DASH   "'"
-  CREATE "create"
-  DROP "drop"
-  INSERT "insert"
+  END 0 "EOF"
+  SEMI ";"
+  COMMA ","
+  LPAREN "("
+  RPAREN ")"
+  DASH "'"
+  STAR "*"
+  EQUAL "="
+
   TABLE "table"
+  NULL_ "null"
+
+  CREATE "create"
   INTEGER "integer"
   TEXT "text"
   PRIMARY_KEY "primary key"
   NOT_NULL "not null"
+
+  DROP "drop"
+
+  INSERT "insert"
   INTO "into"
   VALUES "values"
-  NULL_ "null"
+
+  SELECT "select"
+  FROM "from"
+  WHERE "where"
+  AND "and"
+  OR "or"
 ;
 
 %token <int> INT
@@ -73,6 +86,9 @@ statement:
   }
 | insert {
     $$ = std::move($1);
+  }
+| select {
+    $$ = std::move($1); 
   };
 
 %type <std::unique_ptr<SQLStatement>> create;
@@ -91,6 +107,15 @@ drop:
 insert:
   INSERT INTO STRING VALUES row SEMI {
     $$ = std::make_unique<SQLInsert>(std::move($3), std::move($5));
+  };
+
+%type <std::unique_ptr<SQLStatement>> select;
+select:
+  SELECT cols FROM STRING SEMI {
+    $$ = std::make_unique<SQLSelect>(std::move($4), std::move($2), false, nullptr);
+  }
+| SELECT cols FROM STRING WHERE whereExpr SEMI {
+    $$ = std::make_unique<SQLSelect>(std::move($4), std::move($2), true, std::move($6));
   };
 
 %type <std::vector<std::tuple<std::string, EntryType, std::string>>> columns;
@@ -150,6 +175,52 @@ entries:
   }
 | entry {
     $$.emplace_back(std::move($1));
+  };
+
+%type <std::vector<std::string>> cols;
+cols:
+  STAR {
+    $$.emplace_back("*");
+  }
+| cols COMMA col {
+    $$.emplace_back(std::move($3));
+  }
+| col {
+    $$.emplace_back(std::move($1));
+  };
+
+%type <std::string> col;
+col:
+  STRING {
+    $$ = std::move($1);
+  };
+
+%type<std::unique_ptr<SQLSelect::WhereTree>> whereExpr;
+whereExpr:
+  whereTerm {
+    $$ = std::move($1);
+  }
+| whereExpr OR whereTerm{
+    $$ = std::make_unique<SQLSelect::WhereTree>("OR", std::move($1), std::move($3));
+  };
+
+%type<std::unique_ptr<SQLSelect::WhereTree>> whereTerm;
+whereTerm:
+  whereFactor {
+    $$ = std::move($1);
+  }
+| whereTerm AND whereFactor{
+    $$ = std::make_unique<SQLSelect::WhereTree>("AND", std::move($1), std::move($3));
+  };
+
+%type<std::unique_ptr<SQLSelect::WhereTree>> whereFactor;
+whereFactor:
+  STRING EQUAL entry {
+    // std::cout << $1 << "=" << $3->getType() << std::endl;
+    $$ = std::make_unique<SQLSelect::WhereTree>(std::move($1), std::move($3));
+  }
+| LPAREN whereExpr RPAREN {
+    $$ = std::move($2);
   };
 
 %type <std::unique_ptr<Entry>> entry;

@@ -46,6 +46,7 @@
   #include "../statements/api/Create.h"
   #include "../statements/api/Drop.h"
   #include "../statements/api/Insert.h"
+  #include "../statements/api/Select.h"
   #include "../../schema/api/Entry/Entry.h"
   #include "../../schema/api/Entry/EntryType.h"
   #include "../../schema/api/Entry/NullEntry.h"
@@ -57,7 +58,7 @@
   #include <memory>
   class Parser;
 
-#line 61 "sqloo.tab.hh" // lalr1.cc:377
+#line 62 "sqloo.tab.hh" // lalr1.cc:377
 
 
 # include <cstdlib> // std::abort
@@ -134,7 +135,7 @@
 
 
 namespace yy {
-#line 138 "sqloo.tab.hh" // lalr1.cc:377
+#line 139 "sqloo.tab.hh" // lalr1.cc:377
 
 
 
@@ -287,6 +288,7 @@ namespace yy {
       // STRING
       // restrictions
       // restriction
+      // col
       // text
       char dummy2[sizeof(std::string)];
 
@@ -296,18 +298,27 @@ namespace yy {
       // entry
       char dummy4[sizeof(std::unique_ptr<Entry>)];
 
+      // whereExpr
+      // whereTerm
+      // whereFactor
+      char dummy5[sizeof(std::unique_ptr<SQLSelect::WhereTree>)];
+
       // statement
       // create
       // drop
       // insert
-      char dummy5[sizeof(std::unique_ptr<SQLStatement>)];
+      // select
+      char dummy6[sizeof(std::unique_ptr<SQLStatement>)];
+
+      // cols
+      char dummy7[sizeof(std::vector<std::string>)];
 
       // columns
-      char dummy6[sizeof(std::vector<std::tuple<std::string, EntryType, std::string>>)];
+      char dummy8[sizeof(std::vector<std::tuple<std::string, EntryType, std::string>>)];
 
       // row
       // entries
-      char dummy7[sizeof(std::vector<std::unique_ptr<Entry>>)];
+      char dummy9[sizeof(std::vector<std::unique_ptr<Entry>>)];
 };
 
     /// Symbol semantic values.
@@ -333,19 +344,26 @@ namespace yy {
         TOK_LPAREN = 260,
         TOK_RPAREN = 261,
         TOK_DASH = 262,
-        TOK_CREATE = 263,
-        TOK_DROP = 264,
-        TOK_INSERT = 265,
-        TOK_TABLE = 266,
-        TOK_INTEGER = 267,
-        TOK_TEXT = 268,
-        TOK_PRIMARY_KEY = 269,
-        TOK_NOT_NULL = 270,
-        TOK_INTO = 271,
-        TOK_VALUES = 272,
-        TOK_NULL_ = 273,
-        TOK_INT = 274,
-        TOK_STRING = 275
+        TOK_STAR = 263,
+        TOK_EQUAL = 264,
+        TOK_TABLE = 265,
+        TOK_NULL_ = 266,
+        TOK_CREATE = 267,
+        TOK_INTEGER = 268,
+        TOK_TEXT = 269,
+        TOK_PRIMARY_KEY = 270,
+        TOK_NOT_NULL = 271,
+        TOK_DROP = 272,
+        TOK_INSERT = 273,
+        TOK_INTO = 274,
+        TOK_VALUES = 275,
+        TOK_SELECT = 276,
+        TOK_FROM = 277,
+        TOK_WHERE = 278,
+        TOK_AND = 279,
+        TOK_OR = 280,
+        TOK_INT = 281,
+        TOK_STRING = 282
       };
     };
 
@@ -391,7 +409,11 @@ namespace yy {
 
   basic_symbol (typename Base::kind_type t, const std::unique_ptr<Entry> v);
 
+  basic_symbol (typename Base::kind_type t, const std::unique_ptr<SQLSelect::WhereTree> v);
+
   basic_symbol (typename Base::kind_type t, const std::unique_ptr<SQLStatement> v);
+
+  basic_symbol (typename Base::kind_type t, const std::vector<std::string> v);
 
   basic_symbol (typename Base::kind_type t, const std::vector<std::tuple<std::string, EntryType, std::string>> v);
 
@@ -486,19 +508,23 @@ namespace yy {
 
     static inline
     symbol_type
-    make_CREATE ();
+    make_STAR ();
 
     static inline
     symbol_type
-    make_DROP ();
-
-    static inline
-    symbol_type
-    make_INSERT ();
+    make_EQUAL ();
 
     static inline
     symbol_type
     make_TABLE ();
+
+    static inline
+    symbol_type
+    make_NULL_ ();
+
+    static inline
+    symbol_type
+    make_CREATE ();
 
     static inline
     symbol_type
@@ -518,6 +544,14 @@ namespace yy {
 
     static inline
     symbol_type
+    make_DROP ();
+
+    static inline
+    symbol_type
+    make_INSERT ();
+
+    static inline
+    symbol_type
     make_INTO ();
 
     static inline
@@ -526,7 +560,23 @@ namespace yy {
 
     static inline
     symbol_type
-    make_NULL_ ();
+    make_SELECT ();
+
+    static inline
+    symbol_type
+    make_FROM ();
+
+    static inline
+    symbol_type
+    make_WHERE ();
+
+    static inline
+    symbol_type
+    make_AND ();
+
+    static inline
+    symbol_type
+    make_OR ();
 
     static inline
     symbol_type
@@ -737,12 +787,12 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 36,     ///< Last index in yytable_.
-      yynnts_ = 14,  ///< Number of nonterminal symbols.
-      yyfinal_ = 12, ///< Termination state number.
+      yylast_ = 58,     ///< Last index in yytable_.
+      yynnts_ = 20,  ///< Number of nonterminal symbols.
+      yyfinal_ = 18, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
-      yyntokens_ = 21  ///< Number of tokens.
+      yyntokens_ = 28  ///< Number of tokens.
     };
 
 
@@ -786,9 +836,10 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25,    26,    27
     };
-    const unsigned int user_token_number_max_ = 275;
+    const unsigned int user_token_number_max_ = 282;
     const token_number_type undef_token_ = 2;
 
     if (static_cast<int>(t) <= yyeof_)
@@ -819,38 +870,50 @@ namespace yy {
   {
       switch (other.type_get ())
     {
-      case 19: // INT
+      case 26: // INT
         value.copy< int > (other.value);
         break;
 
-      case 20: // STRING
-      case 29: // restrictions
-      case 30: // restriction
-      case 34: // text
+      case 27: // STRING
+      case 37: // restrictions
+      case 38: // restriction
+      case 42: // col
+      case 47: // text
         value.copy< std::string > (other.value);
         break;
 
-      case 28: // column
+      case 36: // column
         value.copy< std::tuple<std::string, EntryType, std::string> > (other.value);
         break;
 
-      case 33: // entry
+      case 46: // entry
         value.copy< std::unique_ptr<Entry> > (other.value);
         break;
 
-      case 23: // statement
-      case 24: // create
-      case 25: // drop
-      case 26: // insert
+      case 43: // whereExpr
+      case 44: // whereTerm
+      case 45: // whereFactor
+        value.copy< std::unique_ptr<SQLSelect::WhereTree> > (other.value);
+        break;
+
+      case 30: // statement
+      case 31: // create
+      case 32: // drop
+      case 33: // insert
+      case 34: // select
         value.copy< std::unique_ptr<SQLStatement> > (other.value);
         break;
 
-      case 27: // columns
+      case 41: // cols
+        value.copy< std::vector<std::string> > (other.value);
+        break;
+
+      case 35: // columns
         value.copy< std::vector<std::tuple<std::string, EntryType, std::string>> > (other.value);
         break;
 
-      case 31: // row
-      case 32: // entries
+      case 39: // row
+      case 40: // entries
         value.copy< std::vector<std::unique_ptr<Entry>> > (other.value);
         break;
 
@@ -870,38 +933,50 @@ namespace yy {
     (void) v;
       switch (this->type_get ())
     {
-      case 19: // INT
+      case 26: // INT
         value.copy< int > (v);
         break;
 
-      case 20: // STRING
-      case 29: // restrictions
-      case 30: // restriction
-      case 34: // text
+      case 27: // STRING
+      case 37: // restrictions
+      case 38: // restriction
+      case 42: // col
+      case 47: // text
         value.copy< std::string > (v);
         break;
 
-      case 28: // column
+      case 36: // column
         value.copy< std::tuple<std::string, EntryType, std::string> > (v);
         break;
 
-      case 33: // entry
+      case 46: // entry
         value.copy< std::unique_ptr<Entry> > (v);
         break;
 
-      case 23: // statement
-      case 24: // create
-      case 25: // drop
-      case 26: // insert
+      case 43: // whereExpr
+      case 44: // whereTerm
+      case 45: // whereFactor
+        value.copy< std::unique_ptr<SQLSelect::WhereTree> > (v);
+        break;
+
+      case 30: // statement
+      case 31: // create
+      case 32: // drop
+      case 33: // insert
+      case 34: // select
         value.copy< std::unique_ptr<SQLStatement> > (v);
         break;
 
-      case 27: // columns
+      case 41: // cols
+        value.copy< std::vector<std::string> > (v);
+        break;
+
+      case 35: // columns
         value.copy< std::vector<std::tuple<std::string, EntryType, std::string>> > (v);
         break;
 
-      case 31: // row
-      case 32: // entries
+      case 39: // row
+      case 40: // entries
         value.copy< std::vector<std::unique_ptr<Entry>> > (v);
         break;
 
@@ -944,7 +1019,19 @@ namespace yy {
   {}
 
   template <typename Base>
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::unique_ptr<SQLSelect::WhereTree> v)
+    : Base (t)
+    , value (v)
+  {}
+
+  template <typename Base>
   parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::unique_ptr<SQLStatement> v)
+    : Base (t)
+    , value (v)
+  {}
+
+  template <typename Base>
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::vector<std::string> v)
     : Base (t)
     , value (v)
   {}
@@ -987,38 +1074,50 @@ namespace yy {
     // Type destructor.
     switch (yytype)
     {
-      case 19: // INT
+      case 26: // INT
         value.template destroy< int > ();
         break;
 
-      case 20: // STRING
-      case 29: // restrictions
-      case 30: // restriction
-      case 34: // text
+      case 27: // STRING
+      case 37: // restrictions
+      case 38: // restriction
+      case 42: // col
+      case 47: // text
         value.template destroy< std::string > ();
         break;
 
-      case 28: // column
+      case 36: // column
         value.template destroy< std::tuple<std::string, EntryType, std::string> > ();
         break;
 
-      case 33: // entry
+      case 46: // entry
         value.template destroy< std::unique_ptr<Entry> > ();
         break;
 
-      case 23: // statement
-      case 24: // create
-      case 25: // drop
-      case 26: // insert
+      case 43: // whereExpr
+      case 44: // whereTerm
+      case 45: // whereFactor
+        value.template destroy< std::unique_ptr<SQLSelect::WhereTree> > ();
+        break;
+
+      case 30: // statement
+      case 31: // create
+      case 32: // drop
+      case 33: // insert
+      case 34: // select
         value.template destroy< std::unique_ptr<SQLStatement> > ();
         break;
 
-      case 27: // columns
+      case 41: // cols
+        value.template destroy< std::vector<std::string> > ();
+        break;
+
+      case 35: // columns
         value.template destroy< std::vector<std::tuple<std::string, EntryType, std::string>> > ();
         break;
 
-      case 31: // row
-      case 32: // entries
+      case 39: // row
+      case 40: // entries
         value.template destroy< std::vector<std::unique_ptr<Entry>> > ();
         break;
 
@@ -1045,38 +1144,50 @@ namespace yy {
     super_type::move(s);
       switch (this->type_get ())
     {
-      case 19: // INT
+      case 26: // INT
         value.move< int > (s.value);
         break;
 
-      case 20: // STRING
-      case 29: // restrictions
-      case 30: // restriction
-      case 34: // text
+      case 27: // STRING
+      case 37: // restrictions
+      case 38: // restriction
+      case 42: // col
+      case 47: // text
         value.move< std::string > (s.value);
         break;
 
-      case 28: // column
+      case 36: // column
         value.move< std::tuple<std::string, EntryType, std::string> > (s.value);
         break;
 
-      case 33: // entry
+      case 46: // entry
         value.move< std::unique_ptr<Entry> > (s.value);
         break;
 
-      case 23: // statement
-      case 24: // create
-      case 25: // drop
-      case 26: // insert
+      case 43: // whereExpr
+      case 44: // whereTerm
+      case 45: // whereFactor
+        value.move< std::unique_ptr<SQLSelect::WhereTree> > (s.value);
+        break;
+
+      case 30: // statement
+      case 31: // create
+      case 32: // drop
+      case 33: // insert
+      case 34: // select
         value.move< std::unique_ptr<SQLStatement> > (s.value);
         break;
 
-      case 27: // columns
+      case 41: // cols
+        value.move< std::vector<std::string> > (s.value);
+        break;
+
+      case 35: // columns
         value.move< std::vector<std::tuple<std::string, EntryType, std::string>> > (s.value);
         break;
 
-      case 31: // row
-      case 32: // entries
+      case 39: // row
+      case 40: // entries
         value.move< std::vector<std::unique_ptr<Entry>> > (s.value);
         break;
 
@@ -1136,7 +1247,7 @@ namespace yy {
     {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275
+     275,   276,   277,   278,   279,   280,   281,   282
     };
     return static_cast<token_type> (yytoken_number_[type]);
   }
@@ -1178,27 +1289,33 @@ namespace yy {
   }
 
   parser::symbol_type
-  parser::make_CREATE ()
+  parser::make_STAR ()
   {
-    return symbol_type (token::TOK_CREATE);
+    return symbol_type (token::TOK_STAR);
   }
 
   parser::symbol_type
-  parser::make_DROP ()
+  parser::make_EQUAL ()
   {
-    return symbol_type (token::TOK_DROP);
-  }
-
-  parser::symbol_type
-  parser::make_INSERT ()
-  {
-    return symbol_type (token::TOK_INSERT);
+    return symbol_type (token::TOK_EQUAL);
   }
 
   parser::symbol_type
   parser::make_TABLE ()
   {
     return symbol_type (token::TOK_TABLE);
+  }
+
+  parser::symbol_type
+  parser::make_NULL_ ()
+  {
+    return symbol_type (token::TOK_NULL_);
+  }
+
+  parser::symbol_type
+  parser::make_CREATE ()
+  {
+    return symbol_type (token::TOK_CREATE);
   }
 
   parser::symbol_type
@@ -1226,6 +1343,18 @@ namespace yy {
   }
 
   parser::symbol_type
+  parser::make_DROP ()
+  {
+    return symbol_type (token::TOK_DROP);
+  }
+
+  parser::symbol_type
+  parser::make_INSERT ()
+  {
+    return symbol_type (token::TOK_INSERT);
+  }
+
+  parser::symbol_type
   parser::make_INTO ()
   {
     return symbol_type (token::TOK_INTO);
@@ -1238,9 +1367,33 @@ namespace yy {
   }
 
   parser::symbol_type
-  parser::make_NULL_ ()
+  parser::make_SELECT ()
   {
-    return symbol_type (token::TOK_NULL_);
+    return symbol_type (token::TOK_SELECT);
+  }
+
+  parser::symbol_type
+  parser::make_FROM ()
+  {
+    return symbol_type (token::TOK_FROM);
+  }
+
+  parser::symbol_type
+  parser::make_WHERE ()
+  {
+    return symbol_type (token::TOK_WHERE);
+  }
+
+  parser::symbol_type
+  parser::make_AND ()
+  {
+    return symbol_type (token::TOK_AND);
+  }
+
+  parser::symbol_type
+  parser::make_OR ()
+  {
+    return symbol_type (token::TOK_OR);
   }
 
   parser::symbol_type
@@ -1258,7 +1411,7 @@ namespace yy {
 
 
 } // yy
-#line 1262 "sqloo.tab.hh" // lalr1.cc:377
+#line 1415 "sqloo.tab.hh" // lalr1.cc:377
 
 
 
