@@ -1,63 +1,54 @@
-%{
-  #include "sqloo.tab.hh"
-  #include <iostream>
-  #include <string>
-  using namespace std;
+%{ /* -*- C++ -*- */
+# include <cerrno>
+# include <climits>
+# include <cstdlib>
+# include <cstring> // strerror
+# include <string>
+# include "Parser.h"
+# include "sqloo.tab.hh"
 %}
 
-%option noyywrap
+%option noyywrap batch
+
+blank [ \t\r]
+int [0-9]+
+string [a-zA-Z][a-zA-Z_0-9]*
 
 %%
 
-[ \t\n ] ;
+{blank}+ ;
 
+<<EOF>> return yy::parser::make_END();
 ";" return yy::parser::make_SEMI();
-
 "," return yy::parser::make_COMMA();
-
 "(" return yy::parser::make_LPAREN();
-
 ")" return yy::parser::make_RPAREN();
-
 "'" return yy::parser::make_DASH();
+"*" return yy::parser::make_STAR();
+"=" return yy::parser::make_EQUAL();
 
-create {
-  return CREATE;
-}
+"table" return yy::parser::make_TABLE();
+"null" return yy::parser::make_NULL_();
 
-drop {
-  return DROP;
-}
+"create" return yy::parser::make_CREATE();
+"integer" return yy::parser::make_INTEGER();
+"text" return yy::parser::make_TEXT();
+"primary key" return yy::parser::make_PRIMARY_KEY();
+"not null" return yy::parser::make_NOT_NULL();
 
-insert {
-  return INSERT;
-}
+"drop" return yy::parser::make_DROP();
 
-into {
-  return INTO;
-}
+"insert" return yy::parser::make_INSERT();
+"into" return yy::parser::make_INTO();
+"values" return yy::parser::make_VALUES();
 
-table {
-  return TABLE;
-}
+"select" return yy::parser::make_SELECT();
+"from" return yy::parser::make_FROM();
+"where" return yy::parser::make_WHERE();
+"and" return yy::parser::make_AND();
+"or" return yy::parser::make_OR();
 
-values {
-  return VALUES;
-}
-
-null {
-  return NULL__;
-}
-
-[0-9]+ {
-  // yylval.ival = atoi(yytext);
-  return INT;
-}
-
-[a-zA-Z0-9]+ {
-  // must free sval in Bison
-  // yylval.sval = strdup(yytext);
-  return yy::parser::make_STRING(yytext);
-}
+{int} return yy::parser::make_INT(std::atoi(yytext));
+{string} return yy::parser::make_STRING(yytext);
 
 %%
