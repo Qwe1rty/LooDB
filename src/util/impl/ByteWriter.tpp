@@ -46,6 +46,12 @@ ByteWriter<Datatype>& ByteWriter<Datatype>::operator<<(const char& item) {
 }
 
 template<typename Datatype>
+ByteWriter<Datatype>& ByteWriter<Datatype>::operator<<(const bool& item) {
+  impl_->template write<bool>(item);
+  return *this;
+}
+
+template<typename Datatype>
 ByteWriter<Datatype>& ByteWriter<Datatype>::operator<<(const uint32_t& item) {
   impl_->template write<uint32_t>(item);
   return *this;
