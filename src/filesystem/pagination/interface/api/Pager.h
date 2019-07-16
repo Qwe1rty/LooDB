@@ -10,14 +10,18 @@
 
 class Pager final {
 
-  const static uint64_t DEFAULT_CACHE_LIMIT = 2000;
+  const static uint32_t DEFAULT_CACHE_LIMIT = 2000;
 
 public:
 
-  explicit Pager(const std::string&, uint64_t = DEFAULT_CACHE_LIMIT);
+  explicit Pager(const std::string&, uint32_t = DEFAULT_CACHE_LIMIT);
 
-  std::unique_ptr<Page> read(uint64_t);
-  void write(uint64_t, const std::unique_ptr<Page>&);
+  template<typename T>
+  std::unique_ptr<T> fetch(uint32_t);
+  std::unique_ptr<Page> read(uint32_t);
+
+  void write(uint32_t, const std::unique_ptr<Page>&);
+  void append(const std::unique_ptr<Page>&);
 
   uint32_t length() const; // Returns number of bytes the file contains
   uint32_t size() const;   // Returns number of pages the file contains

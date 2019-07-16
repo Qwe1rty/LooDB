@@ -13,11 +13,11 @@ class Pager::Impl final {
 
 public:
 
-  explicit Impl(const std::string&, uint64_t = DEFAULT_CACHE_LIMIT);
+  explicit Impl(const std::string&, uint32_t = DEFAULT_CACHE_LIMIT);
   ~Impl();
 
-  std::unique_ptr<Page> read(uint64_t);
-  void write(uint64_t, const std::unique_ptr<Page>&);
+  std::unique_ptr<Page> read(uint32_t);
+  void write(uint32_t, const std::unique_ptr<Page>&);
   uint32_t length();
 
 private:
@@ -37,12 +37,21 @@ void Pager::ImplDeleter::operator()(Pager::Impl* impl) {
  * Pager.h header class implementations
  */
 
-std::unique_ptr<Page> Pager::read(uint64_t index) {
+template<typename T>
+std::unique_ptr<T> Pager::fetch(uint32_t page_index) {
+  return std::unique_ptr<T>(static_cast<T*>(read(page_index).release()));
+}
+
+std::unique_ptr<Page> Pager::read(uint32_t index) {
   return impl_->read(index);
 }
 
-void Pager::write(uint64_t index, const std::unique_ptr<Page>& page) {
+void Pager::write(uint32_t index, const std::unique_ptr<Page>& page) {
   impl_->write(index, page);
+}
+
+void Pager::append(const std::unique_ptr<Page>& page) {
+  impl_->write(size(), page);
 }
 
 uint32_t Pager::length() const {
@@ -53,7 +62,7 @@ uint32_t Pager::size() const {
   return length() / Page::SIZE;
 }
 
-Pager::Pager(const std::string& filename, uint64_t limit) :
+Pager::Pager(const std::string& filename, uint32_t limit) :
   impl_{std::unique_ptr<Impl, ImplDeleter>(new Impl(filename, limit))}
 {}
 
@@ -62,7 +71,7 @@ Pager::Pager(const std::string& filename, uint64_t limit) :
  * Public member functions
  */
 
-std::unique_ptr<Page> Pager::Impl::read(uint64_t index) {
+std::unique_ptr<Page> Pager::Impl::read(uint32_t index) {
 
   // First check the cache
 //  auto cache_result{cache_.seek(index)};
@@ -76,7 +85,7 @@ std::unique_ptr<Page> Pager::Impl::read(uint64_t index) {
   return PageCodec::CODEC.decode(disk_result);
 }
 
-void Pager::Impl::write(uint64_t index, const std::unique_ptr<Page>& page) {
+void Pager::Impl::write(uint32_t index, const std::unique_ptr<Page>& page) {
 
    // Try to write to disk first, in case of errors
    auto page_bytes = PageCodec::CODEC.encode(page);
@@ -103,7 +112,7 @@ uint32_t Pager::Impl::length() {
  * Constructors/Destructors
  */
 
-Pager::Impl::Impl(const std::string& filename, uint64_t limit) :
+Pager::Impl::Impl(const std::string& filename, uint32_t limit) :
 //  cache_{PageCache{PageCacheStrategy{limit}}},
   filename_{filename},
   stream_{filename, std::fstream::in |

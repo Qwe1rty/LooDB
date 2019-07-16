@@ -40,6 +40,12 @@ ByteReader<Datatype>& ByteReader<Datatype>::operator>>(char& item) {
 }
 
 template<typename Datatype>
+ByteReader<Datatype>& ByteReader<Datatype>::operator>>(bool& item) {
+  impl_->template read<bool>(item);
+  return *this;
+}
+
+template<typename Datatype>
 ByteReader<Datatype>& ByteReader<Datatype>::operator>>(uint32_t& item) {
   impl_->template read<uint32_t>(item);
   return *this;

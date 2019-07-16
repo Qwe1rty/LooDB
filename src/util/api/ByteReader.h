@@ -11,6 +11,7 @@ class ByteReader {
 public:
 
   ByteReader& operator>>(char&);
+  ByteReader& operator>>(bool&);
   ByteReader& operator>>(uint32_t&);
   ByteReader& operator>>(uint64_t&);
 

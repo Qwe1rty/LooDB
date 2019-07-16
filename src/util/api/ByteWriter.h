@@ -21,6 +21,7 @@ public:
    * Multi-byte numeric parameters are encoded in little-endian format
    */
   ByteWriter& operator<<(const char&);
+  ByteWriter& operator<<(const bool&);
   ByteWriter& operator<<(const uint32_t&);
   ByteWriter& operator<<(const uint64_t&);
 
