@@ -36,8 +36,3 @@ bool Database::DatabaseImpl::helper() {
     closedir(pDIR);
   }
 }
-
-int main () {
-  Database p;
-  return 0;
-}
