@@ -7,49 +7,54 @@
 
 class Column {
 
-    // class Iterator;
+public:
 
-    // Validate an Entry before writing to Column
-    virtual bool valid_(const Entry& entry) const = 0;
+  struct Iterator {
 
-    // Retrieve the page index for the primary key associated with the entry
-    virtual uint32_t read_(uint32_t entry_index) = 0;
+    virtual uint32_t operator* () = 0;
+    virtual Iterator& operator++ () = 0;
+    virtual bool operator!= (const Iterator&) = 0;
+    virtual bool operator== (const Iterator&) = 0;
+  };
 
-    // Write to Column
-    virtual void write_(uint32_t entry_index, uint32_t row_index) = 0;
+  // NVI for valid_()
+  bool valid(const Entry& entry);
 
-    // Check if Column is empty
-    virtual bool empty_() const = 0;
+  // NVI for read_()
+  uint32_t read(uint32_t entry_index);
 
-    // virtual BaseColumn::Iterator begin_() = 0;
+  // NVI for write_()
+  void write(uint32_t entry_index, uint32_t row_index);
 
-    // virtual BaseColumn::Iterator end_() = 0;
+  // NVI for empty_()
+  bool empty() const;
 
-    // virtual BaseColumn::Iterator find_(Entry) = 0;
+   //NVI for begin_()
+  Column::Iterator begin();
 
-  public:
+  // NVI for end_()
+  Column::Iterator end();
 
-    // NVI for valid_()
-    bool valid(const Entry& entry);
+  // NVI for find_()
+  Column::Iterator find(Entry);
 
-    // NVI for read_()
-    uint32_t read(uint32_t entry_index);
+private:
 
-    // NVI for write_()
-    void write(uint32_t entry_index, uint32_t row_index);
+  // Validate an Entry before writing to Column
+  virtual bool valid_(const Entry& entry) const = 0;
 
-    // NVI for empty_()
-    bool empty() const;
+  // Retrieve the page index for the primary key associated with the entry
+  virtual uint32_t read_(uint32_t entry_index) = 0;
 
-    // NVI for begin_()
-    // BaseColumn::Iterator begin();
+  // Write to Column
+  virtual void write_(uint32_t entry_index, uint32_t row_index) = 0;
 
-    // NVI for end_()
-    // BaseColumn::Iterator end();
+  // Check if Column is empty
+  virtual bool empty_() const = 0;
 
-    // NVI for find_()
-    // BaseColumn::Iterator find(Entry);
-
+  virtual Column::Iterator begin_() = 0;
+  virtual Column::Iterator end_() = 0;
+  virtual Column::Iterator find_(Entry) = 0;
 };
 
 #endif // LOODB_COLUMN_H

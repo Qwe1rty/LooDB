@@ -15,20 +15,34 @@ class BaseColumn : public Column  {
 
 public:
 
+  class Iterator : Column::Iterator {
+
+  public:
+
+    uint32_t operator* () override;
+    Iterator& operator++ () override;
+    bool operator!= (const Column::Iterator&) override;
+    bool operator== (const Column::Iterator&) override;
+
+  private:
+
+    class Impl;
+    std::unique_ptr<Impl> impl_;
+  };
+
   // Constructor
   BaseColumn(const std::string&, EntryType, Pager&);
 
 private:
 
   bool valid_(const Entry&) const override;
-  uint32_t read_(uint32_t) override;
+  uint32_t read_(uint32_t index) override;
   void write_(uint32_t entry_index, uint32_t row_index) override;
   bool empty_() const override;
 
-  // class Iterator;
-  // BaseColumn::Iterator begin_() override;
-  // BaseColumn::Iterator end_() override;
-  // BaseColumn::Iterator find_(Entry) override;
+  Column::Iterator begin_() override;
+  Column::Iterator end_() override;
+  Column::Iterator find_(Entry) override;
 
   // PIMPL for Base Column
   class Impl;

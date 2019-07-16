@@ -29,7 +29,7 @@ private:
   std::unique_ptr<BTreeHeaderPage> fetch_header();
   std::unique_ptr<BTreeNodePage> fetch_node(int32_t);
   std::unique_ptr<Entry> fetch_entry(int32_t);
-  
+
   void split(uint32_t, BTreeNodePage& root, BTreeNodePage& child);
   void insert_capacity(uint32_t row_index, 
                        uint32_t entry_index, 
@@ -110,16 +110,11 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
   // the item should be inserted at
   int32_t i = 0;
   while (i < node->node_.size() && entry > fetch_entry(node->node_.at(i).key_)) ++i;
-  //      std::cout << "fetch_entry: " << i << ", " << node->node_.at(i).key_ << std::endl;
 
-  if (node->leaf_) {
-
-    node->node_.insert(node->node_.cbegin() + i, Cell{entry_index, row_index, 0});
-  }
-
-  else {
+  if (!node->leaf_) {
 
     auto child = fetch_node(node->node_.at(i).left_);
+
     if (child->node_.size() >= 2 * BTreeNodePage::SIZE - 1) {
 
       // Split, and write back results of the modified child
@@ -132,6 +127,9 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
 
     insert_capacity(row_index, entry_index, node->node_.at(i).key_);
   }
+
+  // If the node is a leaf, you won't have to worry about child pages, so just insert the cell
+  else node->node_.insert(node->node_.cbegin() + i, Cell{entry_index, row_index, 0});
 
   // Write back changes to the node
   index_file_.write(node_index, std::move(node));
@@ -231,6 +229,28 @@ BaseColumn::Impl::Impl(std::string name,
   if (index_file_.size() == 0) {
     index_file_.append(std::make_unique<BTreeHeaderPage>(0, true));
   }
+}
+
+
+/*
+ * Iterator implementation
+ */
+
+uint32_t BaseColumn::Iterator::operator*() {
+  // TODO
+}
+
+BaseColumn::Iterator& BaseColumn::Iterator::operator++() {
+  // TODO
+  return *this;
+}
+
+bool BaseColumn::Iterator::operator!=(const Column::Iterator& src) {
+  return !(*this == src);
+}
+
+bool BaseColumn::Iterator::operator==(const Column::Iterator& src) {
+  // TODO
 }
 
 
