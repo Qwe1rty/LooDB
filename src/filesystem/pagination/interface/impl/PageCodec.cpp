@@ -141,7 +141,7 @@ namespace {
       BP_TREE_HEADER_PAGE,
       [](ByteReader<const Serial>& reader) -> Object {
         
-        uint32_t root;
+        uint64_t root;
         reader >> root;
 
         bool empty;
@@ -216,7 +216,7 @@ namespace {
       B_TREE_HEADER_PAGE,
       [](ByteReader<const Serial>& reader) -> Object {
 
-        uint32_t root;
+        uint64_t root;
         reader >> root;
 
         bool empty;

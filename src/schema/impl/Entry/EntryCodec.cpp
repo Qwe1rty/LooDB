@@ -8,6 +8,7 @@
 #include <string>
 #include <memory>
 
+
 using Object = std::unique_ptr<Entry>;
 using Serial = std::vector<char>;
 

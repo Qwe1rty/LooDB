@@ -3,6 +3,8 @@
 #include "../../api/Entry/EntryCodec.h"
 #include "../../../filesystem/pagination/page/api/EntryPage.h"
 
+#include <iostream>
+
 
 int main() {
 
@@ -22,7 +24,7 @@ int main() {
   std::unique_ptr<Page> pkp2 = std::make_unique<EntryPage>(codec.encode(pk2), 0);
   std::unique_ptr<Page> pkp3 = std::make_unique<EntryPage>(codec.encode(pk3), 0);
 
-  Pager data{"data"};
+  Pager data{"data.txt"};
   data.append(ep1);
   data.append(ep2);
   data.append(ep3);
@@ -30,8 +32,12 @@ int main() {
   data.append(pkp2);
   data.append(pkp3);
 
-  BaseColumn col{"toast", EntryType::INTEGER, data};
+  BaseColumn col{"toast.txt", EntryType::INTEGER, data};
+  std::cout << "ADSHADSADSKJ" << std::endl;
   col.write(0, 3);
+  std::cout << "ADSHADSADSKJ" << std::endl;
   col.write(1, 4);
+  std::cout << "ADSHADSADSKJ" << std::endl;
   col.write(2, 5);
+  std::cout << "ADSHADSADSKJ" << std::endl;
 }

@@ -28,7 +28,7 @@ private:
 };
 
 // https://stackoverflow.com/questions/9954518/stdunique-ptr-with-an-incomplete-type-wont-compile
-void Pager::ImplDeleter::operator()(Pager::Impl* impl) {
+void Pager::ImplDeleter::operator()(Impl* impl) {
   delete impl;
 }
 
@@ -37,10 +37,6 @@ void Pager::ImplDeleter::operator()(Pager::Impl* impl) {
  * Pager.h header class implementations
  */
 
-template<typename T>
-std::unique_ptr<T> Pager::fetch(uint32_t page_index) {
-  return std::unique_ptr<T>(static_cast<T*>(read(page_index).release()));
-}
 
 std::unique_ptr<Page> Pager::read(uint32_t index) {
   return impl_->read(index);
@@ -98,13 +94,8 @@ void Pager::Impl::write(uint32_t index, const std::unique_ptr<Page>& page) {
 
 uint32_t Pager::Impl::length() {
 
-  const uint32_t prev = stream_.tellg();
-
   stream_.seekg(0, std::fstream::end);
-  const uint32_t size = stream_.tellg();
-  stream_.seekg(prev, std::fstream::beg);
-
-  return size;
+  return stream_.tellg();
 }
 
 

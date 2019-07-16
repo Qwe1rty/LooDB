@@ -13,9 +13,12 @@
 
 class BaseColumn : public Column  {
 
-  // pImpl for Base Column
-  class Impl;
-  std::unique_ptr<Impl> impl_;
+public:
+
+  // Constructor
+  BaseColumn(const std::string&, EntryType, Pager&);
+
+private:
 
   bool valid_(const Entry&) const override;
   uint32_t read_(uint32_t) override;
@@ -27,10 +30,13 @@ class BaseColumn : public Column  {
   // BaseColumn::Iterator end_() override;
   // BaseColumn::Iterator find_(Entry) override;
 
-public:
+  // PIMPL for Base Column
+  class Impl;
+  struct ImplDeleter {
+    void operator()(Impl*);
+  };
 
-  // Constructor
-  BaseColumn(const std::string&, EntryType, Pager&);
+  std::unique_ptr<Impl, ImplDeleter> impl_;
 };
 
 #endif // LOODB_BASECOLUMN_H

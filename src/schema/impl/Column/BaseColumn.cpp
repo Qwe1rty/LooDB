@@ -16,6 +16,8 @@ public:
   void write_(uint32_t entry_index, uint32_t row_index);
   bool empty_();
 
+  Impl(std::string, EntryType, EntryCodec, Pager, Pager&);
+
 private:
 
   std::string name_;
@@ -33,6 +35,10 @@ private:
                        uint32_t entry_index, 
                        uint32_t node_index);
 };
+
+void BaseColumn::ImplDeleter::operator()(Impl* impl) {
+  delete impl;
+}
 
 
 /*
@@ -94,9 +100,13 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
                                        const uint32_t entry_index,
                                        const uint32_t node_index) {
 
+  std::cout << "mate wtf" << std::endl;
+
   // Fetch pages
   const auto node = fetch_node(node_index);
   const auto entry = fetch_entry(entry_index);
+
+  std::cout << "FEEEETC" << std::endl;
 
   // Indexer used for traversing through keys in a node
   uint32_t i = node->node_.size() - 1;
@@ -145,7 +155,11 @@ uint32_t BaseColumn::Impl::read_(uint32_t) {
 
 void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
 
+  std::cout << "size before: " << index_file_.size() << std::endl;
+
   if (empty_()) {
+
+    std::cout << "EMPTYYY" << std::endl;
 
     // Make root node and append to end of file
     auto root_node = std::make_unique<BTreeNodePage>(
@@ -155,14 +169,20 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
     );
     index_file_.append(std::move(root_node));
 
+    std::cout << "new root appended" << std::endl;
+
     // Update the header's empty_ and root_ fields
     auto header = fetch_header();
     header->empty_ = false;
     header->root_ = index_file_.size() - 1;
     index_file_.write(0, std::move(header));
+
+    std::cout << "header rewritten " << std::endl;
   }
 
   else {
+
+    std::cout << "NOOOOOOOT EMPTYYY" << std::endl;
 
     auto header = fetch_header();
     auto old_root = fetch_node(header->root_);
@@ -196,12 +216,30 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
 
     else insert_capacity(row_index, entry_index, header->root_);
   }
+
+  std::cout << "size after: " << index_file_.size() << std::endl;
 }
 
 bool BaseColumn::Impl::empty_() {
 
   // Contains more than just the header page
   return fetch_header()->empty_;
+}
+
+BaseColumn::Impl::Impl(std::string name,
+                       EntryType entry_type,
+                       EntryCodec entry_codec,
+                       Pager index_file,
+                       Pager& data_file) :
+  name_{std::move(name)},
+  entry_type_{entry_type},
+  entry_codec_{std::move(entry_codec)},
+  index_file_{std::move(index_file)},
+  data_file_{data_file}
+{
+  if (index_file_.size() == 0) {
+    index_file_.append(std::make_unique<BTreeHeaderPage>(0, true));
+  }
 }
 
 
@@ -226,11 +264,13 @@ bool BaseColumn::empty_() const {
 }
 
 BaseColumn::BaseColumn(const std::string& name, EntryType type, Pager& data_file) :
-  impl_{std::make_unique<Impl>(
+  impl_{std::unique_ptr<Impl, ImplDeleter>(
+    new Impl(
       name,
       type,
       EntryCodec{},
       Pager{name, Page::SIZE},
       data_file
+    )
   )}
 {}
