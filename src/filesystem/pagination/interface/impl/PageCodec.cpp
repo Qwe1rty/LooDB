@@ -43,6 +43,7 @@ namespace {
         const auto page = static_cast<BPTreeHeaderPage*>(obj.get());
 
         writer << page->root_;
+        writer << page->empty_;
       }
     },
     {
@@ -94,6 +95,7 @@ namespace {
         const auto page = static_cast<BTreeHeaderPage*>(obj.get());
 
         writer << page->root_;
+        writer << page->empty_;
       }
     },
     {
@@ -103,6 +105,7 @@ namespace {
         const auto page = static_cast<BTreeNodePage*>(obj.get());
 
         writer << BTreeNodePage::ORDER;
+        writer << page->leaf_;
         writer << page->node_.size();
 
         for (const auto& cell : page->node_) {
@@ -140,8 +143,11 @@ namespace {
         
         uint32_t root;
         reader >> root;
+
+        bool empty;
+        reader >> empty;
         
-        return std::make_unique<BPTreeHeaderPage>(root);
+        return std::make_unique<BPTreeHeaderPage>(root, empty);
       }
     },
     {
@@ -189,7 +195,7 @@ namespace {
           reader >> values_size;
           values.reserve(values_size);
 
-          for (int i = 0; i < values_size; ++i) {
+          for (int j = 0; i < values_size; ++j) {
 
             uint64_t value;
             reader >> value;
@@ -213,7 +219,10 @@ namespace {
         uint32_t root;
         reader >> root;
 
-        return std::make_unique<BTreeHeaderPage>(root);
+        bool empty;
+        reader >> empty;
+
+        return std::make_unique<BTreeHeaderPage>(root, empty);
       }
     },
     {
@@ -221,6 +230,9 @@ namespace {
       [](ByteReader<const Serial>& reader) -> Object {
 
         reader.skip(sizeof(BTreeNodePage::ORDER));
+
+        bool leaf;
+        reader >> leaf;
 
         std::vector<Cell>::size_type size;
         std::vector<Cell> cells;
@@ -237,7 +249,7 @@ namespace {
         uint64_t right;
         reader >> right;
 
-        return std::make_unique<BTreeNodePage>(right, std::move(cells));
+        return std::make_unique<BTreeNodePage>(leaf, right, std::move(cells));
       }
     },
     {
