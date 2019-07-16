@@ -13,6 +13,7 @@
 
 #include <functional>
 #include <map>
+#include <iostream>
 
 
 namespace {
@@ -34,6 +35,16 @@ namespace {
    * TODO expand on this note
    */
 
+  /*
+   * NOTE: When encoding the ::size_t field of a vector or something, you have to
+   * cast it to something (like uint32_t) and read it back with the same type for
+   * it to work since the ::size_t will cast to something else in the ByteWriter
+   *
+   * eg.
+   * - Writing: static_cast<uint32_t>(vector.size());
+   * - Reading: uint32_t size; reader >> size;
+   */
+
   const std::map<PageType, EncodeWriter> encode_functions
   {
     {
@@ -53,7 +64,7 @@ namespace {
         const auto page = static_cast<BPTreeInternalPage*>(obj.get());
 
         writer << BPTreeInternalPage::ORDER;
-        writer << page->node_.size();
+        writer << static_cast<uint32_t>(page->node_.size());
 
         for (const auto& cell : page->node_) {
           
@@ -72,12 +83,12 @@ namespace {
         const auto page = static_cast<BPTreeLeafPage*>(obj.get());
 
         writer << BPTreeLeafPage::ORDER;
-        writer << page->node_.size();
+        writer << static_cast<uint32_t>(page->node_.size());
 
         for (const auto& cell : page->node_) {
           
           writer << cell.key_;
-          writer << cell.values_.size();
+          writer << static_cast<uint32_t>(cell.values_.size());
 
           for (const auto& value : cell.values_) {
             
@@ -106,7 +117,7 @@ namespace {
 
         writer << BTreeNodePage::ORDER;
         writer << page->leaf_;
-        writer << page->node_.size();
+        writer << static_cast<uint32_t>(page->node_.size());
 
         for (const auto& cell : page->node_) {
 
@@ -125,7 +136,7 @@ namespace {
         const auto page = static_cast<EntryPage*>(obj.get());
 
         writer << page->overflow_;
-        writer << page->value_.size();
+        writer << static_cast<uint32_t>(page->value_.size());
 
         for (uint32_t i = 0; i < page->value_.size() && writer; ++i) {
 
@@ -156,9 +167,9 @@ namespace {
 
         reader.skip(sizeof(BPTreeInternalPage::ORDER));
 
-        std::vector<Cell>::size_type size;
-        std::vector<Cell> cells;
+        uint32_t size;
         reader >> size;
+        std::vector<Cell> cells;
         cells.reserve(size);
 
         for (int i = 0; i < size; ++i) {
@@ -180,9 +191,9 @@ namespace {
 
         reader.skip(sizeof(BPTreeLeafPage::ORDER));
 
-        std::vector<CellBP>::size_type cells_size;
-        std::vector<CellBP> cells;
+        uint32_t cells_size;
         reader >> cells_size;
+        std::vector<CellBP> cells;
         cells.reserve(cells_size);
 
         for (int i = 0; i < cells_size; ++i) {
@@ -190,16 +201,15 @@ namespace {
           uint64_t key;
           reader >> key;
 
-          std::vector<uint64_t>::size_type values_size;
-          std::vector<uint64_t> values;
+          uint32_t values_size;
           reader >> values_size;
+          std::vector<uint64_t> values;
           values.reserve(values_size);
 
           for (int j = 0; i < values_size; ++j) {
 
             uint64_t value;
             reader >> value;
-
             values.emplace_back(value);
           }
 
@@ -234,9 +244,9 @@ namespace {
         bool leaf;
         reader >> leaf;
 
-        std::vector<Cell>::size_type size;
-        std::vector<Cell> cells;
+        uint32_t size;
         reader >> size;
+        std::vector<Cell> cells;
         cells.reserve(size);
 
         for (int i = 0; i < size; ++i) {
@@ -259,14 +269,16 @@ namespace {
         uint64_t overflow;
         reader >> overflow;
 
-        std::vector<char>::size_type size;
-        std::vector<char> bytes;
+        uint32_t size;
         reader >> size;
+        std::vector<char> bytes;
         bytes.reserve(size);
 
         for (int i = 0; i < size; ++i) {
 
-          reader >> bytes[i];
+          char b;
+          reader >> b;
+          bytes.emplace_back(b);
         }
 
         return std::make_unique<EntryPage>(std::move(bytes), overflow);

@@ -100,35 +100,31 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
                                        const uint32_t entry_index,
                                        const uint32_t node_index) {
 
-  std::cout << "mate wtf" << std::endl;
+  std::cout << "insert_capacity with: " << row_index << ", " << entry_index << ", " << node_index << std::endl;
 
   // Fetch pages
-  const auto node = fetch_node(node_index);
   const auto entry = fetch_entry(entry_index);
+  auto node = fetch_node(node_index);
 
-  std::cout << "FEEEETC" << std::endl;
-
-  // Indexer used for traversing through keys in a node
-  uint32_t i = node->node_.size() - 1;
+  // Indexer used for traversing through keys in a node. The loop finds the right position where
+  // the item should be inserted at
+  int32_t i = 0;
+  while (i < node->node_.size() && entry > fetch_entry(node->node_.at(i).key_)) ++i;
+  //      std::cout << "fetch_entry: " << i << ", " << node->node_.at(i).key_ << std::endl;
 
   if (node->leaf_) {
 
-    for (; i >= 0 && fetch_entry(node->node_.at(i).key_) > entry; --i) {
-      node->node_.at(i + 1) = node->node_.at(i);
-    }
-    node->node_.at(i + 1) = Cell{entry_index, row_index, 0};
+    node->node_.insert(node->node_.cbegin() + i, Cell{entry_index, row_index, 0});
   }
 
   else {
 
-    for (; i >= 0 && fetch_entry(node->node_.at(i).key_) > entry; --i) {}
-
-    auto child = fetch_node(node->node_.at(i).key_);
+    auto child = fetch_node(node->node_.at(i).left_);
     if (child->node_.size() >= 2 * BTreeNodePage::SIZE - 1) {
 
       // Split, and write back results of the modified child
       split(i + 1, *node, *child);
-      index_file_.write(node->node_.at(i).key_, std::move(child));
+      index_file_.write(node->node_.at(i).left_, std::move(child));
 
       // Determine which of the two splitted children should contain the inserted entry
       if (fetch_entry(node->node_.at(i + 1).key_) < entry) ++i;
@@ -136,6 +132,9 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
 
     insert_capacity(row_index, entry_index, node->node_.at(i).key_);
   }
+
+  // Write back changes to the node
+  index_file_.write(node_index, std::move(node));
 }
 
 
@@ -159,8 +158,6 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
 
   if (empty_()) {
 
-    std::cout << "EMPTYYY" << std::endl;
-
     // Make root node and append to end of file
     auto root_node = std::make_unique<BTreeNodePage>(
       true,
@@ -169,20 +166,14 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
     );
     index_file_.append(std::move(root_node));
 
-    std::cout << "new root appended" << std::endl;
-
     // Update the header's empty_ and root_ fields
     auto header = fetch_header();
     header->empty_ = false;
     header->root_ = index_file_.size() - 1;
     index_file_.write(0, std::move(header));
-
-    std::cout << "header rewritten " << std::endl;
   }
 
   else {
-
-    std::cout << "NOOOOOOOT EMPTYYY" << std::endl;
 
     auto header = fetch_header();
     auto old_root = fetch_node(header->root_);
