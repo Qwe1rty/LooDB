@@ -49,7 +49,7 @@
 
 #line 51 "sqloo.tab.cc" // lalr1.cc:412
 // Unqualified %code blocks.
-#line 22 "sqloo.yy" // lalr1.cc:413
+#line 25 "sqloo.yy" // lalr1.cc:413
 
   #include "Parser.h"
 
@@ -198,18 +198,23 @@ namespace yy {
         value.move< int > (that.value);
         break;
 
-      case 26: // value
-        value.move< std::shared_ptr<Entry> > (that.value);
-        break;
-
       case 16: // STRING
       case 27: // text
         value.move< std::string > (that.value);
         break;
 
+      case 26: // value
+        value.move< std::unique_ptr<Entry> > (that.value);
+        break;
+
+      case 22: // drop
+      case 23: // insert
+        value.move< std::unique_ptr<SQLStatement> > (that.value);
+        break;
+
       case 24: // row
       case 25: // values
-        value.move< std::vector<std::shared_ptr<Entry>> > (that.value);
+        value.move< std::vector<std::unique_ptr<Entry>> > (that.value);
         break;
 
       default:
@@ -231,18 +236,23 @@ namespace yy {
         value.copy< int > (that.value);
         break;
 
-      case 26: // value
-        value.copy< std::shared_ptr<Entry> > (that.value);
-        break;
-
       case 16: // STRING
       case 27: // text
         value.copy< std::string > (that.value);
         break;
 
+      case 26: // value
+        value.copy< std::unique_ptr<Entry> > (that.value);
+        break;
+
+      case 22: // drop
+      case 23: // insert
+        value.copy< std::unique_ptr<SQLStatement> > (that.value);
+        break;
+
       case 24: // row
       case 25: // values
-        value.copy< std::vector<std::shared_ptr<Entry>> > (that.value);
+        value.copy< std::vector<std::unique_ptr<Entry>> > (that.value);
         break;
 
       default:
@@ -472,18 +482,23 @@ namespace yy {
         yylhs.value.build< int > ();
         break;
 
-      case 26: // value
-        yylhs.value.build< std::shared_ptr<Entry> > ();
-        break;
-
       case 16: // STRING
       case 27: // text
         yylhs.value.build< std::string > ();
         break;
 
+      case 26: // value
+        yylhs.value.build< std::unique_ptr<Entry> > ();
+        break;
+
+      case 22: // drop
+      case 23: // insert
+        yylhs.value.build< std::unique_ptr<SQLStatement> > ();
+        break;
+
       case 24: // row
       case 25: // values
-        yylhs.value.build< std::vector<std::shared_ptr<Entry>> > ();
+        yylhs.value.build< std::vector<std::unique_ptr<Entry>> > ();
         break;
 
       default:
@@ -499,129 +514,131 @@ namespace yy {
           switch (yyn)
             {
   case 2:
-#line 51 "sqloo.yy" // lalr1.cc:859
+#line 54 "sqloo.yy" // lalr1.cc:859
     {}
-#line 505 "sqloo.tab.cc" // lalr1.cc:859
+#line 520 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 3:
-#line 54 "sqloo.yy" // lalr1.cc:859
+#line 57 "sqloo.yy" // lalr1.cc:859
     {}
-#line 511 "sqloo.tab.cc" // lalr1.cc:859
+#line 526 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 4:
-#line 55 "sqloo.yy" // lalr1.cc:859
+#line 58 "sqloo.yy" // lalr1.cc:859
     {}
-#line 517 "sqloo.tab.cc" // lalr1.cc:859
+#line 532 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 5:
-#line 58 "sqloo.yy" // lalr1.cc:859
+#line 61 "sqloo.yy" // lalr1.cc:859
     {}
-#line 523 "sqloo.tab.cc" // lalr1.cc:859
+#line 538 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 6:
-#line 59 "sqloo.yy" // lalr1.cc:859
+#line 62 "sqloo.yy" // lalr1.cc:859
     {}
-#line 529 "sqloo.tab.cc" // lalr1.cc:859
+#line 544 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 7:
-#line 60 "sqloo.yy" // lalr1.cc:859
+#line 63 "sqloo.yy" // lalr1.cc:859
     {}
-#line 535 "sqloo.tab.cc" // lalr1.cc:859
+#line 550 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 8:
-#line 63 "sqloo.yy" // lalr1.cc:859
+#line 66 "sqloo.yy" // lalr1.cc:859
     {
     std::cout << "creating table " << yystack_[1].value.as< std::string > () << std::endl;
   }
-#line 543 "sqloo.tab.cc" // lalr1.cc:859
+#line 558 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 9:
-#line 68 "sqloo.yy" // lalr1.cc:859
+#line 72 "sqloo.yy" // lalr1.cc:859
     {
     std::cout << "dropping table " << yystack_[1].value.as< std::string > () << std::endl;
-  }
-#line 551 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 10:
-#line 73 "sqloo.yy" // lalr1.cc:859
-    {
-    std::cout << "inserting " << std::endl;
-  }
-#line 559 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 11:
-#line 79 "sqloo.yy" // lalr1.cc:859
-    {
-    yylhs.value.as< std::vector<std::shared_ptr<Entry>> > () = yystack_[1].value.as< std::vector<std::shared_ptr<Entry>> > ();
+    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::make_unique<SQLDrop>(yystack_[1].value.as< std::string > ());
   }
 #line 567 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
-  case 12:
-#line 85 "sqloo.yy" // lalr1.cc:859
+  case 10:
+#line 79 "sqloo.yy" // lalr1.cc:859
     {
-    std::cout << "inserting " << yystack_[0].value.as< std::shared_ptr<Entry> > ()->getType() << " into values" << std::endl;
-    yylhs.value.as< std::vector<std::shared_ptr<Entry>> > ().emplace_back(yystack_[0].value.as< std::shared_ptr<Entry> > ());
+    std::cout << "inserting " << std::endl;
+    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::make_unique<SQLInsert>(yystack_[3].value.as< std::string > (), std::move(yystack_[1].value.as< std::vector<std::unique_ptr<Entry>> > ()));
   }
 #line 576 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
-  case 13:
-#line 89 "sqloo.yy" // lalr1.cc:859
+  case 11:
+#line 86 "sqloo.yy" // lalr1.cc:859
     {
-    std::cout << "inserting " << yystack_[0].value.as< std::shared_ptr<Entry> > ()->getType() << " into values" << std::endl;
-    yylhs.value.as< std::vector<std::shared_ptr<Entry>> > ().emplace_back(yystack_[0].value.as< std::shared_ptr<Entry> > ());
+    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > () = std::move(yystack_[1].value.as< std::vector<std::unique_ptr<Entry>> > ());
   }
-#line 585 "sqloo.tab.cc" // lalr1.cc:859
+#line 584 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 12:
+#line 92 "sqloo.yy" // lalr1.cc:859
+    {
+    std::cout << "inserting " << yystack_[0].value.as< std::unique_ptr<Entry> > ()->getType() << " into values" << std::endl;
+    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
+  }
+#line 593 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 13:
+#line 96 "sqloo.yy" // lalr1.cc:859
+    {
+    std::cout << "inserting " << yystack_[0].value.as< std::unique_ptr<Entry> > ()->getType() << " into values" << std::endl;
+    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
+  }
+#line 602 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 14:
-#line 96 "sqloo.yy" // lalr1.cc:859
+#line 103 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::shared_ptr<Entry> > () = std::make_shared<NullEntry>();
-    std::cout << "value null: " << yylhs.value.as< std::shared_ptr<Entry> > ()->getType() << std::endl;
+    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<NullEntry>();
+    std::cout << "value null: " << yylhs.value.as< std::unique_ptr<Entry> > ()->getType() << std::endl;
   }
-#line 594 "sqloo.tab.cc" // lalr1.cc:859
+#line 611 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 15:
-#line 100 "sqloo.yy" // lalr1.cc:859
+#line 107 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::shared_ptr<Entry> > () = std::make_shared<IntEntry>(yystack_[0].value.as< int > ());
-    std::cout << "value int: " << yylhs.value.as< std::shared_ptr<Entry> > ()->getType() << std::endl;
+    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<IntEntry>(yystack_[0].value.as< int > ());
+    std::cout << "value int: " << yylhs.value.as< std::unique_ptr<Entry> > ()->getType() << std::endl;
   }
-#line 603 "sqloo.tab.cc" // lalr1.cc:859
+#line 620 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 16:
-#line 104 "sqloo.yy" // lalr1.cc:859
+#line 111 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::shared_ptr<Entry> > () = std::make_shared<StringEntry>(yystack_[0].value.as< std::string > ());
-    std::cout << "value text: " << yylhs.value.as< std::shared_ptr<Entry> > ()->getType() << std::endl;
+    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<StringEntry>(yystack_[0].value.as< std::string > ());
+    std::cout << "value text: " << yylhs.value.as< std::unique_ptr<Entry> > ()->getType() << std::endl;
   }
-#line 612 "sqloo.tab.cc" // lalr1.cc:859
+#line 629 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 17:
-#line 111 "sqloo.yy" // lalr1.cc:859
+#line 118 "sqloo.yy" // lalr1.cc:859
     {
     std::cout << "text: " << yystack_[1].value.as< std::string > () << std::endl;
     yylhs.value.as< std::string > () = yystack_[1].value.as< std::string > ();
   }
-#line 621 "sqloo.tab.cc" // lalr1.cc:859
+#line 638 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
 
-#line 625 "sqloo.tab.cc" // lalr1.cc:859
+#line 642 "sqloo.tab.cc" // lalr1.cc:859
             default:
               break;
             }
@@ -875,8 +892,8 @@ namespace yy {
   const unsigned char
   parser::yyrline_[] =
   {
-       0,    51,    51,    54,    55,    58,    59,    60,    63,    68,
-      73,    79,    85,    89,    96,   100,   104,   111
+       0,    54,    54,    57,    58,    61,    62,    63,    66,    72,
+      79,    86,    92,    96,   103,   107,   111,   118
   };
 
   // Print the state stack on the debug stream.
@@ -911,8 +928,8 @@ namespace yy {
 
 
 } // yy
-#line 915 "sqloo.tab.cc" // lalr1.cc:1167
-#line 116 "sqloo.yy" // lalr1.cc:1168
+#line 932 "sqloo.tab.cc" // lalr1.cc:1167
+#line 123 "sqloo.yy" // lalr1.cc:1168
 
 
 void yy::parser::error (const std::string& m) {

@@ -42,6 +42,9 @@
 // //                    "%code requires" blocks.
 #line 8 "sqloo.yy" // lalr1.cc:377
 
+  #include "../statements/api/Statement.h"
+  #include "../statements/api/Insert.h"
+  #include "../statements/api/Drop.h"
   #include "../../schema/api/Entry/Entry.h"
   #include "../../schema/api/Entry/NullEntry.h"
   #include "../../schema/api/Entry/IntEntry.h"
@@ -51,7 +54,7 @@
   #include <memory>
   class Parser;
 
-#line 55 "sqloo.tab.hh" // lalr1.cc:377
+#line 58 "sqloo.tab.hh" // lalr1.cc:377
 
 
 # include <cstdlib> // std::abort
@@ -128,7 +131,7 @@
 
 
 namespace yy {
-#line 132 "sqloo.tab.hh" // lalr1.cc:377
+#line 135 "sqloo.tab.hh" // lalr1.cc:377
 
 
 
@@ -172,7 +175,7 @@ namespace yy {
     T&
     build (const T& t)
     {
-      return *new (yyas_<T> ()) T (t);
+      return *new (yyas_<T> ()) T (std::move((T&)t));
     }
 
     /// Accessor to a built \a T.
@@ -278,16 +281,20 @@ namespace yy {
       // INT
       char dummy1[sizeof(int)];
 
-      // value
-      char dummy2[sizeof(std::shared_ptr<Entry>)];
-
       // STRING
       // text
-      char dummy3[sizeof(std::string)];
+      char dummy2[sizeof(std::string)];
+
+      // value
+      char dummy3[sizeof(std::unique_ptr<Entry>)];
+
+      // drop
+      // insert
+      char dummy4[sizeof(std::unique_ptr<SQLStatement>)];
 
       // row
       // values
-      char dummy4[sizeof(std::vector<std::shared_ptr<Entry>>)];
+      char dummy5[sizeof(std::vector<std::unique_ptr<Entry>>)];
 };
 
     /// Symbol semantic values.
@@ -361,11 +368,13 @@ namespace yy {
 
   basic_symbol (typename Base::kind_type t, const int v);
 
-  basic_symbol (typename Base::kind_type t, const std::shared_ptr<Entry> v);
-
   basic_symbol (typename Base::kind_type t, const std::string v);
 
-  basic_symbol (typename Base::kind_type t, const std::vector<std::shared_ptr<Entry>> v);
+  basic_symbol (typename Base::kind_type t, const std::unique_ptr<Entry> v);
+
+  basic_symbol (typename Base::kind_type t, const std::unique_ptr<SQLStatement> v);
+
+  basic_symbol (typename Base::kind_type t, const std::vector<std::unique_ptr<Entry>> v);
 
 
       /// Constructor for symbols with semantic value.
@@ -777,18 +786,23 @@ namespace yy {
         value.copy< int > (other.value);
         break;
 
-      case 26: // value
-        value.copy< std::shared_ptr<Entry> > (other.value);
-        break;
-
       case 16: // STRING
       case 27: // text
         value.copy< std::string > (other.value);
         break;
 
+      case 26: // value
+        value.copy< std::unique_ptr<Entry> > (other.value);
+        break;
+
+      case 22: // drop
+      case 23: // insert
+        value.copy< std::unique_ptr<SQLStatement> > (other.value);
+        break;
+
       case 24: // row
       case 25: // values
-        value.copy< std::vector<std::shared_ptr<Entry>> > (other.value);
+        value.copy< std::vector<std::unique_ptr<Entry>> > (other.value);
         break;
 
       default:
@@ -811,18 +825,23 @@ namespace yy {
         value.copy< int > (v);
         break;
 
-      case 26: // value
-        value.copy< std::shared_ptr<Entry> > (v);
-        break;
-
       case 16: // STRING
       case 27: // text
         value.copy< std::string > (v);
         break;
 
+      case 26: // value
+        value.copy< std::unique_ptr<Entry> > (v);
+        break;
+
+      case 22: // drop
+      case 23: // insert
+        value.copy< std::unique_ptr<SQLStatement> > (v);
+        break;
+
       case 24: // row
       case 25: // values
-        value.copy< std::vector<std::shared_ptr<Entry>> > (v);
+        value.copy< std::vector<std::unique_ptr<Entry>> > (v);
         break;
 
       default:
@@ -846,19 +865,25 @@ namespace yy {
   {}
 
   template <typename Base>
-  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::shared_ptr<Entry> v)
-    : Base (t)
-    , value (v)
-  {}
-
-  template <typename Base>
   parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::string v)
     : Base (t)
     , value (v)
   {}
 
   template <typename Base>
-  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::vector<std::shared_ptr<Entry>> v)
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::unique_ptr<Entry> v)
+    : Base (t)
+    , value (v)
+  {}
+
+  template <typename Base>
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::unique_ptr<SQLStatement> v)
+    : Base (t)
+    , value (v)
+  {}
+
+  template <typename Base>
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::vector<std::unique_ptr<Entry>> v)
     : Base (t)
     , value (v)
   {}
@@ -893,18 +918,23 @@ namespace yy {
         value.template destroy< int > ();
         break;
 
-      case 26: // value
-        value.template destroy< std::shared_ptr<Entry> > ();
-        break;
-
       case 16: // STRING
       case 27: // text
         value.template destroy< std::string > ();
         break;
 
+      case 26: // value
+        value.template destroy< std::unique_ptr<Entry> > ();
+        break;
+
+      case 22: // drop
+      case 23: // insert
+        value.template destroy< std::unique_ptr<SQLStatement> > ();
+        break;
+
       case 24: // row
       case 25: // values
-        value.template destroy< std::vector<std::shared_ptr<Entry>> > ();
+        value.template destroy< std::vector<std::unique_ptr<Entry>> > ();
         break;
 
       default:
@@ -934,18 +964,23 @@ namespace yy {
         value.move< int > (s.value);
         break;
 
-      case 26: // value
-        value.move< std::shared_ptr<Entry> > (s.value);
-        break;
-
       case 16: // STRING
       case 27: // text
         value.move< std::string > (s.value);
         break;
 
+      case 26: // value
+        value.move< std::unique_ptr<Entry> > (s.value);
+        break;
+
+      case 22: // drop
+      case 23: // insert
+        value.move< std::unique_ptr<SQLStatement> > (s.value);
+        break;
+
       case 24: // row
       case 25: // values
-        value.move< std::vector<std::shared_ptr<Entry>> > (s.value);
+        value.move< std::vector<std::unique_ptr<Entry>> > (s.value);
         break;
 
       default:
@@ -1101,7 +1136,7 @@ namespace yy {
 
 
 } // yy
-#line 1105 "sqloo.tab.hh" // lalr1.cc:377
+#line 1140 "sqloo.tab.hh" // lalr1.cc:377
 
 
 

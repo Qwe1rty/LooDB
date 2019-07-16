@@ -1,14 +1,11 @@
 #include "../api/Insert.h"
+#include "../api/StatementType.h"
+#include <vector>
+#include <string>
+#include <memory>
 #include <utility>
-using namespace std;
 
-class SQLInsert::Impl{
-  // entries_: vector of rows to be entred; each row being a vector of entries
-  vector<vector<unique_ptr<Entry>>> entries_;
+SQLInsert::Impl::Impl(std::vector<std::unique_ptr<Entry>> e) : entries_(std::move(e)) {}
 
- public:
-  Impl(vector<unique_ptr<Entry>> e) : entries_(move(e)) {}
-};
-
-SQLInsert::SQLInsert(string table_name, std::vector<unique_ptr<Entry>> e) : 
-  SQLStatement(table_name, stmtInsert), impl_{make_unique<Impl>(move(e))} {}
+SQLInsert::SQLInsert(std::string table_name, std::vector<std::unique_ptr<Entry>> e) : 
+  SQLStatement(table_name, StatementType::stmtInsert), impl_{std::make_unique<Impl>(std::move(e))} {}
