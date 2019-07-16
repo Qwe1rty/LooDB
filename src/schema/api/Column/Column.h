@@ -10,16 +10,16 @@ class Column {
     // class Iterator;
 
     // Validate an Entry before writing to Column
-    virtual bool valid_(Entry) = 0;
+    virtual bool valid_(const Entry&) const = 0;
 
-    // TODO: Figure out how read works
-    virtual std::unique_ptr<Page> read_(Entry) = 0;
+    // Retrieve the page index for the primary key associated with the entry
+    virtual uint32_t read_(uint32_t entry_index) = 0;
 
     // Write to Column
-    virtual void write_(Entry, Page&) = 0;
+    virtual void write_(uint32_t entry_index, uint32_t row_index) = 0;
 
     // Check if Column is empty
-    virtual bool empty_() = 0;
+    virtual bool empty_() const = 0;
 
     // virtual BaseColumn::Iterator begin_() = 0;
 

@@ -6,42 +6,31 @@
 #include "../Entry/EntryType.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
 #include "../../../filesystem/pagination/interface/api/Pager.h"
+
 #include <memory>
 #include <string>
 
+
 class BaseColumn : public Column  {
 
-    // Private members of Base Column
-    struct BaseColumnImpl{
-      std::string name_;
-      EntryType type_;
-      std::unique_ptr<Pager> file_;
-    };
+  // pImpl for Base Column
+  class Impl;
+  std::unique_ptr<Impl> impl_;
 
-    // pImpl for Base Column
-    std::unique_ptr<BaseColumnImpl> impl_;
+  bool valid_(const Entry&) const override;
+  uint32_t read_(uint32_t) override;
+  void write_(uint32_t entry_index, uint32_t row_index) override;
+  bool empty_() const override;
 
-    // class Iterator;
+  // class Iterator;
+  // BaseColumn::Iterator begin_() override;
+  // BaseColumn::Iterator end_() override;
+  // BaseColumn::Iterator find_(Entry) override;
 
-    bool valid_(Entry) override;
+public:
 
-    std::unique_ptr<Page> read_(Entry) override;
-
-    void write_(Entry, Page&) override;
-
-    bool empty_() override;
-
-    // BaseColumn::Iterator begin_() override;
-
-    // BaseColumn::Iterator end_() override;
-
-    // BaseColumn::Iterator find_(Entry) override;
-
-  public:
-
-    // Constructor
-    BaseColumn( /* params */ );
-
+  // Constructor
+  BaseColumn(const std::string&, EntryType, const std::unique_ptr<Pager>&);
 };
 
 #endif // LOODB_BASECOLUMN_H
