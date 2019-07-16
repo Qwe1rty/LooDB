@@ -4,6 +4,8 @@
 #include "../../../filesystem/pagination/page/api/EntryPage.h"
 #include "../../../schema/api/Entry/EntryCodec.h"
 
+#include <iostream>
+
 
 class BaseColumn::Impl {
 
@@ -109,26 +111,21 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
 
   else {
 
-    uint32_t child_index = node->right_;
+    for (; i >= 0 && fetch_entry(node->node_.at(i).key_) > entry; --i) {}
 
-    while (i >= 0 && fetch_entry(node->node_.at(i).key_) > entry) {
-      child_index = node->node_.at(i).left_;
-      --i;
-    }
-
-    const auto child = fetch_node(node->node_.at(i).left_);
+    auto child = fetch_node(node->node_.at(i).key_);
     if (child->node_.size() >= 2 * BTreeNodePage::SIZE - 1) {
 
-      // Split, and determine which of the two splitted children should contain the inserted entry
+      // Split, and write back results of the modified child
       split(i + 1, *node, *child);
-      if (fetch_entry(node->node_.at(i + 1).key_) < entry) {
-        ++i;
-      }
+      index_file_.write(node->node_.at(i).key_, std::move(child));
+
+      // Determine which of the two splitted children should contain the inserted entry
+      if (fetch_entry(node->node_.at(i + 1).key_) < entry) ++i;
     }
 
     insert_capacity(row_index, entry_index, node->node_.at(i).key_);
   }
-
 }
 
 
@@ -147,8 +144,6 @@ uint32_t BaseColumn::Impl::read_(uint32_t) {
 }
 
 void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
-
-  
 
   if (empty_()) {
 
@@ -179,28 +174,24 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
       auto new_root = std::make_unique<BTreeNodePage>(
         false,
         BTreeNodePage::ORDER,
-        std::vector<Cell>{
-          Cell{
-            entry_index,
-            row_index,
-            header->root_
-          }
-        }
+        std::vector<Cell>{Cell{entry_index, row_index, header->root_}}
       );
 
       split(0, *new_root, *old_root);
 
       // Compare the key to be inserted and the previous root's middle key
       uint64_t middle_index{new_root->node_.at(0).key_};
-      const auto middle_entry = fetch_entry(middle_index);
-      const auto insert_entry = fetch_entry(entry_index);
-
-      uint32_t i = middle_entry < insert_entry;
+      uint32_t i = fetch_entry(middle_index) < fetch_entry(entry_index);
       insert_capacity(row_index, entry_index, new_root->node_.at(i).left_);
 
-      // TODO Write back all modified pages!!!!!!!!!
-      // Append the new root, and update the header to point to it
+      // Write back the old root and new root before the header is updated (while old_root
+      // index is still known)
+      index_file_.write(header->root_, std::move(old_root));
+      index_file_.append(std::move(new_root));
 
+      // Update the header and write it back
+      header->root_ = index_file_.size() - 1;
+      index_file_.write(0, std::move(header));
     }
 
     else insert_capacity(row_index, entry_index, header->root_);
@@ -234,7 +225,7 @@ bool BaseColumn::empty_() const {
   return impl_->empty_();
 }
 
-BaseColumn::BaseColumn(const std::string& name, EntryType type, const std::unique_ptr<Pager>& data_file) :
+BaseColumn::BaseColumn(const std::string& name, EntryType type, Pager& data_file) :
   impl_{std::make_unique<Impl>(
       name,
       type,

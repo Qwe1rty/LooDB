@@ -30,7 +30,7 @@ class BaseColumn : public Column  {
 public:
 
   // Constructor
-  BaseColumn(const std::string&, EntryType, const std::unique_ptr<Pager>&);
+  BaseColumn(const std::string&, EntryType, Pager&);
 };
 
 #endif // LOODB_BASECOLUMN_H

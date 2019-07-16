@@ -10,7 +10,7 @@ class Column {
     // class Iterator;
 
     // Validate an Entry before writing to Column
-    virtual bool valid_(const Entry&) const = 0;
+    virtual bool valid_(const Entry& entry) const = 0;
 
     // Retrieve the page index for the primary key associated with the entry
     virtual uint32_t read_(uint32_t entry_index) = 0;
@@ -29,20 +29,17 @@ class Column {
 
   public:
 
-    // Constructor
-    Column( /* params */ );
-
     // NVI for valid_()
-    bool valid(Entry);
+    bool valid(const Entry& entry);
 
     // NVI for read_()
-    Page read(Entry);
+    uint32_t read(uint32_t entry_index);
 
     // NVI for write_()
-    void write(Entry, Page);
+    void write(uint32_t entry_index, uint32_t row_index);
 
     // NVI for empty_()
-    bool empty();
+    bool empty() const;
 
     // NVI for begin_()
     // BaseColumn::Iterator begin();
