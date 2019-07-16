@@ -96,7 +96,7 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
   const auto node = fetch_node(node_index);
   const auto entry = fetch_entry(entry_index);
 
-  // Search index
+  // Indexer used for traversing through keys in a node
   uint32_t i = node->node_.size() - 1;
 
   if (node->leaf_) {
@@ -104,17 +104,29 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
     for (; i >= 0 && fetch_entry(node->node_.at(i).key_) > entry; --i) {
       node->node_.at(i + 1) = node->node_.at(i);
     }
-    node->node_.at(i + 1) = Cell{
-      entry_index,
-      row_index,
-      0
-    };
+    node->node_.at(i + 1) = Cell{entry_index, row_index, 0};
   }
 
   else {
 
-    while (i >= 0 && fetch_entry(node->node_.at(i).key_) > entry) --i;
+    uint32_t child_index = node->right_;
 
+    while (i >= 0 && fetch_entry(node->node_.at(i).key_) > entry) {
+      child_index = node->node_.at(i).left_;
+      --i;
+    }
+
+    const auto child = fetch_node(node->node_.at(i).left_);
+    if (child->node_.size() >= 2 * BTreeNodePage::SIZE - 1) {
+
+      // Split, and determine which of the two splitted children should contain the inserted entry
+      split(i + 1, *node, *child);
+      if (fetch_entry(node->node_.at(i + 1).key_) < entry) {
+        ++i;
+      }
+    }
+
+    insert_capacity(row_index, entry_index, node->node_.at(i).key_);
   }
 
 }
@@ -135,6 +147,8 @@ uint32_t BaseColumn::Impl::read_(uint32_t) {
 }
 
 void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
+
+  
 
   if (empty_()) {
 
@@ -159,7 +173,7 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
     auto old_root = fetch_node(header->root_);
 
     // If the node is full
-    if (old_root->node_.size() >= 2 * BTreeNodePage::ORDER + 1) {
+    if (old_root->node_.size() >= 2 * BTreeNodePage::ORDER - 1) {
 
       // Create a new root with the old root as its first child
       auto new_root = std::make_unique<BTreeNodePage>(
