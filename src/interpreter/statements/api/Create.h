@@ -2,18 +2,28 @@
 #define LOODB_SQLCREATE_H
 
 #include "Statement.h"
+#include "../../../schema/api/Entry/EntryType.h"
 #include <vector>
 #include <tuple>
 #include <memory>
 
 class SQLCreate : public SQLStatement {
-  // columns_: vector of column names and their repective type
-  // modifications_: a vector of columns names and modifications to their type
-  class Impl;
+  
+  // Private members of SQLCreate
+  class Impl{
+    // columns_: vector of column names, their repective type and modifications
+    std::vector<std::tuple<std::string, EntryType, std::string>> columns_;
+  public:
+    Impl(std::vector<std::tuple<std::string, EntryType, std::string>> c);
+  };
+
+  // pImpl for SQLCreate
   std::unique_ptr<Impl> impl_;
+
  public:
   
-  SQLCreate(std::string, std::vector<std::tuple<std::string, std::string, std::string>>);
+  // Constructor
+  SQLCreate(std::string, std::vector<std::tuple<std::string, EntryType, std::string>>);
 
 };
 

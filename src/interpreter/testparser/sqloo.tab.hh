@@ -43,18 +43,21 @@
 #line 8 "sqloo.yy" // lalr1.cc:377
 
   #include "../statements/api/Statement.h"
-  #include "../statements/api/Insert.h"
+  #include "../statements/api/Create.h"
   #include "../statements/api/Drop.h"
+  #include "../statements/api/Insert.h"
   #include "../../schema/api/Entry/Entry.h"
+  #include "../../schema/api/Entry/EntryType.h"
   #include "../../schema/api/Entry/NullEntry.h"
   #include "../../schema/api/Entry/IntEntry.h"
   #include "../../schema/api/Entry/StringEntry.h"
   #include <iostream>
   #include <string>
+  #include <tuple>
   #include <memory>
   class Parser;
 
-#line 58 "sqloo.tab.hh" // lalr1.cc:377
+#line 61 "sqloo.tab.hh" // lalr1.cc:377
 
 
 # include <cstdlib> // std::abort
@@ -131,7 +134,7 @@
 
 
 namespace yy {
-#line 135 "sqloo.tab.hh" // lalr1.cc:377
+#line 138 "sqloo.tab.hh" // lalr1.cc:377
 
 
 
@@ -282,19 +285,29 @@ namespace yy {
       char dummy1[sizeof(int)];
 
       // STRING
+      // restrictions
+      // restriction
       // text
       char dummy2[sizeof(std::string)];
 
-      // value
-      char dummy3[sizeof(std::unique_ptr<Entry>)];
+      // column
+      char dummy3[sizeof(std::tuple<std::string, EntryType, std::string>)];
 
+      // entry
+      char dummy4[sizeof(std::unique_ptr<Entry>)];
+
+      // statement
+      // create
       // drop
       // insert
-      char dummy4[sizeof(std::unique_ptr<SQLStatement>)];
+      char dummy5[sizeof(std::unique_ptr<SQLStatement>)];
+
+      // columns
+      char dummy6[sizeof(std::vector<std::tuple<std::string, EntryType, std::string>>)];
 
       // row
-      // values
-      char dummy5[sizeof(std::vector<std::unique_ptr<Entry>>)];
+      // entries
+      char dummy7[sizeof(std::vector<std::unique_ptr<Entry>>)];
 };
 
     /// Symbol semantic values.
@@ -323,12 +336,16 @@ namespace yy {
         TOK_CREATE = 263,
         TOK_DROP = 264,
         TOK_INSERT = 265,
-        TOK_INTO = 266,
-        TOK_TABLE = 267,
-        TOK_VALUES = 268,
-        TOK_NULL_ = 269,
-        TOK_INT = 270,
-        TOK_STRING = 271
+        TOK_TABLE = 266,
+        TOK_INTEGER = 267,
+        TOK_TEXT = 268,
+        TOK_PRIMARY_KEY = 269,
+        TOK_NOT_NULL = 270,
+        TOK_INTO = 271,
+        TOK_VALUES = 272,
+        TOK_NULL_ = 273,
+        TOK_INT = 274,
+        TOK_STRING = 275
       };
     };
 
@@ -370,9 +387,13 @@ namespace yy {
 
   basic_symbol (typename Base::kind_type t, const std::string v);
 
+  basic_symbol (typename Base::kind_type t, const std::tuple<std::string, EntryType, std::string> v);
+
   basic_symbol (typename Base::kind_type t, const std::unique_ptr<Entry> v);
 
   basic_symbol (typename Base::kind_type t, const std::unique_ptr<SQLStatement> v);
+
+  basic_symbol (typename Base::kind_type t, const std::vector<std::tuple<std::string, EntryType, std::string>> v);
 
   basic_symbol (typename Base::kind_type t, const std::vector<std::unique_ptr<Entry>> v);
 
@@ -477,11 +498,27 @@ namespace yy {
 
     static inline
     symbol_type
-    make_INTO ();
+    make_TABLE ();
 
     static inline
     symbol_type
-    make_TABLE ();
+    make_INTEGER ();
+
+    static inline
+    symbol_type
+    make_TEXT ();
+
+    static inline
+    symbol_type
+    make_PRIMARY_KEY ();
+
+    static inline
+    symbol_type
+    make_NOT_NULL ();
+
+    static inline
+    symbol_type
+    make_INTO ();
 
     static inline
     symbol_type
@@ -583,7 +620,7 @@ namespace yy {
   // number is the opposite.  If YYTABLE_NINF, syntax error.
   static const unsigned char yytable_[];
 
-  static const unsigned char yycheck_[];
+  static const signed char yycheck_[];
 
   // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
   // symbol of state STATE-NUM.
@@ -700,12 +737,12 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 23,     ///< Last index in yytable_.
-      yynnts_ = 11,  ///< Number of nonterminal symbols.
-      yyfinal_ = 13, ///< Termination state number.
+      yylast_ = 36,     ///< Last index in yytable_.
+      yynnts_ = 14,  ///< Number of nonterminal symbols.
+      yyfinal_ = 12, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
-      yyntokens_ = 17  ///< Number of tokens.
+      yyntokens_ = 21  ///< Number of tokens.
     };
 
 
@@ -749,9 +786,9 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16
+      15,    16,    17,    18,    19,    20
     };
-    const unsigned int user_token_number_max_ = 271;
+    const unsigned int user_token_number_max_ = 275;
     const token_number_type undef_token_ = 2;
 
     if (static_cast<int>(t) <= yyeof_)
@@ -782,26 +819,38 @@ namespace yy {
   {
       switch (other.type_get ())
     {
-      case 15: // INT
+      case 19: // INT
         value.copy< int > (other.value);
         break;
 
-      case 16: // STRING
-      case 27: // text
+      case 20: // STRING
+      case 29: // restrictions
+      case 30: // restriction
+      case 34: // text
         value.copy< std::string > (other.value);
         break;
 
-      case 26: // value
+      case 28: // column
+        value.copy< std::tuple<std::string, EntryType, std::string> > (other.value);
+        break;
+
+      case 33: // entry
         value.copy< std::unique_ptr<Entry> > (other.value);
         break;
 
-      case 22: // drop
-      case 23: // insert
+      case 23: // statement
+      case 24: // create
+      case 25: // drop
+      case 26: // insert
         value.copy< std::unique_ptr<SQLStatement> > (other.value);
         break;
 
-      case 24: // row
-      case 25: // values
+      case 27: // columns
+        value.copy< std::vector<std::tuple<std::string, EntryType, std::string>> > (other.value);
+        break;
+
+      case 31: // row
+      case 32: // entries
         value.copy< std::vector<std::unique_ptr<Entry>> > (other.value);
         break;
 
@@ -821,26 +870,38 @@ namespace yy {
     (void) v;
       switch (this->type_get ())
     {
-      case 15: // INT
+      case 19: // INT
         value.copy< int > (v);
         break;
 
-      case 16: // STRING
-      case 27: // text
+      case 20: // STRING
+      case 29: // restrictions
+      case 30: // restriction
+      case 34: // text
         value.copy< std::string > (v);
         break;
 
-      case 26: // value
+      case 28: // column
+        value.copy< std::tuple<std::string, EntryType, std::string> > (v);
+        break;
+
+      case 33: // entry
         value.copy< std::unique_ptr<Entry> > (v);
         break;
 
-      case 22: // drop
-      case 23: // insert
+      case 23: // statement
+      case 24: // create
+      case 25: // drop
+      case 26: // insert
         value.copy< std::unique_ptr<SQLStatement> > (v);
         break;
 
-      case 24: // row
-      case 25: // values
+      case 27: // columns
+        value.copy< std::vector<std::tuple<std::string, EntryType, std::string>> > (v);
+        break;
+
+      case 31: // row
+      case 32: // entries
         value.copy< std::vector<std::unique_ptr<Entry>> > (v);
         break;
 
@@ -871,6 +932,12 @@ namespace yy {
   {}
 
   template <typename Base>
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::tuple<std::string, EntryType, std::string> v)
+    : Base (t)
+    , value (v)
+  {}
+
+  template <typename Base>
   parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::unique_ptr<Entry> v)
     : Base (t)
     , value (v)
@@ -878,6 +945,12 @@ namespace yy {
 
   template <typename Base>
   parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::unique_ptr<SQLStatement> v)
+    : Base (t)
+    , value (v)
+  {}
+
+  template <typename Base>
+  parser::basic_symbol<Base>::basic_symbol (typename Base::kind_type t, const std::vector<std::tuple<std::string, EntryType, std::string>> v)
     : Base (t)
     , value (v)
   {}
@@ -914,26 +987,38 @@ namespace yy {
     // Type destructor.
     switch (yytype)
     {
-      case 15: // INT
+      case 19: // INT
         value.template destroy< int > ();
         break;
 
-      case 16: // STRING
-      case 27: // text
+      case 20: // STRING
+      case 29: // restrictions
+      case 30: // restriction
+      case 34: // text
         value.template destroy< std::string > ();
         break;
 
-      case 26: // value
+      case 28: // column
+        value.template destroy< std::tuple<std::string, EntryType, std::string> > ();
+        break;
+
+      case 33: // entry
         value.template destroy< std::unique_ptr<Entry> > ();
         break;
 
-      case 22: // drop
-      case 23: // insert
+      case 23: // statement
+      case 24: // create
+      case 25: // drop
+      case 26: // insert
         value.template destroy< std::unique_ptr<SQLStatement> > ();
         break;
 
-      case 24: // row
-      case 25: // values
+      case 27: // columns
+        value.template destroy< std::vector<std::tuple<std::string, EntryType, std::string>> > ();
+        break;
+
+      case 31: // row
+      case 32: // entries
         value.template destroy< std::vector<std::unique_ptr<Entry>> > ();
         break;
 
@@ -960,26 +1045,38 @@ namespace yy {
     super_type::move(s);
       switch (this->type_get ())
     {
-      case 15: // INT
+      case 19: // INT
         value.move< int > (s.value);
         break;
 
-      case 16: // STRING
-      case 27: // text
+      case 20: // STRING
+      case 29: // restrictions
+      case 30: // restriction
+      case 34: // text
         value.move< std::string > (s.value);
         break;
 
-      case 26: // value
+      case 28: // column
+        value.move< std::tuple<std::string, EntryType, std::string> > (s.value);
+        break;
+
+      case 33: // entry
         value.move< std::unique_ptr<Entry> > (s.value);
         break;
 
-      case 22: // drop
-      case 23: // insert
+      case 23: // statement
+      case 24: // create
+      case 25: // drop
+      case 26: // insert
         value.move< std::unique_ptr<SQLStatement> > (s.value);
         break;
 
-      case 24: // row
-      case 25: // values
+      case 27: // columns
+        value.move< std::vector<std::tuple<std::string, EntryType, std::string>> > (s.value);
+        break;
+
+      case 31: // row
+      case 32: // entries
         value.move< std::vector<std::unique_ptr<Entry>> > (s.value);
         break;
 
@@ -1038,7 +1135,8 @@ namespace yy {
     yytoken_number_[] =
     {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271
+     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
+     275
     };
     return static_cast<token_type> (yytoken_number_[type]);
   }
@@ -1098,15 +1196,39 @@ namespace yy {
   }
 
   parser::symbol_type
-  parser::make_INTO ()
-  {
-    return symbol_type (token::TOK_INTO);
-  }
-
-  parser::symbol_type
   parser::make_TABLE ()
   {
     return symbol_type (token::TOK_TABLE);
+  }
+
+  parser::symbol_type
+  parser::make_INTEGER ()
+  {
+    return symbol_type (token::TOK_INTEGER);
+  }
+
+  parser::symbol_type
+  parser::make_TEXT ()
+  {
+    return symbol_type (token::TOK_TEXT);
+  }
+
+  parser::symbol_type
+  parser::make_PRIMARY_KEY ()
+  {
+    return symbol_type (token::TOK_PRIMARY_KEY);
+  }
+
+  parser::symbol_type
+  parser::make_NOT_NULL ()
+  {
+    return symbol_type (token::TOK_NOT_NULL);
+  }
+
+  parser::symbol_type
+  parser::make_INTO ()
+  {
+    return symbol_type (token::TOK_INTO);
   }
 
   parser::symbol_type
@@ -1136,7 +1258,7 @@ namespace yy {
 
 
 } // yy
-#line 1140 "sqloo.tab.hh" // lalr1.cc:377
+#line 1262 "sqloo.tab.hh" // lalr1.cc:377
 
 
 

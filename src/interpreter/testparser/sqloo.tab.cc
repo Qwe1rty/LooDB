@@ -49,7 +49,7 @@
 
 #line 51 "sqloo.tab.cc" // lalr1.cc:412
 // Unqualified %code blocks.
-#line 25 "sqloo.yy" // lalr1.cc:413
+#line 28 "sqloo.yy" // lalr1.cc:413
 
   #include "Parser.h"
 
@@ -194,26 +194,38 @@ namespace yy {
   {
       switch (that.type_get ())
     {
-      case 15: // INT
+      case 19: // INT
         value.move< int > (that.value);
         break;
 
-      case 16: // STRING
-      case 27: // text
+      case 20: // STRING
+      case 29: // restrictions
+      case 30: // restriction
+      case 34: // text
         value.move< std::string > (that.value);
         break;
 
-      case 26: // value
+      case 28: // column
+        value.move< std::tuple<std::string, EntryType, std::string> > (that.value);
+        break;
+
+      case 33: // entry
         value.move< std::unique_ptr<Entry> > (that.value);
         break;
 
-      case 22: // drop
-      case 23: // insert
+      case 23: // statement
+      case 24: // create
+      case 25: // drop
+      case 26: // insert
         value.move< std::unique_ptr<SQLStatement> > (that.value);
         break;
 
-      case 24: // row
-      case 25: // values
+      case 27: // columns
+        value.move< std::vector<std::tuple<std::string, EntryType, std::string>> > (that.value);
+        break;
+
+      case 31: // row
+      case 32: // entries
         value.move< std::vector<std::unique_ptr<Entry>> > (that.value);
         break;
 
@@ -232,26 +244,38 @@ namespace yy {
     state = that.state;
       switch (that.type_get ())
     {
-      case 15: // INT
+      case 19: // INT
         value.copy< int > (that.value);
         break;
 
-      case 16: // STRING
-      case 27: // text
+      case 20: // STRING
+      case 29: // restrictions
+      case 30: // restriction
+      case 34: // text
         value.copy< std::string > (that.value);
         break;
 
-      case 26: // value
+      case 28: // column
+        value.copy< std::tuple<std::string, EntryType, std::string> > (that.value);
+        break;
+
+      case 33: // entry
         value.copy< std::unique_ptr<Entry> > (that.value);
         break;
 
-      case 22: // drop
-      case 23: // insert
+      case 23: // statement
+      case 24: // create
+      case 25: // drop
+      case 26: // insert
         value.copy< std::unique_ptr<SQLStatement> > (that.value);
         break;
 
-      case 24: // row
-      case 25: // values
+      case 27: // columns
+        value.copy< std::vector<std::tuple<std::string, EntryType, std::string>> > (that.value);
+        break;
+
+      case 31: // row
+      case 32: // entries
         value.copy< std::vector<std::unique_ptr<Entry>> > (that.value);
         break;
 
@@ -478,26 +502,38 @@ namespace yy {
          when using variants.  */
         switch (yyr1_[yyn])
     {
-      case 15: // INT
+      case 19: // INT
         yylhs.value.build< int > ();
         break;
 
-      case 16: // STRING
-      case 27: // text
+      case 20: // STRING
+      case 29: // restrictions
+      case 30: // restriction
+      case 34: // text
         yylhs.value.build< std::string > ();
         break;
 
-      case 26: // value
+      case 28: // column
+        yylhs.value.build< std::tuple<std::string, EntryType, std::string> > ();
+        break;
+
+      case 33: // entry
         yylhs.value.build< std::unique_ptr<Entry> > ();
         break;
 
-      case 22: // drop
-      case 23: // insert
+      case 23: // statement
+      case 24: // create
+      case 25: // drop
+      case 26: // insert
         yylhs.value.build< std::unique_ptr<SQLStatement> > ();
         break;
 
-      case 24: // row
-      case 25: // values
+      case 27: // columns
+        yylhs.value.build< std::vector<std::tuple<std::string, EntryType, std::string>> > ();
+        break;
+
+      case 31: // row
+      case 32: // entries
         yylhs.value.build< std::vector<std::unique_ptr<Entry>> > ();
         break;
 
@@ -514,131 +550,197 @@ namespace yy {
           switch (yyn)
             {
   case 2:
-#line 54 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 520 "sqloo.tab.cc" // lalr1.cc:859
+#line 61 "sqloo.yy" // lalr1.cc:859
+    {
+    p.result = std::move(yystack_[0].value.as< std::unique_ptr<SQLStatement> > ());
+    YYACCEPT;
+  }
+#line 559 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 3:
-#line 57 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 526 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 4:
-#line 58 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 532 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 5:
-#line 61 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 538 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 6:
-#line 62 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 544 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 7:
-#line 63 "sqloo.yy" // lalr1.cc:859
-    {}
-#line 550 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 8:
-#line 66 "sqloo.yy" // lalr1.cc:859
+#line 68 "sqloo.yy" // lalr1.cc:859
     {
-    std::cout << "creating table " << yystack_[1].value.as< std::string > () << std::endl;
-  }
-#line 558 "sqloo.tab.cc" // lalr1.cc:859
-    break;
-
-  case 9:
-#line 72 "sqloo.yy" // lalr1.cc:859
-    {
-    std::cout << "dropping table " << yystack_[1].value.as< std::string > () << std::endl;
-    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::make_unique<SQLDrop>(yystack_[1].value.as< std::string > ());
+    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::move(yystack_[0].value.as< std::unique_ptr<SQLStatement> > ());
   }
 #line 567 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
-  case 10:
-#line 79 "sqloo.yy" // lalr1.cc:859
+  case 4:
+#line 71 "sqloo.yy" // lalr1.cc:859
     {
-    std::cout << "inserting " << std::endl;
-    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::make_unique<SQLInsert>(yystack_[3].value.as< std::string > (), std::move(yystack_[1].value.as< std::vector<std::unique_ptr<Entry>> > ()));
+    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::move(yystack_[0].value.as< std::unique_ptr<SQLStatement> > ());
   }
-#line 576 "sqloo.tab.cc" // lalr1.cc:859
+#line 575 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 5:
+#line 74 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::move(yystack_[0].value.as< std::unique_ptr<SQLStatement> > ());
+  }
+#line 583 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 6:
+#line 80 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::make_unique<SQLCreate>(std::move(yystack_[4].value.as< std::string > ()), std::move(yystack_[2].value.as< std::vector<std::tuple<std::string, EntryType, std::string>> > ()));
+  }
+#line 591 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 7:
+#line 86 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::make_unique<SQLDrop>(std::move(yystack_[1].value.as< std::string > ()));
+  }
+#line 599 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 8:
+#line 92 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::unique_ptr<SQLStatement> > () = std::make_unique<SQLInsert>(std::move(yystack_[3].value.as< std::string > ()), std::move(yystack_[1].value.as< std::vector<std::unique_ptr<Entry>> > ()));
+  }
+#line 607 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 9:
+#line 98 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::vector<std::tuple<std::string, EntryType, std::string>> > ().emplace_back(std::move(yystack_[0].value.as< std::tuple<std::string, EntryType, std::string> > ()));
+  }
+#line 615 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 10:
+#line 101 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::vector<std::tuple<std::string, EntryType, std::string>> > ().emplace_back(std::move(yystack_[0].value.as< std::tuple<std::string, EntryType, std::string> > ()));
+  }
+#line 623 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 11:
-#line 86 "sqloo.yy" // lalr1.cc:859
+#line 107 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > () = std::move(yystack_[1].value.as< std::vector<std::unique_ptr<Entry>> > ());
+    yylhs.value.as< std::tuple<std::string, EntryType, std::string> > () = std::make_tuple(std::move(yystack_[2].value.as< std::string > ()), EntryType::INTEGER, std::move(yystack_[0].value.as< std::string > ()));
   }
-#line 584 "sqloo.tab.cc" // lalr1.cc:859
+#line 631 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 12:
-#line 92 "sqloo.yy" // lalr1.cc:859
+#line 110 "sqloo.yy" // lalr1.cc:859
     {
-    std::cout << "inserting " << yystack_[0].value.as< std::unique_ptr<Entry> > ()->getType() << " into values" << std::endl;
-    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
+    yylhs.value.as< std::tuple<std::string, EntryType, std::string> > () = std::make_tuple(std::move(yystack_[2].value.as< std::string > ()), EntryType::TEXT, std::move(yystack_[0].value.as< std::string > ()));
   }
-#line 593 "sqloo.tab.cc" // lalr1.cc:859
+#line 639 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 13:
-#line 96 "sqloo.yy" // lalr1.cc:859
+#line 116 "sqloo.yy" // lalr1.cc:859
     {
-    std::cout << "inserting " << yystack_[0].value.as< std::unique_ptr<Entry> > ()->getType() << " into values" << std::endl;
-    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
+    yylhs.value.as< std::string > () = "";
   }
-#line 602 "sqloo.tab.cc" // lalr1.cc:859
+#line 647 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 14:
-#line 103 "sqloo.yy" // lalr1.cc:859
+#line 119 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<NullEntry>();
-    std::cout << "value null: " << yylhs.value.as< std::unique_ptr<Entry> > ()->getType() << std::endl;
+    yylhs.value.as< std::string > () = std::move(yystack_[0].value.as< std::string > ());
   }
-#line 611 "sqloo.tab.cc" // lalr1.cc:859
+#line 655 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 15:
-#line 107 "sqloo.yy" // lalr1.cc:859
+#line 122 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<IntEntry>(yystack_[0].value.as< int > ());
-    std::cout << "value int: " << yylhs.value.as< std::unique_ptr<Entry> > ()->getType() << std::endl;
+    if (yystack_[1].value.as< std::string > () != yystack_[0].value.as< std::string > ()) {
+      yylhs.value.as< std::string > () = yystack_[1].value.as< std::string > () + ", " + yystack_[0].value.as< std::string > ();
+    } else {
+      std::cerr << "Parse error: duplicate restriction" << std::endl;
+      YYERROR;
+    }
   }
-#line 620 "sqloo.tab.cc" // lalr1.cc:859
+#line 668 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 16:
-#line 111 "sqloo.yy" // lalr1.cc:859
+#line 133 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<StringEntry>(yystack_[0].value.as< std::string > ());
-    std::cout << "value text: " << yylhs.value.as< std::unique_ptr<Entry> > ()->getType() << std::endl;
+    yylhs.value.as< std::string > () = "primary key";
   }
-#line 629 "sqloo.tab.cc" // lalr1.cc:859
+#line 676 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 17:
-#line 118 "sqloo.yy" // lalr1.cc:859
+#line 136 "sqloo.yy" // lalr1.cc:859
     {
-    std::cout << "text: " << yystack_[1].value.as< std::string > () << std::endl;
-    yylhs.value.as< std::string > () = yystack_[1].value.as< std::string > ();
+    yylhs.value.as< std::string > () = "not null";
   }
-#line 638 "sqloo.tab.cc" // lalr1.cc:859
+#line 684 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 18:
+#line 142 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > () = std::move(yystack_[1].value.as< std::vector<std::unique_ptr<Entry>> > ());
+  }
+#line 692 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 19:
+#line 148 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
+  }
+#line 700 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 20:
+#line 151 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
+  }
+#line 708 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 21:
+#line 157 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<NullEntry>();
+  }
+#line 716 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 22:
+#line 160 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<IntEntry>(std::move(yystack_[0].value.as< int > ()));
+  }
+#line 724 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 23:
+#line 163 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<StringEntry>(std::move(yystack_[0].value.as< std::string > ()));
+  }
+#line 732 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 24:
+#line 169 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::string > () = std::move(yystack_[1].value.as< std::string > ());
+  }
+#line 740 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
 
-#line 642 "sqloo.tab.cc" // lalr1.cc:859
+#line 744 "sqloo.tab.cc" // lalr1.cc:859
             default:
               break;
             }
@@ -799,79 +901,86 @@ namespace yy {
   }
 
 
-  const signed char parser::yypact_ninf_ = -12;
+  const signed char parser::yypact_ninf_ = -13;
 
   const signed char parser::yytable_ninf_ = -1;
 
   const signed char
   parser::yypact_[] =
   {
-      -6,   -11,    -2,    -5,    12,    -6,   -12,   -12,   -12,   -12,
-      -3,    -1,     0,   -12,   -12,     2,    11,     4,   -12,   -12,
-      13,    -7,    16,     6,   -12,   -12,     5,   -12,   -12,   -12,
-      14,    -7,   -12,   -12,   -12
+      -6,   -10,     4,     0,    17,   -13,   -13,   -13,   -13,    -2,
+       3,     5,   -13,    14,    18,     7,     6,   -13,    15,    -3,
+       1,   -13,    -7,    19,    -1,    -1,     6,    24,     8,   -13,
+     -13,     2,   -13,   -13,   -13,   -13,   -13,   -13,    -1,   -13,
+     -13,   -13,    22,    -7,   -13,   -13,   -13,   -13
   };
 
   const unsigned char
   parser::yydefact_[] =
   {
-       0,     0,     0,     0,     0,     2,     4,     5,     6,     7,
-       0,     0,     0,     1,     3,     0,     0,     0,     8,     9,
-       0,     0,     0,     0,    14,    15,     0,    13,    16,    10,
-       0,     0,    11,    17,    12
+       0,     0,     0,     0,     0,     2,     3,     4,     5,     0,
+       0,     0,     1,     0,     0,     0,     0,     7,     0,     0,
+       0,    10,     0,     0,    13,    13,     0,     0,     0,    21,
+      22,     0,    20,    23,     8,    16,    17,    11,    14,    12,
+       9,     6,     0,     0,    18,    15,    24,    19
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-     -12,   -12,   -12,    15,   -12,   -12,   -12,   -12,   -12,    -8,
-     -12
+     -13,   -13,   -13,   -13,   -13,   -13,   -13,     9,    11,    -8,
+     -13,   -13,   -12,   -13
   };
 
   const signed char
   parser::yydefgoto_[] =
   {
-      -1,     4,     5,     6,     7,     8,     9,    22,    26,    27,
-      28
+      -1,     4,     5,     6,     7,     8,    20,    21,    37,    38,
+      23,    31,    32,    33
   };
 
   const unsigned char
   parser::yytable_[] =
   {
-      23,    10,     1,     2,     3,    18,    12,    24,    25,    31,
-      11,    32,    13,    15,    19,    16,    17,    20,    21,    29,
-      14,    33,    30,    34
+      28,     9,     1,     2,     3,    26,    43,    27,    44,    24,
+      25,    29,    30,    35,    36,    10,    11,    12,    13,    16,
+      22,    17,    34,    14,    18,    15,    19,    41,    42,    46,
+      45,    47,     0,     0,     0,    40,    39
   };
 
-  const unsigned char
+  const signed char
   parser::yycheck_[] =
   {
-       7,    12,     8,     9,    10,     3,    11,    14,    15,     4,
-      12,     6,     0,    16,     3,    16,    16,    13,     5,     3,
-       5,     7,    16,    31
+       7,    11,     8,     9,    10,     4,     4,     6,     6,    12,
+      13,    18,    19,    14,    15,    11,    16,     0,    20,     5,
+       5,     3,     3,    20,    17,    20,    20,     3,    20,     7,
+      38,    43,    -1,    -1,    -1,    26,    25
   };
 
   const unsigned char
   parser::yystos_[] =
   {
-       0,     8,     9,    10,    18,    19,    20,    21,    22,    23,
-      12,    12,    11,     0,    20,    16,    16,    16,     3,     3,
-      13,     5,    24,     7,    14,    15,    25,    26,    27,     3,
-      16,     4,     6,     7,    26
+       0,     8,     9,    10,    22,    23,    24,    25,    26,    11,
+      11,    16,     0,    20,    20,    20,     5,     3,    17,    20,
+      27,    28,     5,    31,    12,    13,     4,     6,     7,    18,
+      19,    32,    33,    34,     3,    14,    15,    29,    30,    29,
+      28,     3,    20,     4,     6,    30,     7,    33
   };
 
   const unsigned char
   parser::yyr1_[] =
   {
-       0,    17,    18,    19,    19,    20,    20,    20,    21,    22,
-      23,    24,    25,    25,    26,    26,    26,    27
+       0,    21,    22,    23,    23,    23,    24,    25,    26,    27,
+      27,    28,    28,    29,    29,    29,    30,    30,    31,    32,
+      32,    33,    33,    33,    34
   };
 
   const unsigned char
   parser::yyr2_[] =
   {
-       0,     2,     1,     2,     1,     1,     1,     1,     4,     4,
-       6,     3,     3,     1,     1,     1,     1,     3
+       0,     2,     1,     1,     1,     1,     7,     4,     6,     3,
+       1,     3,     3,     0,     1,     2,     1,     1,     3,     3,
+       1,     1,     1,     1,     3
   };
 
 
@@ -882,18 +991,20 @@ namespace yy {
   const parser::yytname_[] =
   {
   "\"EOF\"", "error", "$undefined", "\";\"", "\",\"", "\"(\"", "\")\"",
-  "\"'\"", "\"create\"", "\"drop\"", "\"insert\"", "\"into\"", "\"table\"",
+  "\"'\"", "\"create\"", "\"drop\"", "\"insert\"", "\"table\"",
+  "\"integer\"", "\"text\"", "\"primary key\"", "\"not null\"", "\"into\"",
   "\"values\"", "\"null\"", "INT", "STRING", "$accept", "sqloo",
-  "statements", "statement", "create", "drop", "insert", "row", "values",
-  "value", "text", YY_NULLPTR
+  "statement", "create", "drop", "insert", "columns", "column",
+  "restrictions", "restriction", "row", "entries", "entry", "text", YY_NULLPTR
   };
 
 
   const unsigned char
   parser::yyrline_[] =
   {
-       0,    54,    54,    57,    58,    61,    62,    63,    66,    72,
-      79,    86,    92,    96,   103,   107,   111,   118
+       0,    61,    61,    68,    71,    74,    80,    86,    92,    98,
+     101,   107,   110,   116,   119,   122,   133,   136,   142,   148,
+     151,   157,   160,   163,   169
   };
 
   // Print the state stack on the debug stream.
@@ -928,8 +1039,8 @@ namespace yy {
 
 
 } // yy
-#line 932 "sqloo.tab.cc" // lalr1.cc:1167
-#line 123 "sqloo.yy" // lalr1.cc:1168
+#line 1043 "sqloo.tab.cc" // lalr1.cc:1167
+#line 173 "sqloo.yy" // lalr1.cc:1168
 
 
 void yy::parser::error (const std::string& m) {

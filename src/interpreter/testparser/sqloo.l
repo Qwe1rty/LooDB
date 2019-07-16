@@ -27,11 +27,17 @@ string [a-zA-Z][a-zA-Z_0-9]*
 "create" return yy::parser::make_CREATE();
 "drop" return yy::parser::make_DROP();
 "insert" return yy::parser::make_INSERT();
-"into" return yy::parser::make_INTO();
 "table" return yy::parser::make_TABLE();
-"values" return yy::parser::make_VALUES();
-"null" return yy::parser::make_NULL_();
 
+"integer" return yy::parser::make_INTEGER();
+"text" return yy::parser::make_TEXT();
+"primary key" return yy::parser::make_PRIMARY_KEY();
+"not null" return yy::parser::make_NOT_NULL();
+
+"into" return yy::parser::make_INTO();
+"values" return yy::parser::make_VALUES();
+
+"null" return yy::parser::make_NULL_();
 {int} return yy::parser::make_INT(std::atoi(yytext));
 {string} return yy::parser::make_STRING(yytext);
 <<EOF>> return yy::parser::make_END();

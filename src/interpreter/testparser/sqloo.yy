@@ -7,14 +7,17 @@
 
 %code requires {
   #include "../statements/api/Statement.h"
-  #include "../statements/api/Insert.h"
+  #include "../statements/api/Create.h"
   #include "../statements/api/Drop.h"
+  #include "../statements/api/Insert.h"
   #include "../../schema/api/Entry/Entry.h"
+  #include "../../schema/api/Entry/EntryType.h"
   #include "../../schema/api/Entry/NullEntry.h"
   #include "../../schema/api/Entry/IntEntry.h"
   #include "../../schema/api/Entry/StringEntry.h"
   #include <iostream>
   #include <string>
+  #include <tuple>
   #include <memory>
   class Parser;
 }
@@ -37,8 +40,12 @@
   CREATE "create"
   DROP "drop"
   INSERT "insert"
-  INTO "into"
   TABLE "table"
+  INTEGER "integer"
+  TEXT "text"
+  PRIMARY_KEY "primary key"
+  NOT_NULL "not null"
+  INTO "into"
   VALUES "values"
   NULL_ "null"
 ;
@@ -51,73 +58,116 @@
 %start sqloo;
 
 sqloo:
-  statements {};
+  statement {
+    p.result = std::move($1);
+    YYACCEPT;
+  };
 
-statements:
-  statements statement {}
-| statement {};
-
+%type <std::unique_ptr<SQLStatement>> statement;
 statement:
-  create {}
-| drop {}
-| insert {};
+  create {
+    $$ = std::move($1);
+  }
+| drop {
+    $$ = std::move($1);
+  }
+| insert {
+    $$ = std::move($1);
+  };
 
+%type <std::unique_ptr<SQLStatement>> create;
 create:
-  CREATE TABLE STRING SEMI {
-    std::cout << "creating table " << $3 << std::endl;
+  CREATE TABLE STRING LPAREN columns RPAREN SEMI {
+    $$ = std::make_unique<SQLCreate>(std::move($3), std::move($5));
   };
 
 %type <std::unique_ptr<SQLStatement>> drop;
 drop:
   DROP TABLE STRING SEMI {
-    std::cout << "dropping table " << $3 << std::endl;
-    $$ = std::make_unique<SQLDrop>($3);
+    $$ = std::make_unique<SQLDrop>(std::move($3));
   };
 
 %type <std::unique_ptr<SQLStatement>> insert;
 insert:
   INSERT INTO STRING VALUES row SEMI {
-    std::cout << "inserting " << std::endl;
-    $$ = std::make_unique<SQLInsert>($3, std::move($5));
+    $$ = std::make_unique<SQLInsert>(std::move($3), std::move($5));
+  };
+
+%type <std::vector<std::tuple<std::string, EntryType, std::string>>> columns;
+columns:
+  columns COMMA column {
+    $$.emplace_back(std::move($3));
+  }
+| column {
+    $$.emplace_back(std::move($1));
+  };
+
+%type <std::tuple<std::string, EntryType, std::string>> column;
+column:
+  STRING INTEGER restrictions {
+    $$ = std::make_tuple(std::move($1), EntryType::INTEGER, std::move($3));
+  }
+| STRING TEXT restrictions {
+    $$ = std::make_tuple(std::move($1), EntryType::TEXT, std::move($3));
+  };
+
+%type <std::string> restrictions;
+restrictions:
+  %empty {
+    $$ = "";
+  }
+| restriction {
+    $$ = std::move($1);
+  }
+| restriction restriction {
+    if ($1 != $2) {
+      $$ = $1 + ", " + $2;
+    } else {
+      std::cerr << "Parse error: duplicate restriction" << std::endl;
+      YYERROR;
+    }
+  };
+
+%type <std::string> restriction;
+restriction:
+  PRIMARY_KEY {
+    $$ = "primary key";
+  }
+| NOT_NULL {
+    $$ = "not null";
   };
 
 %type <std::vector<std::unique_ptr<Entry>>> row;
 row:
-  LPAREN values RPAREN {
+  LPAREN entries RPAREN {
     $$ = std::move($2);
   };
 
-%type <std::vector<std::unique_ptr<Entry>>> values;
-values:
-  values COMMA value {
-    std::cout << "inserting " << $3->getType() << " into values" << std::endl;
+%type <std::vector<std::unique_ptr<Entry>>> entries;
+entries:
+  entries COMMA entry {
     $$.emplace_back(std::move($3));
   }
-| value {
-    std::cout << "inserting " << $1->getType() << " into values" << std::endl;
+| entry {
     $$.emplace_back(std::move($1));
   };
 
-%type <std::unique_ptr<Entry>> value;
-value:
+%type <std::unique_ptr<Entry>> entry;
+entry:
   NULL_ {
     $$ = std::make_unique<NullEntry>();
-    std::cout << "value null: " << $$->getType() << std::endl;
   }
 | INT {
-    $$ = std::make_unique<IntEntry>($1);
-    std::cout << "value int: " << $$->getType() << std::endl;
+    $$ = std::make_unique<IntEntry>(std::move($1));
   }
 | text {
-    $$ = std::make_unique<StringEntry>($1);
-    std::cout << "value text: " << $$->getType() << std::endl;
+    $$ = std::make_unique<StringEntry>(std::move($1));
   };
 
 %type <std::string> text;
 text:
   DASH STRING DASH {
-    std::cout << "text: " << $2 << std::endl;
-    $$ = $2;
+    $$ = std::move($2);
   };
 
 %%
