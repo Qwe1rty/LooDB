@@ -4,6 +4,7 @@
 #include "Statement.h"
 #include <vector>
 #include <tuple>
+#include <memory>
 
 class SQLCreate : public SQLStatement {
   // columns_: vector of column names and their repective type

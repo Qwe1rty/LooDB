@@ -7,8 +7,8 @@ class SQLInsert::Impl{
   vector<vector<unique_ptr<Entry>>> entries_;
 
  public:
-  Impl(vector<vector<unique_ptr<Entry>>> e) : entries_(move(e)) {}
+  Impl(vector<unique_ptr<Entry>> e) : entries_(move(e)) {}
 };
 
-SQLInsert::SQLInsert(string table_name, std::vector<std::vector<unique_ptr<Entry>>> e) : 
+SQLInsert::SQLInsert(string table_name, std::vector<unique_ptr<Entry>> e) : 
   SQLStatement(table_name, stmtInsert), impl_{make_unique<Impl>(move(e))} {}
