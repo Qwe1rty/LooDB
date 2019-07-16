@@ -17,9 +17,6 @@ class Parser {
     std::unique_ptr<SQLStatement> result;
 
     int parse(const std::string& query);
-
-    void begin();
-    void end();
 };
 
 #endif // LOODB_PARSER_H
