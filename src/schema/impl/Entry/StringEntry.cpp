@@ -5,6 +5,11 @@
 // Constructor
 StringEntry::StringEntry(std::string val) : Entry(EntryType::TEXT), val_(val) {}
 
+// Get value
+std::string StringEntry::getVal() const {
+  return this->val_;
+}
+
 // Override private less than operator
 // First, checks if types are equivalent
 // If so, compare values

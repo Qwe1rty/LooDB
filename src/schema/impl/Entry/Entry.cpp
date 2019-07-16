@@ -4,7 +4,7 @@
 Entry::Entry(EntryType type) : type_(type) {}
 
 EntryType Entry::getType() const {
-    return type_;
+  return this->type_;
 }
 
 bool Entry::operator<(const Entry& other) const {

@@ -34,6 +34,6 @@ private:
     LRUCacheStrategy& operator= (LRUCacheStrategy&&) noexcept = delete;
 };
 
-#include "../impl/LRUCacheStrategy.cpp"
+#include "../impl/LRUCacheStrategy.tpp"
 
 #endif //LOODB_LRUCACHESTRATEGY_H
