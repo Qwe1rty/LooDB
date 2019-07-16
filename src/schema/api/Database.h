@@ -1,7 +1,7 @@
 #ifndef LOODB_DATABASE_H
 #define LOODB_DATABASE_H
 
-//#include "Table.h"
+#include "Table.h"
 #include "Entry/Entry.h"
 #include <memory>
 #include <string>
@@ -13,8 +13,9 @@ class Database {
     // Private members of Database
     struct DatabaseImpl {
       std::string name_ = "loo";
-      std::map<std::string, int> tables_;
+      std::map<std::string, Table> tables_;
       DatabaseImpl();
+      bool helper();
     };
     
     // pImpl for Database
