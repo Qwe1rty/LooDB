@@ -39,7 +39,6 @@ void Pager::ImplDeleter::operator()(Impl* impl) {
  * Pager.h header class implementations
  */
 
-
 std::unique_ptr<Page> Pager::read(uint32_t index) {
   return impl_->read(index);
 }

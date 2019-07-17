@@ -3,9 +3,9 @@
 
 enum StatementType {
   stmtCreate,
+  stmtDrop,
   stmtInsert,
-  stmtSelect,
-  stmtDrop
+  stmtSelect
 };
 
 #endif // LOODB_STMTYPE_H
