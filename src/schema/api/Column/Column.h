@@ -12,10 +12,12 @@ public:
   struct Iterator {
 
     // operator* will dereference to the page number of the associated primary key
-    virtual uint32_t operator* ();
-    virtual Iterator& operator++ ();
-    virtual bool operator!= (const Iterator&);
-    virtual bool operator== (const Iterator&);
+    virtual uint32_t operator* () = 0;
+    virtual Iterator& operator++ () = 0;
+    virtual bool operator!= (const Iterator&) = 0;
+    virtual bool operator== (const Iterator&) = 0;
+
+    virtual ~Iterator() = default;
   };
 
   // NVI for valid_()
@@ -39,6 +41,8 @@ public:
   // NVI for find_()
   std::unique_ptr<Iterator> find(const Entry&);
 
+  virtual ~Column() = default;
+
 private:
 
   // Validate an Entry before writing to Column
@@ -57,5 +61,6 @@ private:
   virtual std::unique_ptr<Iterator> end_() = 0;
   virtual std::unique_ptr<Iterator> find_(const Entry&) = 0;
 };
+
 
 #endif // LOODB_COLUMN_H

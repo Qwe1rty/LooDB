@@ -13,21 +13,14 @@ uint32_t Column::read(const Entry& entry) {
   return read_(entry);
 }
 
-
-// None of these operators should actually ever be accessed directly
-
-uint32_t Column::Iterator::operator*() {
-  return 0;
+std::unique_ptr<Column::Iterator> Column::begin() {
+  return begin_();
 }
 
-Column::Iterator& Column::Iterator::operator++() {
-  return *this;
+std::unique_ptr<Column::Iterator> Column::end() {
+  return end_();
 }
 
-bool Column::Iterator::operator!=(const Column::Iterator& src) {
-  return !(*this == src);
-}
-
-bool Column::Iterator::operator==(const Column::Iterator&) {
-  return true;
+std::unique_ptr<Column::Iterator> Column::find(const Entry& entry) {
+  return find_(entry);
 }

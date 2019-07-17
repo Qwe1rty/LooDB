@@ -33,11 +33,20 @@ int main() {
   data.append(pkp3);
 
   BaseColumn col{"toast.txt", EntryType::INTEGER, data};
-  std::cout << "ADSHADSADSKJ" << std::endl;
-  col.write(0, 3);
-  std::cout << "ADSHADSADSKJ" << std::endl;
-  col.write(1, 4);
-  std::cout << "ADSHADSADSKJ" << std::endl;
-  col.write(2, 5);
-  std::cout << "ADSHADSADSKJ" << std::endl;
+  for (int i = 0; i < 3; i++) {
+
+    std::cout << "Attempting insert of: " << i << ' ' << i + 3 << std::endl;
+    col.write(i, i + 3);
+    std::cout << "Insertion complete with: " << i << ' ' << i + 3 << '\n' << std::endl;
+
+    int limit = 0;
+    for (auto pk = col.begin(); *pk != *col.end(); pk->operator++()) {
+      std::cout << "\nPrimary key: " << std::flush;
+      std::cout << **pk << ", next iteration: " << (*pk != *col.end()) << std::endl;
+
+      ++limit;
+      if (limit >= 10) break;
+    }
+    std::cout << '\n' << std::endl;
+  }
 }

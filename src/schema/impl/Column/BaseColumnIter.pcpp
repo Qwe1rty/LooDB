@@ -1,8 +1,7 @@
 #include "../../api/Column/BaseColumn.h"
 
-#include "BaseColumn.cpp"
-
 #include <stack>
+#include <iostream>
 
 
 class BaseColumn::Impl::Iterator {
@@ -37,7 +36,7 @@ struct BaseColumn::Iterator::Impl {
  * Public member functions
  */
 
-BaseColumn::Impl::Iterator BaseColumn::Impl::begin_() {
+std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::begin_() {
 
   const auto header = fetch_header();
 
@@ -47,34 +46,39 @@ BaseColumn::Impl::Iterator BaseColumn::Impl::begin_() {
   if (!header->empty_) {
 
     path.push(header->root_);
-    auto node = fetch_node(header->root_);
+    cells.push(0);
 
-    uint32_t child_index = node->node_.front().left_;
+    std::cout << "path.top(): " << header->root_ << std::endl;
+    std::cout << "node_.size(): " << fetch_node(path.top())->node_.size() << std::endl;
+    std::cout << "child_index: " << fetch_node(path.top())->node_.front().left_ << std::endl;
+    uint32_t child_index = fetch_node(path.top())->node_.front().left_;
 
-    while (node->node_.front().left_ > 0) {
+    while (child_index > 0) {
 
       path.push(child_index);
-      node = fetch_node(child_index);
+      cells.push(0);
+
+      child_index = fetch_node(child_index)->node_.front().left_;
     }
   }
 
-  return BaseColumn::Impl::Iterator{
+  return std::make_unique<BaseColumn::Impl::Iterator>(
     *this,
     std::move(path),
     std::move(cells)
-  };
+  );
 }
 
-BaseColumn::Impl::Iterator BaseColumn::Impl::end_() {
+std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::end_() {
 
-  return BaseColumn::Impl::Iterator{
+  return std::make_unique<BaseColumn::Impl::Iterator>(
     *this,
     std::stack<uint32_t>{},
     std::stack<uint32_t>{}
-  };
+  );
 }
 
-BaseColumn::Impl::Iterator BaseColumn::Impl::find_(const Entry& entry) {
+std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::find_(const Entry& entry) {
 
   const auto header = fetch_header();
 
@@ -97,7 +101,11 @@ BaseColumn::Impl::Iterator BaseColumn::Impl::find_(const Entry& entry) {
 
       // If it's been found, return iterator to it
       if (entry == *fetch_entry(node->node_.at(cell).key_)) {
-        return BaseColumn::Impl::Iterator{*this, std::move(path), std::move(cells)};
+        return std::make_unique<BaseColumn::Impl::Iterator>(
+          *this,
+          std::move(path),
+          std::move(cells)
+        );
       }
 
       // If it hasn't been found, try to see if it's contained in a child node, and if it is,
@@ -124,7 +132,10 @@ BaseColumn::Impl::Iterator BaseColumn::Impl::find_(const Entry& entry) {
  */
 
 uint32_t BaseColumn::Impl::Iterator::operator*() {
-  return parent_.fetch_node(path_.top())->node_.at(cells_.top()).key_;
+
+  return path_.empty() || cells_.empty() ?
+    0 :
+    parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_;
 }
 
 BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
@@ -133,13 +144,18 @@ BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
   if (!path_.empty() && !cells_.empty()) {
     do {
 
+      std::cout << "in ++ do loop" << std::endl;
+
       // Increment cell value for this B-Tree node
       uint32_t cell = cells_.top() + 1;
       cells_.pop();
 
       // Fetch the current node, and see if we need to backtrack
       const auto node = parent_.fetch_node(path_.top());
-      if (cell < node->node_.size()) break;
+      if (cell < node->node_.size()) {
+        cells_.push(cell);
+        break;
+      }
       path_.pop();
 
     } while (!path_.empty());
@@ -179,7 +195,7 @@ BaseColumn::Impl::Iterator::Iterator(BaseColumn::Impl& parent,
  */
 
 uint32_t BaseColumn::Iterator::operator*() {
-  return impl_->impl_->operator*();
+  return **impl_->impl_;
 }
 
 BaseColumn::Iterator& BaseColumn::Iterator::operator++() {
