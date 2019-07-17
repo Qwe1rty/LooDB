@@ -29,16 +29,18 @@ private:
 
     class Impl;
     std::unique_ptr<Impl> impl_;
+
+    explicit Iterator(std::unique_ptr<Impl>);
   };
 
   bool valid_(const Entry&) const override;
-  uint32_t read_(uint32_t index) override; // TODO rename to search_ to make it less misleading // TODO MAKE IT ACCEPT AN ENTRY
+  uint32_t read_(const Entry&) override; // TODO rename to at_ to make it less misleading
   void write_(uint32_t entry_index, uint32_t row_index) override;
   bool empty_() const override;
 
-  Column::Iterator begin_() override;
-  Column::Iterator end_() override;
-  Column::Iterator find_(const Entry&) override;
+  std::unique_ptr<Column::Iterator> begin_() override;
+  std::unique_ptr<Column::Iterator> end_() override;
+  std::unique_ptr<Column::Iterator> find_(const Entry&) override;
 
   // PIMPL for Base Column
   class Impl;

@@ -14,7 +14,6 @@ public:
   class Iterator;
 
   bool valid_(const Entry&) const;
-  uint32_t read_(uint32_t);
   void write_(uint32_t entry_index, uint32_t row_index);
   bool empty_();
 
@@ -112,26 +111,36 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
   const auto entry = fetch_entry(entry_index);
   auto node = fetch_node(node_index);
 
+  // Function used for getting the page index of a node's child
+  auto index_at = [&node](uint32_t i) -> uint32_t {
+   return i < node->node_.size() ?
+      node->node_.at(i).left_ :
+      node->right_;
+  };
+
   // Indexer used for traversing through keys in a node. The loop finds the right position where
   // the item should be inserted at
-  int32_t i = 0;
+  uint32_t i = 0;
   while (i < node->node_.size() && *entry > *fetch_entry(node->node_.at(i).key_)) ++i;
+  uint32_t child_index = index_at(i);
 
   if (!node->leaf_) {
 
-    auto child = fetch_node(node->node_.at(i).left_);
+    auto child = fetch_node(child_index);
 
     if (child->node_.size() >= 2 * BTreeNodePage::SIZE - 1) {
 
       // Split, and write back results of the modified child
-      split(i + 1, *node, *child);
-      index_file_.write(node->node_.at(i).left_, std::move(child));
+      split(i, *node, *child);
+      index_file_.write(child_index, std::move(child));
 
       // Determine which of the two splitted children should contain the inserted entry
-      if (fetch_entry(node->node_.at(i + 1).key_) < entry) ++i;
+      if (*entry > *fetch_entry(node->node_.at(i + 1).key_)) {
+        child_index = index_at(i + 1);
+      }
     }
 
-    insert_capacity(row_index, entry_index, node->node_.at(i).key_);
+    insert_capacity(row_index, entry_index, child_index);
   }
 
   // If the node is a leaf, you won't have to worry about child pages, so just insert the cell
@@ -149,11 +158,6 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
 bool BaseColumn::Impl::valid_(const Entry& entry) const {
 
   return entry.getType() == entry_type_;
-}
-
-uint32_t BaseColumn::Impl::read_(uint32_t) {
-
-  return 102931258;
 }
 
 void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
@@ -196,7 +200,7 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
 
       // Compare the key to be inserted and the previous root's middle key
       uint64_t middle_index{new_root->node_.at(0).key_};
-      uint32_t i = fetch_entry(middle_index) < fetch_entry(entry_index);
+      uint32_t i = *fetch_entry(middle_index) < *fetch_entry(entry_index);
       insert_capacity(row_index, entry_index, new_root->node_.at(i).left_);
 
       // Write back the old root and new root before the header is updated (while old_root
@@ -246,8 +250,8 @@ bool BaseColumn::valid_(const Entry& entry) const {
   return impl_->valid_(entry);
 }
 
-uint32_t BaseColumn::read_(uint32_t index) {
-  return impl_->read_(index);
+uint32_t BaseColumn::read_(const Entry& entry) {
+  return **find_(entry);
 }
 
 void BaseColumn::write_(uint32_t entry_index, uint32_t row_index) {

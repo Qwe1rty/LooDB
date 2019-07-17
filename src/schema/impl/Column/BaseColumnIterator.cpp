@@ -20,7 +20,7 @@ public:
   bool operator!= (const Column::Iterator&);
   bool operator== (const Column::Iterator&);
 
-  Iterator(Impl&, std::stack<uint32_t> path, std::stack<uint32_t> positions);
+  Iterator(Impl&, std::stack<uint32_t> path, std::stack<uint32_t> cells);
 };
 
 struct BaseColumn::Iterator::Impl {
@@ -28,6 +28,8 @@ struct BaseColumn::Iterator::Impl {
   // Unfortunate double pointer indirection :/
   // Good enough for now, I guess
   std::unique_ptr<BaseColumn::Impl::Iterator> impl_;
+
+  explicit Impl(std::unique_ptr<BaseColumn::Impl::Iterator>);
 };
 
 
@@ -37,64 +39,49 @@ struct BaseColumn::Iterator::Impl {
 
 BaseColumn::Impl::Iterator BaseColumn::Impl::begin_() {
 
-//  std::stack<uint32_t> path{};
-//  std::stack<uint32_t> cells{};
-//  const auto header = fetch_header();
-//
-//  if (!header->empty_) {
-//
-//    path.push(header->root_);
-//    auto node = fetch_node(header->root_);
-//
-//    while (node->node_.front().left_ != 0) {
-//      uint32_t child_index = node->node_.front().left_;
-//      path.push(child_index);
-//      node = fetch_node(child_index);
-//    }
-//  }
-//
-//  return BaseColumn::Impl::Iterator{
-//    *this,
-//    std::move(path),
-//    std::move(cells)
-//  };
-}
-
-BaseColumn::Impl::Iterator BaseColumn::Impl::end_() {
-
-//  std::stack<uint32_t> path{};
-//  std::stack<uint32_t> cells{};
-//  const auto header = fetch_header();
-//
-//  if (!header->empty_) {
-//
-//    path.push(header->root_);
-//    auto node = fetch_node(header->root_);
-//
-//    while (node->right_ != 0) {
-//      uint32_t child_index = node->right_;
-//      path.push(child_index);
-//      node = fetch_node(child_index);
-//    }
-//
-//    last = node->node_.size();
-//  }
-//
-//  return BaseColumn::Impl::Iterator{
-//    *this,
-//    std::move(path),
-//    last
-//  }; // TODO double check this
-}
-
-BaseColumn::Impl::Iterator BaseColumn::Impl::find_(const Entry& entry) {
+  const auto header = fetch_header();
 
   std::stack<uint32_t> path{};
   std::stack<uint32_t> cells{};
 
+  if (!header->empty_) {
+
+    path.push(header->root_);
+    auto node = fetch_node(header->root_);
+
+    uint32_t child_index = node->node_.front().left_;
+
+    while (node->node_.front().left_ > 0) {
+
+      path.push(child_index);
+      node = fetch_node(child_index);
+    }
+  }
+
+  return BaseColumn::Impl::Iterator{
+    *this,
+    std::move(path),
+    std::move(cells)
+  };
+}
+
+BaseColumn::Impl::Iterator BaseColumn::Impl::end_() {
+
+  return BaseColumn::Impl::Iterator{
+    *this,
+    std::stack<uint32_t>{},
+    std::stack<uint32_t>{}
+  };
+}
+
+BaseColumn::Impl::Iterator BaseColumn::Impl::find_(const Entry& entry) {
+
   const auto header = fetch_header();
 
   if (!header->empty_) {
+
+    std::stack<uint32_t> path{};
+    std::stack<uint32_t> cells{};
 
     path.push(header->root_);
     auto node = fetch_node(header->root_);
@@ -103,29 +90,32 @@ BaseColumn::Impl::Iterator BaseColumn::Impl::find_(const Entry& entry) {
 
       // Find the index where the entry would be located
       uint32_t cell{0};
-      while (cell < node->node_.size() && entry > *fetch_entry(node->node_.at(cell).key_)) ++cell;
+      while (cell < node->node_.size() && entry > *fetch_entry(node->node_.at(cell).key_)) {
+        ++cell;
+      }
+      cells.push(cell);
 
+      // If it's been found, return iterator to it
+      if (entry == *fetch_entry(node->node_.at(cell).key_)) {
+        return BaseColumn::Impl::Iterator{*this, std::move(path), std::move(cells)};
+      }
+
+      // If it hasn't been found, try to see if it's contained in a child node, and if it is,
+      // then "recurse" to that node (AKA not a leaf). Otherwise, you're done, as it's not in the tree
       uint32_t child_index = cell < node->node_.size() ?
         node->node_.at(cell).left_ :
         node->right_;
 
-      // If there's a child within, then "recurse" to that node (AKA not a leaf).
-      // Otherwise, you're done
       if (child_index > 0) {
-
         path.push(child_index);
-        cells.push(cell);
         node = fetch_node(child_index);
       }
       else break;
     }
   }
 
-  return BaseColumn::Impl::Iterator{
-    *this,
-    std::move(path),
-    std::move(cells),
-  };
+  // Return the end iterator if it's not found or tree is empty
+  return end_();
 }
 
 
@@ -139,35 +129,21 @@ uint32_t BaseColumn::Impl::Iterator::operator*() {
 
 BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
 
-//  const auto node = parent_.fetch_node(path_.top());
-//  uint32_t child_index;
+  // If it's not already at the end or just empty
+  if (!path_.empty() && !cells_.empty()) {
+    do {
 
-  ++last_;
+      // Increment cell value for this B-Tree node
+      uint32_t cell = cells_.top() + 1;
+      cells_.pop();
 
-  if (last_ < node->node_.size()) {
+      // Fetch the current node, and see if we need to backtrack
+      const auto node = parent_.fetch_node(path_.top());
+      if (cell < node->node_.size()) break;
+      path_.pop();
 
+    } while (!path_.empty());
   }
-
-  while ()
-
-//  // Get the next inorder child page index
-//  if (cell_ + 1 < node->node_.size()) {
-//    ++cell_;
-//    if (node->node_.at(cell_).left_ > 0) {
-//
-//    }
-//  }
-//  else {
-//
-//  }
-//
-//  // If this cell has a child, then "recurse" into it
-//  if (child_index > 0) {
-//    path_.push(child_index);
-//    cell_ = 0;
-//  }
-//
-//  // If the
 
   return *this;
 }
@@ -191,12 +167,10 @@ bool BaseColumn::Impl::Iterator::operator==(const Column::Iterator& src) {
 
 BaseColumn::Impl::Iterator::Iterator(BaseColumn::Impl& parent,
                                      std::stack<uint32_t> path,
-                                     std::stack<uint32_t> positions,
-                                     uint32_t last) :
+                                     std::stack<uint32_t> cells) :
   parent_{parent},
   path_{std::move(path)},
-  cells_{std::move(positions)},
-  last_{last}
+  cells_{std::move(cells)}
 {}
 
 
@@ -220,3 +194,34 @@ bool BaseColumn::Iterator::operator!=(const Column::Iterator& src) {
 bool BaseColumn::Iterator::operator==(const Column::Iterator& src) {
   return impl_->impl_->operator==(src);
 }
+
+BaseColumn::Iterator::Impl::Impl(std::unique_ptr<BaseColumn::Impl::Iterator> impl) :
+  impl_{std::move(impl)}
+{}
+
+
+/*
+ * BaseColumn.h implementations
+ */
+
+std::unique_ptr<Column::Iterator> BaseColumn::begin_() {
+  return std::make_unique<BaseColumn::Iterator>(
+    std::make_unique<BaseColumn::Iterator::Impl>(impl_->begin_())
+  );
+}
+
+std::unique_ptr<Column::Iterator> BaseColumn::end_() {
+  return std::make_unique<BaseColumn::Iterator>(
+    std::make_unique<BaseColumn::Iterator::Impl>(impl_->end_())
+  );
+}
+
+std::unique_ptr<Column::Iterator> BaseColumn::find_(const Entry& entry) {
+  return std::make_unique<BaseColumn::Iterator>(
+    std::make_unique<BaseColumn::Iterator::Impl>(impl_->find_(entry))
+  );
+}
+
+BaseColumn::Iterator::Iterator(std::unique_ptr<BaseColumn::Iterator::Impl> impl) :
+  impl_{std::move(impl)}
+{}
