@@ -1,6 +1,9 @@
 #include "Parser.h"
 #include "../statements/api/Select.h"
 #include "../statements/api/StatementType.h"
+#include "../../schema/api/Database.h"
+#include "../virtualmachine/api/virtual_machine.h"
+
 #include <iostream>
 #include <sstream>
 #include <memory>
@@ -15,6 +18,12 @@ int run() {
 
   // Create Parser
   Parser p;
+
+  //create DB 
+  Database d;
+
+  //Create VM
+  VM v;
 
   // Accept white space
   std::cin >> std::noskipws;
@@ -39,6 +48,7 @@ int run() {
             static_cast<SQLSelect*>(p.result.get())->printWhere();
           }
         }
+        v.execute(std::move(p.result), d);
       }
 
       // Clear ss
