@@ -18,7 +18,9 @@ public:
 
   std::unique_ptr<Page> read(uint32_t);
   void write(uint32_t, const std::unique_ptr<Page>&);
+
   uint32_t length();
+  const std::string& name() const;
 
 private:
 
@@ -46,8 +48,10 @@ void Pager::write(uint32_t index, const std::unique_ptr<Page>& page) {
   impl_->write(index, page);
 }
 
-void Pager::append(const std::unique_ptr<Page>& page) {
-  impl_->write(size(), page);
+uint32_t Pager::append(const std::unique_ptr<Page>& page) {
+  uint32_t index{size()};
+  impl_->write(index, page);
+  return index;
 }
 
 uint32_t Pager::length() const {
@@ -56,6 +60,10 @@ uint32_t Pager::length() const {
 
 uint32_t Pager::size() const {
   return length() / Page::SIZE;
+}
+
+const std::string& Pager::name() const {
+  return impl_->name();
 }
 
 Pager::Pager(const std::string& filename, uint32_t limit) :
@@ -96,6 +104,10 @@ uint32_t Pager::Impl::length() {
 
   stream_.seekg(0, std::fstream::end);
   return stream_.tellg();
+}
+
+const std::string& Pager::Impl::name() const {
+  return filename_;
 }
 
 

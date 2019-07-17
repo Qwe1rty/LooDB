@@ -11,6 +11,7 @@ public:
 
   struct Iterator {
 
+    // operator* will dereference to the page number of the associated primary key
     virtual uint32_t operator* () = 0;
     virtual Iterator& operator++ () = 0;
     virtual bool operator!= (const Iterator&) = 0;
@@ -36,7 +37,7 @@ public:
   Column::Iterator end();
 
   // NVI for find_()
-  Column::Iterator find(Entry);
+  Column::Iterator find(const Entry&);
 
 private:
 
@@ -54,7 +55,7 @@ private:
 
   virtual Column::Iterator begin_() = 0;
   virtual Column::Iterator end_() = 0;
-  virtual Column::Iterator find_(Entry) = 0;
+  virtual Column::Iterator find_(const Entry&) = 0;
 };
 
 #endif // LOODB_COLUMN_H

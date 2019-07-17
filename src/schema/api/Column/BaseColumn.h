@@ -15,41 +15,36 @@ class BaseColumn : public Column  {
 
 public:
 
-  class Iterator : Column::Iterator {
+  // Constructor
+  BaseColumn(const std::string&, EntryType, Pager&);
 
-  public:
+private:
+
+  struct Iterator : Column::Iterator {
 
     uint32_t operator* () override;
     Iterator& operator++ () override;
     bool operator!= (const Column::Iterator&) override;
     bool operator== (const Column::Iterator&) override;
 
-  private:
-
     class Impl;
     std::unique_ptr<Impl> impl_;
   };
 
-  // Constructor
-  BaseColumn(const std::string&, EntryType, Pager&);
-
-private:
-
   bool valid_(const Entry&) const override;
-  uint32_t read_(uint32_t index) override;
+  uint32_t read_(uint32_t index) override; // TODO rename to search_ to make it less misleading // TODO MAKE IT ACCEPT AN ENTRY
   void write_(uint32_t entry_index, uint32_t row_index) override;
   bool empty_() const override;
 
   Column::Iterator begin_() override;
   Column::Iterator end_() override;
-  Column::Iterator find_(Entry) override;
+  Column::Iterator find_(const Entry&) override;
 
   // PIMPL for Base Column
   class Impl;
   struct ImplDeleter {
     void operator()(Impl*);
   };
-
   std::unique_ptr<Impl, ImplDeleter> impl_;
 };
 

@@ -11,10 +11,16 @@ class BaseColumn::Impl {
 
 public:
 
+  class Iterator;
+
   bool valid_(const Entry&) const;
   uint32_t read_(uint32_t);
   void write_(uint32_t entry_index, uint32_t row_index);
   bool empty_();
+
+  Iterator begin_();
+  Iterator end_();
+  Iterator find_(const Entry&);
 
   Impl(std::string, EntryType, EntryCodec, Pager, Pager&);
 
@@ -229,28 +235,6 @@ BaseColumn::Impl::Impl(std::string name,
   if (index_file_.size() == 0) {
     index_file_.append(std::make_unique<BTreeHeaderPage>(0, true));
   }
-}
-
-
-/*
- * Iterator implementation
- */
-
-uint32_t BaseColumn::Iterator::operator*() {
-  // TODO
-}
-
-BaseColumn::Iterator& BaseColumn::Iterator::operator++() {
-  // TODO
-  return *this;
-}
-
-bool BaseColumn::Iterator::operator!=(const Column::Iterator& src) {
-  return !(*this == src);
-}
-
-bool BaseColumn::Iterator::operator==(const Column::Iterator& src) {
-  // TODO
 }
 
 
