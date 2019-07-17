@@ -19,7 +19,7 @@ Table::TableImpl::TableImpl(string s) : name_(s)  {
 Table::Table(string s) : impl_{make_unique<TableImpl>(s)} {}
 
 void Table::TableImpl::populateTable(){
-  cout << "Found table: " << name_ << endl;
+  cerr << "Found table: " << name_ << endl;
 
   DIR *pDIR;
   struct dirent *entry;
