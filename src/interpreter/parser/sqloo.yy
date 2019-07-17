@@ -219,7 +219,6 @@ whereTerm:
 %type<std::unique_ptr<SQLSelect::WhereTree>> whereFactor;
 whereFactor:
   STRING EQUAL entry {
-    // std::cout << $1 << "=" << $3->getType() << std::endl;
     $$ = std::make_unique<SQLSelect::WhereTree>(std::move($1), std::move($3));
   }
 | LPAREN whereExpr RPAREN {
@@ -242,6 +241,9 @@ entry:
 text:
   DASH STRING DASH {
     $$ = std::move($2);
+  }
+| DASH INT DASH {
+    $$ = std::to_string($2);
   };
 
 %%
