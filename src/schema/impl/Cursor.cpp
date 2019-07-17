@@ -1,5 +1,4 @@
 #include "../api/Cursor.h"
-#include "../api/Table.h"
 #include "../api/Entry/Entry.h"
 #include "../api/Entry/EntryCodec.h"
 #include "../../filesystem/pagination/page/api/Page.h"
@@ -8,7 +7,6 @@
 #include "../../filesystem/pagination/page/api/CellBP.h"
 #include "../../filesystem/pagination/page/api/EntryPage.h"
 #include <memory>
-#include <string>
 #include <vector>
 
 // Constructor
