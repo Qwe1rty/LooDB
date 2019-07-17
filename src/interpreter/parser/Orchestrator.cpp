@@ -19,9 +19,6 @@ int run() {
   // Create Parser
   Parser p;
 
-  //create DB 
-  Database d;
-
   //Create VM
   VM v;
 
@@ -48,6 +45,8 @@ int run() {
             static_cast<SQLSelect*>(p.result.get())->printWhere();
           }
         }
+          //create DB 
+        Database d;
         v.execute(std::move(p.result), d);
       }
 
