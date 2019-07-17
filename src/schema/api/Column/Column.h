@@ -7,52 +7,60 @@
 
 class Column {
 
-    // class Iterator;
+public:
 
-    // Validate an Entry before writing to Column
-    virtual bool valid_(const Entry&) const = 0;
+  struct Iterator {
 
-    // Retrieve the page index for the primary key associated with the entry
-    virtual uint32_t read_(uint32_t entry_index) = 0;
+    // operator* will dereference to the page number of the associated primary key
+    virtual uint32_t operator* () = 0;
+    virtual Iterator& operator++ () = 0;
+    virtual bool operator!= (const Iterator&) = 0;
+    virtual bool operator== (const Iterator&) = 0;
 
-    // Write to Column
-    virtual void write_(uint32_t entry_index, uint32_t row_index) = 0;
+    virtual ~Iterator() = default;
+  };
 
-    // Check if Column is empty
-    virtual bool empty_() const = 0;
+  // NVI for valid_()
+  bool valid(const Entry& entry) const;
 
-    // virtual BaseColumn::Iterator begin_() = 0;
+  // NVI for read_()
+  uint32_t read(const Entry& entry);
 
-    // virtual BaseColumn::Iterator end_() = 0;
+  // NVI for write_()
+  void write(uint32_t entry_index, uint32_t row_index);
 
-    // virtual BaseColumn::Iterator find_(Entry) = 0;
+  // NVI for empty_()
+  bool empty() const;
 
-  public:
+   //NVI for begin_()
+  std::unique_ptr<Iterator> begin();
 
-    // Constructor
-    Column( /* params */ );
+  // NVI for end_()
+  std::unique_ptr<Iterator> end();
 
-    // NVI for valid_()
-    bool valid(Entry);
+  // NVI for find_()
+  std::unique_ptr<Iterator> find(const Entry&);
 
-    // NVI for read_()
-    Page read(Entry);
+  virtual ~Column() = default;
 
-    // NVI for write_()
-    void write(Entry, Page);
+private:
 
-    // NVI for empty_()
-    bool empty();
+  // Validate an Entry before writing to Column
+  virtual bool valid_(const Entry& entry) const = 0;
 
-    // NVI for begin_()
-    // BaseColumn::Iterator begin();
+  // Retrieve the page index for the primary key associated with the entry
+  virtual uint32_t read_(const Entry& entry) = 0;
 
-    // NVI for end_()
-    // BaseColumn::Iterator end();
+  // Write to Column
+  virtual void write_(uint32_t entry_index, uint32_t row_index) = 0;
 
-    // NVI for find_()
-    // BaseColumn::Iterator find(Entry);
+  // Check if Column is empty
+  virtual bool empty_() const = 0;
 
+  virtual std::unique_ptr<Iterator> begin_() = 0;
+  virtual std::unique_ptr<Iterator> end_() = 0;
+  virtual std::unique_ptr<Iterator> find_(const Entry&) = 0;
 };
+
 
 #endif // LOODB_COLUMN_H

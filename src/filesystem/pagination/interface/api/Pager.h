@@ -21,10 +21,11 @@ public:
   std::unique_ptr<Page> read(uint32_t);
 
   void write(uint32_t, const std::unique_ptr<Page>&);
-  void append(const std::unique_ptr<Page>&);
+  uint32_t append(const std::unique_ptr<Page>&); // Returns the page number of the appended page
 
   uint32_t length() const; // Returns number of bytes the file contains
   uint32_t size() const;   // Returns number of pages the file contains
+  const std::string& name() const;
 
 
 private:
@@ -36,6 +37,8 @@ private:
 
   std::unique_ptr<Impl, ImplDeleter> impl_;
 };
+
+#include "../impl/Pager.tpp"
 
 #include "../impl/Pager.tpp"
 

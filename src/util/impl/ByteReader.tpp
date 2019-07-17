@@ -117,7 +117,7 @@ template<typename Datatype>
 void ByteReader<Datatype>::Impl::skip(uint32_t skip) {
 
   if (offset_ + skip < limit_) offset_ += skip;
-  throw std::out_of_range("Current offset value " +
+  else throw std::out_of_range("Current offset value " +
                           std::to_string(offset_) +
                           " cannot be incremented by " +
                           std::to_string(skip) +
