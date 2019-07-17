@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 #include <map>
+#include <vector>
 
 class Table {
   // Private members of Table
@@ -39,6 +40,12 @@ class Table {
   // Constructor
   Table(std::string);
 
+  void createColumns(std::vector<std::tuple<std::string, EntryType, std::string>>);
+  bool checkCreateValid(std::vector<std::tuple<std::string, EntryType, std::string>> c);
+
+  void insertColumns(std::vector<std::unique_ptr<Entry>> e);
+  bool checkInsertValid(std::vector<std::unique_ptr<Entry>> e);
+  
   // Return a Cursor to row at Entry in table column
   //Cursor find(std::string, Entry);
 

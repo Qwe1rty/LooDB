@@ -38,20 +38,20 @@ void Database::DatabaseImpl::helper() {
   }
 }
 
-void Database::drop_table(std::unique_ptr<SQLStatement> s) {
-  if(impl_->tables_.find(s->table_name_) != impl_->tables_.end()) {
+void Database::drop_table(const SQLDrop& s) {
+  if(impl_->tables_.find(s.table_name_) != impl_->tables_.end()) {
     struct stat sb;
     string path("./");
     path.append(impl_->name_);
     path.append(string("/"));
-    path.append(s->table_name_);
+    path.append(s.table_name_);
     cerr << path << endl;
     if (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode)) {
       if (system(NULL)) {
        string rm = string("rm -r ");
        rm.append(path);
        system(rm.c_str());
-       impl_->tables_.erase(s->table_name_);
+       impl_->tables_.erase(s.table_name_);
       } else {
        cerr << "Command processor doesn't exists" << endl; 
       }
@@ -59,5 +59,50 @@ void Database::drop_table(std::unique_ptr<SQLStatement> s) {
     }
   } else {
     cerr << "Table Not Found " << endl;
+  }
+}
+
+// Create a table in database
+void Database::create_table(const SQLCreate& s) {
+  if(impl_->tables_.find(s.table_name_) != impl_->tables_.end()) {
+    cerr << "Table Already Exists" << endl;
+  } else {
+    cerr << "Creating Table" << endl;
+
+    struct stat sb;
+    string path("./");
+    path.append(impl_->name_);
+    path.append(string("/"));
+    path.append(s.table_name_);
+
+    cerr << path << endl;
+
+    // create db since the folder does not exist
+    impl_->tables_.insert({s.table_name_, Table(s.table_name_)});
+    cerr << s.getColumns().size() << endl;
+    impl_->tables_.at(s.table_name_.c_str()).createColumns(s.getColumns());
+    // -- bool valid = impl_->tables_.at(s.table_name_.c_str()).checkCreateValid(s.getColumns());
+   // cout << !valid << endl;
+    //impl_->tables_.find(s->table_name_).insert(s->columns_);
+  }
+}
+
+// Insert a row into a database table
+void Database::insert(const SQLInsert& s) {
+  if(impl_->tables_.find(s.table_name_) != impl_->tables_.end()) {
+    cerr << "Table Exists" << endl;
+
+    struct stat sb;
+    string path("./");
+    path.append(impl_->name_);
+    path.append(string("/"));
+    path.append(s.table_name_);
+
+    cerr << path << endl;
+    
+    //bool valid = impl_->tables_.at(s.table_name_.c_str()).checkInsertValid(s.getEntries());
+    //impl_->tables_.at(s.table_name_.c_str()).createColumns(s.getEntries());
+  } else {
+    cerr << "Table does not exist" << endl;
   }
 }

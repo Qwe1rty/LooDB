@@ -13,6 +13,8 @@ Table::TableImpl::TableImpl(string s) : name_(s)  {
   if (stat(path_.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode)) {
     // read in colums
     populateTable();
+  } else {
+    buildTable();
   }
 }
 
@@ -52,4 +54,32 @@ void Table::TableImpl::populateTable(){
 
 void Table::TableImpl::buildTable(){
   // to be used by create table command
+  cerr << "Build table" << endl;
+  cerr << path_ << endl;
+
+  //mkdir(path_.c_str(), 0777);
+  // write file names using pager {table_name_.data, table_name_.row}
+
+}
+
+void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::string>> c){
+  cerr << "insert columns" << endl;
+  for(auto col:c) {
+    // create a column with respective entry type and modifications (decorations)
+  }
+}
+
+bool Table::checkCreateValid(std::vector<std::tuple<std::string, EntryType, std::string>> c) {
+  for(auto col : c) {
+    return false;
+  }
+  return true;
+}
+
+void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
+
+}
+
+bool Table::checkInsertValid(std::vector<std::unique_ptr<Entry>> e) {
+  return true;
 }
