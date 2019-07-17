@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 #include <map>
-#include "../../compiler/statements/api/Statement.h"
+#include "../../interpreter/statements/api/Statement.h"
 
 class Database {
 
@@ -15,7 +15,7 @@ class Database {
       std::string name_ = "loo";
       std::map<std::string, Table> tables_;
       DatabaseImpl();
-      bool helper();
+      void helper();
     };
     
     // pImpl for Database
