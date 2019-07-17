@@ -18,7 +18,7 @@ Database::DatabaseImpl::DatabaseImpl() {
 
 Database::Database() : impl_{make_unique<DatabaseImpl>()} {}
 
-bool Database::DatabaseImpl::helper() {
+void Database::DatabaseImpl::helper() {
   DIR *pDIR;
   struct dirent *entry;
   struct stat sb;

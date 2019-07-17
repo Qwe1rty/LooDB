@@ -15,7 +15,7 @@ class Database {
       std::string name_ = "loo";
       std::map<std::string, Table> tables_;
       DatabaseImpl();
-      bool helper();
+      void helper();
     };
     
     // pImpl for Database
