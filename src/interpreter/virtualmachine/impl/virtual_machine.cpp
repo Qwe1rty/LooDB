@@ -8,7 +8,6 @@
 using namespace std;
 
 void VM::execute(unique_ptr<SQLStatement> s, Database & db) {
-
   if(s->type_ == stmtCreate) {
     const SQLCreate& p = static_cast<SQLCreate&>(*s);
     db.create_table(p);

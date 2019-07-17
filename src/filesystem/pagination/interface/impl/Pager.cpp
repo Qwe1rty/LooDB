@@ -18,7 +18,9 @@ public:
 
   std::unique_ptr<Page> read(uint32_t);
   void write(uint32_t, const std::unique_ptr<Page>&);
+
   uint32_t length();
+  const std::string& name() const;
 
 private:
 
@@ -28,7 +30,7 @@ private:
 };
 
 // https://stackoverflow.com/questions/9954518/stdunique-ptr-with-an-incomplete-type-wont-compile
-void Pager::ImplDeleter::operator()(Pager::Impl* impl) {
+void Pager::ImplDeleter::operator()(Impl* impl) {
   delete impl;
 }
 
@@ -36,11 +38,6 @@ void Pager::ImplDeleter::operator()(Pager::Impl* impl) {
 /*
  * Pager.h header class implementations
  */
-
-template<typename T>
-std::unique_ptr<T> Pager::fetch(uint32_t page_index) {
-  return std::unique_ptr<T>(static_cast<T*>(read(page_index).release()));
-}
 
 std::unique_ptr<Page> Pager::read(uint32_t index) {
   return impl_->read(index);
@@ -50,8 +47,10 @@ void Pager::write(uint32_t index, const std::unique_ptr<Page>& page) {
   impl_->write(index, page);
 }
 
-void Pager::append(const std::unique_ptr<Page>& page) {
-  impl_->write(size(), page);
+uint32_t Pager::append(const std::unique_ptr<Page>& page) {
+  uint32_t index{size()};
+  impl_->write(index, page);
+  return index;
 }
 
 uint32_t Pager::length() const {
@@ -60,6 +59,10 @@ uint32_t Pager::length() const {
 
 uint32_t Pager::size() const {
   return length() / Page::SIZE;
+}
+
+const std::string& Pager::name() const {
+  return impl_->name();
 }
 
 Pager::Pager(const std::string& filename, uint32_t limit) :
@@ -98,13 +101,12 @@ void Pager::Impl::write(uint32_t index, const std::unique_ptr<Page>& page) {
 
 uint32_t Pager::Impl::length() {
 
-  const uint32_t prev = stream_.tellg();
-
   stream_.seekg(0, std::fstream::end);
-  const uint32_t size = stream_.tellg();
-  stream_.seekg(prev, std::fstream::beg);
+  return stream_.tellg();
+}
 
-  return size;
+const std::string& Pager::Impl::name() const {
+  return filename_;
 }
 
 

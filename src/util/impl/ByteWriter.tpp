@@ -123,7 +123,7 @@ void ByteWriter<Datatype>::Impl::write(const Numeric& item) {
   }
 
   for (uint32_t i = 0; i < item_size; ++i) {
-    bytes_[offset_] = (item >> i * 8);
+    bytes_[offset_] = (item >> (i * 8));
     ++offset_;
   }
 }
@@ -142,7 +142,7 @@ template<typename Datatype>
 void ByteWriter<Datatype>::Impl::skip(uint32_t skip) {
 
   if (offset_ + skip < limit_) offset_ += skip;
-  throw std::out_of_range("Current offset value " +
+  else throw std::out_of_range("Current offset value " +
                           std::to_string(offset_) +
                           " cannot be incremented by " +
                           std::to_string(skip) +
