@@ -669,53 +669,54 @@ namespace yy {
   case 12:
 #line 123 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::vector<std::tuple<std::string, EntryType, std::string>> > ().emplace_back(std::move(yystack_[0].value.as< std::tuple<std::string, EntryType, std::string> > ()));
+    yystack_[2].value.as< std::vector<std::tuple<std::string, EntryType, std::string>> > ().emplace_back(std::move(yystack_[0].value.as< std::tuple<std::string, EntryType, std::string> > ()));
+    yylhs.value.as< std::vector<std::tuple<std::string, EntryType, std::string>> > () = std::move(yystack_[2].value.as< std::vector<std::tuple<std::string, EntryType, std::string>> > ());
   }
-#line 675 "sqloo.tab.cc" // lalr1.cc:859
+#line 676 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 13:
-#line 126 "sqloo.yy" // lalr1.cc:859
+#line 127 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::vector<std::tuple<std::string, EntryType, std::string>> > ().emplace_back(std::move(yystack_[0].value.as< std::tuple<std::string, EntryType, std::string> > ()));
   }
-#line 683 "sqloo.tab.cc" // lalr1.cc:859
+#line 684 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 14:
-#line 132 "sqloo.yy" // lalr1.cc:859
+#line 133 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::tuple<std::string, EntryType, std::string> > () = std::make_tuple(std::move(yystack_[2].value.as< std::string > ()), EntryType::INTEGER, std::move(yystack_[0].value.as< std::string > ()));
   }
-#line 691 "sqloo.tab.cc" // lalr1.cc:859
+#line 692 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 15:
-#line 135 "sqloo.yy" // lalr1.cc:859
+#line 136 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::tuple<std::string, EntryType, std::string> > () = std::make_tuple(std::move(yystack_[2].value.as< std::string > ()), EntryType::TEXT, std::move(yystack_[0].value.as< std::string > ()));
   }
-#line 699 "sqloo.tab.cc" // lalr1.cc:859
+#line 700 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 16:
-#line 141 "sqloo.yy" // lalr1.cc:859
+#line 142 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::string > () = "";
   }
-#line 707 "sqloo.tab.cc" // lalr1.cc:859
+#line 708 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 17:
-#line 144 "sqloo.yy" // lalr1.cc:859
+#line 145 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::string > () = std::move(yystack_[0].value.as< std::string > ());
   }
-#line 715 "sqloo.tab.cc" // lalr1.cc:859
+#line 716 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 18:
-#line 147 "sqloo.yy" // lalr1.cc:859
+#line 148 "sqloo.yy" // lalr1.cc:859
     {
     if (yystack_[1].value.as< std::string > () != yystack_[0].value.as< std::string > ()) {
       yylhs.value.as< std::string > () = yystack_[1].value.as< std::string > () + ", " + yystack_[0].value.as< std::string > ();
@@ -724,164 +725,174 @@ namespace yy {
       YYERROR;
     }
   }
-#line 728 "sqloo.tab.cc" // lalr1.cc:859
+#line 729 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 19:
-#line 158 "sqloo.yy" // lalr1.cc:859
+#line 159 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::string > () = "primary key";
   }
-#line 736 "sqloo.tab.cc" // lalr1.cc:859
+#line 737 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 20:
-#line 161 "sqloo.yy" // lalr1.cc:859
+#line 162 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::string > () = "not null";
   }
-#line 744 "sqloo.tab.cc" // lalr1.cc:859
+#line 745 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 21:
-#line 167 "sqloo.yy" // lalr1.cc:859
+#line 168 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::vector<std::unique_ptr<Entry>> > () = std::move(yystack_[1].value.as< std::vector<std::unique_ptr<Entry>> > ());
   }
-#line 752 "sqloo.tab.cc" // lalr1.cc:859
+#line 753 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 22:
-#line 173 "sqloo.yy" // lalr1.cc:859
+#line 174 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
+    yystack_[2].value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
+    yylhs.value.as< std::vector<std::unique_ptr<Entry>> > () = std::move(yystack_[2].value.as< std::vector<std::unique_ptr<Entry>> > ());
   }
-#line 760 "sqloo.tab.cc" // lalr1.cc:859
+#line 762 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 23:
-#line 176 "sqloo.yy" // lalr1.cc:859
+#line 178 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::vector<std::unique_ptr<Entry>> > ().emplace_back(std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
   }
-#line 768 "sqloo.tab.cc" // lalr1.cc:859
+#line 770 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 24:
-#line 182 "sqloo.yy" // lalr1.cc:859
+#line 184 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::vector<std::string> > ().emplace_back("*");
   }
-#line 776 "sqloo.tab.cc" // lalr1.cc:859
+#line 778 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 25:
-#line 185 "sqloo.yy" // lalr1.cc:859
+#line 187 "sqloo.yy" // lalr1.cc:859
     {
-    yylhs.value.as< std::vector<std::string> > ().emplace_back(std::move(yystack_[0].value.as< std::string > ()));
+    yystack_[2].value.as< std::vector<std::string> > ().emplace_back(std::move(yystack_[0].value.as< std::string > ()));
+    yylhs.value.as< std::vector<std::string> > () = std::move(yystack_[2].value.as< std::vector<std::string> > ());
   }
-#line 784 "sqloo.tab.cc" // lalr1.cc:859
+#line 787 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 26:
-#line 188 "sqloo.yy" // lalr1.cc:859
+#line 191 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::vector<std::string> > ().emplace_back(std::move(yystack_[0].value.as< std::string > ()));
   }
-#line 792 "sqloo.tab.cc" // lalr1.cc:859
+#line 795 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 27:
-#line 194 "sqloo.yy" // lalr1.cc:859
+#line 197 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::string > () = std::move(yystack_[0].value.as< std::string > ());
   }
-#line 800 "sqloo.tab.cc" // lalr1.cc:859
+#line 803 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 28:
-#line 200 "sqloo.yy" // lalr1.cc:859
+#line 203 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::unique_ptr<SQLSelect::WhereTree> > () = std::move(yystack_[0].value.as< std::unique_ptr<SQLSelect::WhereTree> > ());
   }
-#line 808 "sqloo.tab.cc" // lalr1.cc:859
+#line 811 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 29:
-#line 203 "sqloo.yy" // lalr1.cc:859
+#line 206 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::unique_ptr<SQLSelect::WhereTree> > () = std::make_unique<SQLSelect::WhereTree>("OR", std::move(yystack_[2].value.as< std::unique_ptr<SQLSelect::WhereTree> > ()), std::move(yystack_[0].value.as< std::unique_ptr<SQLSelect::WhereTree> > ()));
   }
-#line 816 "sqloo.tab.cc" // lalr1.cc:859
+#line 819 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 30:
-#line 209 "sqloo.yy" // lalr1.cc:859
+#line 212 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::unique_ptr<SQLSelect::WhereTree> > () = std::move(yystack_[0].value.as< std::unique_ptr<SQLSelect::WhereTree> > ());
   }
-#line 824 "sqloo.tab.cc" // lalr1.cc:859
+#line 827 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 31:
-#line 212 "sqloo.yy" // lalr1.cc:859
+#line 215 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::unique_ptr<SQLSelect::WhereTree> > () = std::make_unique<SQLSelect::WhereTree>("AND", std::move(yystack_[2].value.as< std::unique_ptr<SQLSelect::WhereTree> > ()), std::move(yystack_[0].value.as< std::unique_ptr<SQLSelect::WhereTree> > ()));
   }
-#line 832 "sqloo.tab.cc" // lalr1.cc:859
+#line 835 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 32:
-#line 218 "sqloo.yy" // lalr1.cc:859
+#line 221 "sqloo.yy" // lalr1.cc:859
     {
-    // std::cout << $1 << "=" << $3->getType() << std::endl;
     yylhs.value.as< std::unique_ptr<SQLSelect::WhereTree> > () = std::make_unique<SQLSelect::WhereTree>(std::move(yystack_[2].value.as< std::string > ()), std::move(yystack_[0].value.as< std::unique_ptr<Entry> > ()));
   }
-#line 841 "sqloo.tab.cc" // lalr1.cc:859
+#line 843 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 33:
-#line 222 "sqloo.yy" // lalr1.cc:859
+#line 224 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::unique_ptr<SQLSelect::WhereTree> > () = std::move(yystack_[1].value.as< std::unique_ptr<SQLSelect::WhereTree> > ());
   }
-#line 849 "sqloo.tab.cc" // lalr1.cc:859
+#line 851 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 34:
-#line 228 "sqloo.yy" // lalr1.cc:859
+#line 230 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<NullEntry>();
   }
-#line 857 "sqloo.tab.cc" // lalr1.cc:859
+#line 859 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 35:
-#line 231 "sqloo.yy" // lalr1.cc:859
+#line 233 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<IntEntry>(std::move(yystack_[0].value.as< int > ()));
   }
-#line 865 "sqloo.tab.cc" // lalr1.cc:859
+#line 867 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 36:
-#line 234 "sqloo.yy" // lalr1.cc:859
+#line 236 "sqloo.yy" // lalr1.cc:859
     {
+    std::cout << "text entry" << std::endl;
     yylhs.value.as< std::unique_ptr<Entry> > () = std::make_unique<StringEntry>(std::move(yystack_[0].value.as< std::string > ()));
   }
-#line 873 "sqloo.tab.cc" // lalr1.cc:859
+#line 876 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
   case 37:
-#line 240 "sqloo.yy" // lalr1.cc:859
+#line 243 "sqloo.yy" // lalr1.cc:859
     {
     yylhs.value.as< std::string > () = std::move(yystack_[1].value.as< std::string > ());
   }
-#line 881 "sqloo.tab.cc" // lalr1.cc:859
+#line 884 "sqloo.tab.cc" // lalr1.cc:859
+    break;
+
+  case 38:
+#line 246 "sqloo.yy" // lalr1.cc:859
+    {
+    yylhs.value.as< std::string > () = std::to_string(yystack_[1].value.as< int > ());
+  }
+#line 892 "sqloo.tab.cc" // lalr1.cc:859
     break;
 
 
-#line 885 "sqloo.tab.cc" // lalr1.cc:859
+#line 896 "sqloo.tab.cc" // lalr1.cc:859
             default:
               break;
             }
@@ -1042,21 +1053,21 @@ namespace yy {
   }
 
 
-  const signed char parser::yypact_ninf_ = -48;
+  const signed char parser::yypact_ninf_ = -49;
 
   const signed char parser::yytable_ninf_ = -1;
 
   const signed char
   parser::yypact_[] =
   {
-      -3,    -7,    10,   -14,    -6,    12,   -48,   -48,   -48,   -48,
-     -48,   -20,     5,     8,   -48,   -48,     7,   -48,   -48,    31,
-      34,    19,    11,    14,    15,   -48,    35,   -48,     1,    17,
-      13,   -48,    -1,    40,   -48,    -5,    18,    18,    15,    41,
-      20,   -48,   -48,    22,   -48,   -48,   -48,    -5,    36,    -2,
-      24,   -48,   -48,   -48,   -48,    18,   -48,   -48,   -48,    39,
-      -1,   -48,     2,    -1,   -48,    -5,    -5,   -48,   -48,   -48,
-     -48,   -48,    24,   -48
+      -3,    -7,    10,   -14,    -6,    12,   -49,   -49,   -49,   -49,
+     -49,   -20,     5,    11,   -49,   -49,     7,   -49,   -49,    32,
+      36,    20,    14,    15,    16,   -49,    39,   -49,     1,    17,
+      13,   -49,    -1,    42,   -49,    -5,    18,    18,    16,    43,
+       9,   -49,   -49,    22,   -49,   -49,   -49,    -5,    38,    -2,
+      24,   -49,   -49,   -49,   -49,    18,   -49,   -49,   -49,    44,
+      45,    -1,   -49,     2,    -1,   -49,    -5,    -5,   -49,   -49,
+     -49,   -49,   -49,   -49,    24,   -49
   };
 
   const unsigned char
@@ -1068,15 +1079,15 @@ namespace yy {
        0,    13,     0,     0,    10,     0,    16,    16,     0,     0,
        0,    34,    35,     0,    23,    36,     9,     0,     0,     0,
       28,    30,    19,    20,    14,    17,    15,    12,     7,     0,
-       0,    21,     0,     0,    11,     0,     0,    18,    37,    22,
-      33,    32,    29,    31
+       0,     0,    21,     0,     0,    11,     0,     0,    18,    38,
+      37,    22,    33,    32,    29,    31
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-     -48,   -48,   -48,   -48,   -48,   -48,   -48,   -48,    16,    21,
-      -4,   -48,   -48,   -48,    27,     3,   -13,   -11,   -47,   -48
+     -49,   -49,   -49,   -49,   -49,   -49,   -49,   -49,    19,    21,
+       0,   -49,   -49,   -49,    27,     3,   -13,   -11,   -48,   -49
   };
 
   const signed char
@@ -1089,23 +1100,23 @@ namespace yy {
   const unsigned char
   parser::yytable_[] =
   {
-      47,    64,    14,    11,    34,    13,    40,    19,    70,     1,
-      41,    22,    18,    69,     2,     3,    71,    38,     4,    39,
-      12,    15,    48,    65,    35,    42,    60,    65,    61,    23,
-      36,    37,    20,    52,    53,    21,    24,    25,    15,    26,
-      32,    28,    29,    46,    58,    63,    68,    59,    66,    27,
-      62,    67,    72,     0,    57,    73,     0,     0,    56
+      47,    65,    14,    11,    34,    13,    40,    19,    72,     1,
+      41,    22,    18,    71,     2,     3,    73,    38,     4,    39,
+      12,    15,    48,    66,    35,    42,    61,    66,    62,    23,
+      36,    37,    20,    52,    53,    59,    60,    24,    21,    25,
+      26,    15,    28,    29,    32,    46,    58,    64,    67,    27,
+      63,    69,    70,    74,     0,    68,    75,    57,    56
   };
 
   const signed char
   parser::yycheck_[] =
   {
        5,     3,     8,    10,     3,    19,     7,    27,     6,    12,
-      11,     4,     0,    60,    17,    18,    63,     4,    21,     6,
+      11,     4,     0,    61,    17,    18,    64,     4,    21,     6,
       10,    27,    27,    25,    23,    26,     4,    25,     6,    22,
-      13,    14,    27,    15,    16,    27,     5,     3,    27,    20,
-       5,    27,    27,     3,     3,     9,     7,    27,    24,    22,
-      47,    55,    65,    -1,    38,    66,    -1,    -1,    37
+      13,    14,    27,    15,    16,    26,    27,     5,    27,     3,
+      20,    27,    27,    27,     5,     3,     3,     9,    24,    22,
+      47,     7,     7,    66,    -1,    55,    67,    38,    37
   };
 
   const unsigned char
@@ -1116,9 +1127,9 @@ namespace yy {
       27,    27,     4,    22,     5,     3,    20,    42,    27,    27,
       35,    36,     5,    39,     3,    23,    13,    14,     4,     6,
        7,    11,    26,    40,    46,    47,     3,     5,    27,    43,
-      44,    45,    15,    16,    37,    38,    37,    36,     3,    27,
-       4,     6,    43,     9,     3,    25,    24,    38,     7,    46,
-       6,    46,    44,    45
+      44,    45,    15,    16,    37,    38,    37,    36,     3,    26,
+      27,     4,     6,    43,     9,     3,    25,    24,    38,     7,
+       7,    46,     6,    46,    44,    45
   };
 
   const unsigned char
@@ -1127,7 +1138,7 @@ namespace yy {
        0,    28,    29,    30,    30,    30,    30,    31,    32,    33,
       34,    34,    35,    35,    36,    36,    37,    37,    37,    38,
       38,    39,    40,    40,    41,    41,    41,    42,    43,    43,
-      44,    44,    45,    45,    46,    46,    46,    47
+      44,    44,    45,    45,    46,    46,    46,    47,    47
   };
 
   const unsigned char
@@ -1136,7 +1147,7 @@ namespace yy {
        0,     2,     1,     1,     1,     1,     1,     7,     4,     6,
        5,     7,     3,     1,     3,     3,     0,     1,     2,     1,
        1,     3,     3,     1,     1,     3,     1,     1,     1,     3,
-       1,     3,     3,     3,     1,     1,     1,     3
+       1,     3,     3,     3,     1,     1,     1,     3,     3
   };
 
 
@@ -1161,9 +1172,9 @@ namespace yy {
   parser::yyrline_[] =
   {
        0,    74,    74,    81,    84,    87,    90,    96,   102,   108,
-     114,   117,   123,   126,   132,   135,   141,   144,   147,   158,
-     161,   167,   173,   176,   182,   185,   188,   194,   200,   203,
-     209,   212,   218,   222,   228,   231,   234,   240
+     114,   117,   123,   127,   133,   136,   142,   145,   148,   159,
+     162,   168,   174,   178,   184,   187,   191,   197,   203,   206,
+     212,   215,   221,   224,   230,   233,   236,   243,   246
   };
 
   // Print the state stack on the debug stream.
@@ -1198,8 +1209,8 @@ namespace yy {
 
 
 } // yy
-#line 1202 "sqloo.tab.cc" // lalr1.cc:1167
-#line 244 "sqloo.yy" // lalr1.cc:1168
+#line 1213 "sqloo.tab.cc" // lalr1.cc:1167
+#line 250 "sqloo.yy" // lalr1.cc:1168
 
 
 void yy::parser::error (const std::string& m) {
