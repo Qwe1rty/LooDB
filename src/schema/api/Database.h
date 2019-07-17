@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 #include <map>
-#include "../../compiler/statements/api/Statement.h"
+#include "../../interpreter/statements/api/Statement.h"
 
 class Database {
 
