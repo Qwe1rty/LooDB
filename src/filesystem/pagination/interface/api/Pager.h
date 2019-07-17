@@ -37,5 +37,6 @@ private:
   std::unique_ptr<Impl, ImplDeleter> impl_;
 };
 
+#include "../impl/Pager.tpp"
 
 #endif //LOODB_PAGER_H

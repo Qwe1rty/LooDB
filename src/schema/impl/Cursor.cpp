@@ -56,3 +56,9 @@ std::vector<std::unique_ptr<Entry>> Cursor::operator*() const {
 
   return entries;
 }
+
+int main() {
+  Pager p1("h");
+  Pager p2("h");
+  Cursor c(p1,p2,0);
+}
