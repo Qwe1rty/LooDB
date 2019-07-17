@@ -3,6 +3,7 @@
 #include<dirent.h>
 #include <iostream>
 #include<string.h>
+#include <cstdlib> 
 using namespace std;
 
 Database::DatabaseImpl::DatabaseImpl() {
@@ -34,5 +35,29 @@ void Database::DatabaseImpl::helper() {
       }
     }
     closedir(pDIR);
+  }
+}
+
+void Database::drop_table(std::unique_ptr<SQLStatement> s) {
+  if(impl_->tables_.find(s->table_name_) != impl_->tables_.end()) {
+    struct stat sb;
+    string path("./");
+    path.append(impl_->name_);
+    path.append(string("/"));
+    path.append(s->table_name_);
+    cerr << path << endl;
+    if (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode)) {
+      if (system(NULL)) {
+       string rm = string("rm -r ");
+       rm.append(path);
+       system(rm.c_str());
+       impl_->tables_.erase(s->table_name_);
+      } else {
+       cerr << "Command processor doesn't exists" << endl; 
+      }
+      cerr << "Table Found " << endl;
+    }
+  } else {
+    cerr << "Table Not Found " << endl;
   }
 }
