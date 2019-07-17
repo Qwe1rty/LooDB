@@ -17,12 +17,14 @@ int main() {
   for (int i = 0; i < NUMBER; ++i) {
 
     std::unique_ptr<Entry> e = std::make_unique<IntEntry>('0' + i);
-    std::unique_ptr<Entry> pk = std::make_unique<IntEntry>('a' + i);
-
     std::unique_ptr<Page> ep = std::make_unique<EntryPage>(codec.encode(e), 0);
-    std::unique_ptr<Page> pkp = std::make_unique<EntryPage>(codec.encode(pk), 0);
-
     data.append(ep);
+  }
+
+  for (int i = 0; i < NUMBER; ++i) {
+
+    std::unique_ptr<Entry> pk = std::make_unique<IntEntry>('a' + i);
+    std::unique_ptr<Page> pkp = std::make_unique<EntryPage>(codec.encode(pk), 0);
     data.append(pkp);
   }
 
