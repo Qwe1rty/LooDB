@@ -32,14 +32,14 @@ void Table::TableImpl::populateTable(){
         if ((input.find(data_ext_) != string::npos) 
         && strcmp(input.substr(0, (input.length()-data_ext_.length())).c_str(), name_.c_str()) == 0) {
           data_file_ = input;
-          cout << "- 0 - found file: " << data_file_<< endl;
+          cerr << "- 0 - found file: " << data_file_<< endl;
         } else if ((input.find(row_ext_) != string::npos)
           && strcmp(input.substr(0, (input.length()-row_ext_.length())).c_str(), name_.c_str()) == 0) {
           row_file_ = input;
-          cout << "- 1 - found file: " << row_file_ << endl;
+          cerr << "- 1 - found file: " << row_file_ << endl;
         } else if (input.find(col_ext_) != string::npos) {
           // add columns based on this
-          cout << "- 2 - found file: " << entry->d_name << endl;
+          cerr << "- 2 - found file: " << entry->d_name << endl;
         }
       }
     }
