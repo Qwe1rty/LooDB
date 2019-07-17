@@ -142,23 +142,40 @@ BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
 
   // If it's not already at the end or just empty
   if (!path_.empty() && !cells_.empty()) {
-    do {
 
-      std::cout << "in ++ do loop" << std::endl;
+    // DEBUG
+    for (int i = 0; i < path_.size(); ++i) std::cout << ' ';
+    std::cout << "path_.top() page: " << path_.top() << ", cells_.top() index: " << cells_.top() << std::endl;
 
-      // Increment cell value for this B-Tree node
-      uint32_t cell = cells_.top() + 1;
-      cells_.pop();
+    // Increment cell value for this B-Tree node
+    uint32_t cell = cells_.top() + 1;
+    cells_.pop();
+    cells_.push(cell);
 
-      // Fetch the current node, and see if we need to backtrack
-      const auto node = parent_.fetch_node(path_.top());
-      if (cell < node->node_.size()) {
-        cells_.push(cell);
-        break;
+    // Fetch the current node, and see if we need to backtrack or recurse
+    auto node = parent_.fetch_node(path_.top());
+
+    // If it's not reached the end of the node, increment or increment + recurse
+    if (cells_.top() < node->node_.size()) {
+
+      // If there's a child, recurse into it
+      uint32_t child_index = node->node_.at(cells_.top()).left_;
+      if (child_index > 0) {
+        cells_.push(0);
+        path_.push(child_index);
       }
-      path_.pop();
+    }
 
-    } while (!path_.empty());
+    // Else backtrack and unwind the stack
+    else {
+      while (cells_.top() >= node->node_.size()) {
+        cells_.pop();
+        path_.pop();
+
+        if (path_.empty() || cells_.empty()) break;
+        node = parent_.fetch_node(path_.top());
+      }
+    }
   }
 
   return *this;

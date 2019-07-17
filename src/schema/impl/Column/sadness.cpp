@@ -8,45 +8,42 @@
 
 int main() {
 
-  std::unique_ptr<Entry> e1 = std::make_unique<IntEntry>(123);
-  std::unique_ptr<Entry> e2 = std::make_unique<IntEntry>(124);
-  std::unique_ptr<Entry> e3 = std::make_unique<IntEntry>(125);
-
-  std::unique_ptr<Entry> pk1 = std::make_unique<IntEntry>('0');
-  std::unique_ptr<Entry> pk2 = std::make_unique<IntEntry>('1');
-  std::unique_ptr<Entry> pk3 = std::make_unique<IntEntry>('2');
+  const int NUMBER = 10;
 
   EntryCodec codec{};
-  std::unique_ptr<Page> ep1 = std::make_unique<EntryPage>(codec.encode(e1), 0);
-  std::unique_ptr<Page> ep2 = std::make_unique<EntryPage>(codec.encode(e2), 0);
-  std::unique_ptr<Page> ep3 = std::make_unique<EntryPage>(codec.encode(e3), 0);
-  std::unique_ptr<Page> pkp1 = std::make_unique<EntryPage>(codec.encode(pk1), 0);
-  std::unique_ptr<Page> pkp2 = std::make_unique<EntryPage>(codec.encode(pk2), 0);
-  std::unique_ptr<Page> pkp3 = std::make_unique<EntryPage>(codec.encode(pk3), 0);
-
   Pager data{"data.txt"};
-  data.append(ep1);
-  data.append(ep2);
-  data.append(ep3);
-  data.append(pkp1);
-  data.append(pkp2);
-  data.append(pkp3);
-
   BaseColumn col{"toast.txt", EntryType::INTEGER, data};
-  for (int i = 0; i < 3; i++) {
 
-    std::cout << "Attempting insert of: " << i << ' ' << i + 3 << std::endl;
-    col.write(i, i + 3);
-    std::cout << "Insertion complete with: " << i << ' ' << i + 3 << '\n' << std::endl;
+  for (int i = 0; i < NUMBER; ++i) {
 
-    int limit = 0;
-    for (auto pk = col.begin(); *pk != *col.end(); pk->operator++()) {
-      std::cout << "\nPrimary key: " << std::flush;
-      std::cout << **pk << ", next iteration: " << (*pk != *col.end()) << std::endl;
+    std::unique_ptr<Entry> e = std::make_unique<IntEntry>('0' + i);
+    std::unique_ptr<Entry> pk = std::make_unique<IntEntry>('a' + i);
 
+    std::unique_ptr<Page> ep = std::make_unique<EntryPage>(codec.encode(e), 0);
+    std::unique_ptr<Page> pkp = std::make_unique<EntryPage>(codec.encode(pk), 0);
+
+    data.append(ep);
+    data.append(pkp);
+  }
+
+  for (int i = 0; i < NUMBER; i++) {
+
+    // Insert the element;
+    std::cout << "Attempting insert of: " << i << ' ' << i + NUMBER << std::endl;
+    col.write(i, i + NUMBER);
+    std::cout << "Insertion complete with: " << i << ' ' << i + NUMBER << '\n' << std::endl;
+
+    // Iterate through the whole tree
+    int limit = 0; // incase of infinite loop
+    for (auto pk = col.begin(); *pk != *col.end(); ++(*pk)) {
+//      std::cout << "\nPrimary key: " << std::flush;
+//      std::cout << **pk << ", next iteration: " << (*pk != *col.end());
       ++limit;
-      if (limit >= 10) break;
+      if (limit >= NUMBER + 5) {
+        std::cout << "INFINITE LOOP" << std::endl;
+        break;
+      }
     }
-    std::cout << '\n' << std::endl;
+    std::cout << "\n\n" << std::endl;
   }
 }
