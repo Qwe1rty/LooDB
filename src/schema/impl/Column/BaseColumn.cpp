@@ -115,7 +115,7 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
   // Indexer used for traversing through keys in a node. The loop finds the right position where
   // the item should be inserted at
   int32_t i = 0;
-  while (i < node->node_.size() && entry > fetch_entry(node->node_.at(i).key_)) ++i;
+  while (i < node->node_.size() && *entry > *fetch_entry(node->node_.at(i).key_)) ++i;
 
   if (!node->leaf_) {
 
