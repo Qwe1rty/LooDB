@@ -12,17 +12,17 @@
 // Constructor
 // Takes in path to row and bool loc
 // loc == false -> start, loc == true -> end
-Cursor::Impl::Impl(std::string rowPath, std::string dataPath, bool loc) :
+Cursor::Impl::Impl(std::string rowPath, std::string dataPath, int pageIndex) :
   rowPath_(rowPath), dataPath_(dataPath),
   row_(std::make_unique<Pager>(rowPath)),
   data_(std::make_unique<Pager>(dataPath)),
-  page_index_(loc ? row_->size() : 0) {}
+  page_index_(pageIndex == 0 ? 0 : (pageIndex < 0 ? row_->size() : static_cast<uint32_t>(pageIndex))) {}
 
 // Constructor
 // Takes in path to row and bool loc
 // loc == false -> start, loc == true -> end
-Cursor::Cursor(std::string rowPath, std::string dataPath, bool loc) :
-  impl_(std::make_unique<Impl>(rowPath, dataPath, loc)) {}
+Cursor::Cursor(std::string rowPath, std::string dataPath, int pageIndex) :
+  impl_(std::make_unique<Impl>(rowPath, dataPath, pageIndex)) {}
 
 // Check that row paths aren't not equal or page_index_ aren't equal
 bool Cursor::operator!=(const Cursor& other) const {

@@ -30,8 +30,9 @@ class Cursor {
 
         // Constructor
         // Takes in path to row and bool loc
-        // loc == false -> start, loc == true -> end
-        Impl(std::string rowPath, std::string dataPath, bool loc);
+        // pageIndex == 0 -> start, pageIndex == -1 -> end
+        // Otherwise, use uint32_t(pageIndex)
+        Impl(std::string rowPath, std::string dataPath, int pageIndex);
     };
 
     // pImpl for Cursor
@@ -41,8 +42,9 @@ class Cursor {
 
     // Constructor
     // Takes in path to row and bool loc
-    // loc == false -> start, loc == true -> end
-    Cursor(std::string rowPath, std::string dataPath, bool loc);
+    // pageIndex == 0 -> start, pageIndex == -1 -> end
+    // Otherwise, use uint32_t(pageIndex)
+    Cursor(std::string rowPath, std::string dataPath, int pageIndex);
 
     // Check if this is equal to other
     bool operator!=(const Cursor& other) const;
