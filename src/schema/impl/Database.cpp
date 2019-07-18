@@ -113,7 +113,10 @@ bool Database::checkCreateValid(std::vector<std::tuple<std::string, EntryType, s
   if ((tempPkeys.size() + tempnNull.size())  != c.size()) {
     cout << "Error: The primary key restriction can only be assigned to one column" << endl;
   }
-  return (tempColumns.size() == c.size()) && ((tempPkeys.size() + tempnNull.size())  == c.size());
+  if(tempPkeys.size() != 1) {
+    cout << "Error: One of your columns needs to be marked as a primary key" << endl;
+  }
+  return (tempPkeys.size() == 1) && (tempColumns.size() == c.size()) && ((tempPkeys.size() + tempnNull.size())  == c.size());
 }
 
 // Insert a row into a database table
