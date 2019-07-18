@@ -14,7 +14,7 @@ private:
 
 public:
 
-  uint32_t operator* ();
+  std::pair<std::unique_ptr<Entry>, uint32_t> operator* ();
   Iterator& operator++ ();
   bool operator!= (const Column::Iterator&);
   bool operator== (const Column::Iterator&);
@@ -131,11 +131,16 @@ std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::find_(const Entry&
  * Iterator implementation
  */
 
-uint32_t BaseColumn::Impl::Iterator::operator*() {
+std::pair<std::unique_ptr<Entry>, uint32_t> BaseColumn::Impl::Iterator::operator*() {
 
-  return path_.empty() || cells_.empty() ?
-    0 :
-    parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_;
+  if (path_.empty() || cells_.empty()) return std::make_pair(nullptr, 0);
+  else {
+    auto page = parent_.fetch_node(path_.top())->node_.at(cells_.top());
+    return std::make_pair(
+      parent_.fetch_entry(page.key_),
+      page.value_
+    );
+  }
 }
 
 BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
@@ -211,7 +216,7 @@ BaseColumn::Impl::Iterator::Iterator(BaseColumn::Impl& parent,
  * BaseColumn::Iterator.h implementations
  */
 
-uint32_t BaseColumn::Iterator::operator*() {
+std::pair<std::unique_ptr<Entry>, uint32_t> BaseColumn::Iterator::operator*() {
   return **impl_->impl_;
 }
 

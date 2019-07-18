@@ -35,7 +35,10 @@ private:
   std::unique_ptr<BTreeNodePage> fetch_node(int32_t);
   std::unique_ptr<Entry> fetch_entry(int32_t);
 
-  void split(uint32_t, BTreeNodePage& root, BTreeNodePage& child);
+  void split(uint32_t,
+             BTreeNodePage& root,
+             BTreeNodePage& child,
+             uint32_t child_index);
   void insert_capacity(uint32_t row_index, 
                        uint32_t entry_index, 
                        uint32_t node_index);
@@ -63,14 +66,22 @@ std::unique_ptr<Entry> BaseColumn::Impl::fetch_entry(int32_t index) {
 }
 
 // Split a child node into 2, TODO possibly just pass in the root
-void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNodePage& child) {
+void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNodePage& child, uint32_t child_index) {
+
+  std::cout << "  initial child.node_ elements (key_, value_, left_) and right_:\n  ";
+  for (int i = 0; i < child.node_.size(); ++i)
+    std::cout << '(' << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") ";
+  std::cout << child.right_ << ", ";
+  std::cout << (child.leaf_ ? "true" : "false");
+  std::cout << std::endl;
+
 
   // Copy largest (BTreeNodePage::ORDER - 1) elements of the child into a right counterpart
   auto right_split = std::make_unique<BTreeNodePage>(
     child.leaf_,
     child.right_,
     std::vector<Cell>(
-      child.node_.cbegin() + BTreeNodePage::ORDER - 1, // The middle element
+      child.node_.cbegin() + BTreeNodePage::ORDER, // The middle element + 1
       child.node_.cend()
     )
   );
@@ -83,35 +94,49 @@ void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNod
   );
   child.right_ = child.node_.at(BTreeNodePage::ORDER - 1).left_;
 
-  // Insert the middle element of the child into the i'th slot of the parent,
-  // updating the page numbers
+  // Insert the middle element of the child into the split_index'th slot of the parent,
+  // updating the page numbers.
   root.node_.insert(
     root.node_.cbegin() + split_index,
     child.node_.at(BTreeNodePage::ORDER - 1)
   );
-  root.node_.at(split_index).left_ = root.node_.at(split_index + 1).left_;
+  root.node_.at(split_index).left_ = child_index;
 
 
-  std::cout << "  split.node_ keys: ";
-  for (int i = 0; i < right_split->node_.size(); ++i) std::cout << right_split->node_.at(i).key_ << ' ';
+  std::cout << "  split.node_ elements (key_, value_, left_) and right_:\n  ";
+  for (int i = 0; i < right_split->node_.size(); ++i)
+    std::cout << '(' << right_split->node_.at(i).key_ << ", " << right_split->node_.at(i).value_ << ", " << right_split->node_.at(i).left_ << ") ";
+  std::cout << right_split->right_ << ", ";
+  std::cout << (right_split->leaf_ ? "true" : "false");
   std::cout << std::endl;
 
 
-  // Write the new child's page, and update the i+1'th cell in the root to point to the
+  // Write the new child's page, and update the split_index+1'th cell in the root to point to the
   // new appended node
-  root.node_.at(split_index + 1).left_ = index_file_.size();
-  index_file_.append(std::move(right_split));
+  uint32_t right_split_index = index_file_.append(std::move(right_split));
+  if (split_index < root.node_.size() - 1) {
+    root.node_.at(split_index + 1).left_ = right_split_index;
+  }
+  else {
+    root.right_ = right_split_index;
+  }
 
   // Erase the middle element of the child now that it's stored in the parent
   child.node_.erase(child.node_.cbegin() + (BTreeNodePage::ORDER - 1));
 
 
-  std::cout << "  root.node_ keys: ";
-  for (int i = 0; i < root.node_.size(); ++i) std::cout << root.node_.at(i).key_ << ' ';
+  std::cout << "  root.node_ elements (key_, value_, left_) and right_:\n  ";
+  for (int i = 0; i < root.node_.size(); ++i)
+    std::cout << '(' << root.node_.at(i).key_ << ", " << root.node_.at(i).value_ << ", " << root.node_.at(i).left_ << ") ";
+  std::cout << root.right_ << ", ";
+  std::cout << (root.leaf_ ? "true" : "false");
   std::cout << std::endl;
 
-  std::cout << "  child.node_ keys: ";
-  for (int i = 0; i < child.node_.size(); ++i) std::cout << child.node_.at(i).key_ << ' ';
+  std::cout << "  child.node_ elements (key_, value_, left_) and right_:\n  ";
+  for (int i = 0; i < child.node_.size(); ++i)
+    std::cout << '(' << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") ";
+  std::cout << child.right_ << ", ";
+  std::cout << (child.leaf_ ? "true" : "false");
   std::cout << std::endl;
 }
 
@@ -120,7 +145,9 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
                                        const uint32_t entry_index,
                                        const uint32_t node_index) {
 
-  std::cout << "insert_capacity with: " << row_index << ", " << entry_index << ", " << node_index << std::endl;
+  if (node_index == 0) throw "FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUCK";
+
+  std::cout << " insert_capacity with: " << row_index << ", " << entry_index << ", " << node_index << std::endl;
 
   // Fetch pages
   const auto entry = fetch_entry(entry_index);
@@ -139,6 +166,8 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
   while (i < node->node_.size() && *entry > *fetch_entry(node->node_.at(i).key_)) ++i;
   uint32_t child_index = index_at(i);
 
+  std::cout << " i: " << i << ", child_index: " << child_index << std::endl;
+
   if (!node->leaf_) {
 
     auto child = fetch_node(child_index);
@@ -146,7 +175,7 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
     if (child->node_.size() >= 2 * BTreeNodePage::SIZE - 1) {
 
       // Split, and write back results of the modified child
-      split(i, *node, *child);
+      split(i, *node, *child, child_index);
       index_file_.write(child_index, std::move(child));
 
       // Determine which of the two splitted children should contain the inserted entry
@@ -160,6 +189,10 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
 
   // If the node is a leaf, you won't have to worry about child pages, so just insert the cell
   else node->node_.insert(node->node_.cbegin() + i, Cell{entry_index, row_index, 0});
+
+  std::cout << " (insert capacity).node_ keys: ";
+  for (int i = 0; i < node->node_.size(); ++i) std::cout << node->node_.at(i).key_ << ' ';
+  std::cout << std::endl;
 
   // Write back changes to the node
   index_file_.write(node_index, std::move(node));
@@ -207,16 +240,20 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
       // Create a new root with the old root as its first child
       auto new_root = std::make_unique<BTreeNodePage>(
         false,
-        BTreeNodePage::ORDER,
-        std::vector<Cell>{Cell{entry_index, row_index, header->root_}}
+        0,
+        std::vector<Cell>{}
       );
 
-      split(0, *new_root, *old_root);
+      // Mark the old root as not a leaf, and then split it
+      old_root->leaf_ = true;
+      split(0, *new_root, *old_root, header->root_);
 
       // Compare the key to be inserted and the previous root's middle key
-      uint64_t middle_index{new_root->node_.at(0).key_};
-      uint32_t i = *fetch_entry(middle_index) < *fetch_entry(entry_index);
-      insert_capacity(row_index, entry_index, new_root->node_.at(i).left_);
+      uint64_t middle_index{new_root->node_.front().left_};
+      uint64_t lr = *fetch_entry(middle_index) < *fetch_entry(entry_index) ?
+        new_root->right_ :
+        new_root->node_.front().left_;
+      insert_capacity(row_index, entry_index, lr);
 
       // Write back the old root and new root before the header is updated (while old_root
       // index is still known)
@@ -266,7 +303,7 @@ bool BaseColumn::valid_(const Entry& entry) const {
 }
 
 uint32_t BaseColumn::read_(const Entry& entry) {
-  return **find_(entry);
+  return (**find_(entry)).second;
 }
 
 void BaseColumn::write_(uint32_t entry_index, uint32_t row_index) {

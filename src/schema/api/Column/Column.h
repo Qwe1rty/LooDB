@@ -11,8 +11,10 @@ public:
 
   struct Iterator {
 
-    // operator* will dereference to the page number of the associated primary key
-    virtual uint32_t operator* () = 0;
+    // operator* will dereference to the page number of the:
+    //  1) the entry
+    //  2) page index of the associated primary key
+    virtual std::pair<std::unique_ptr<Entry>, uint32_t> operator* () = 0;
     virtual Iterator& operator++ () = 0;
     virtual bool operator!= (const Iterator&) = 0;
     virtual bool operator== (const Iterator&) = 0;
