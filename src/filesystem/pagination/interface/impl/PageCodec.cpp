@@ -151,10 +151,14 @@ namespace {
         const auto page = static_cast<PropertiesPage*>(obj.get());
 
         writer << static_cast<uint32_t>(page->type_);
+
+        writer << static_cast<uint32_t>(page->column_.size());
+        for (uint32_t i = 0; i < page->column_.size() && writer; ++i) {
+          writer << page->column_[i];
+        }
+
         writer << static_cast<uint32_t>(page->restrictions_.size());
-
         for (uint32_t i = 0; i < page->restrictions_.size() && writer; ++i) {
-
           writer << page->restrictions_[i];
         }
       }
@@ -303,13 +307,27 @@ namespace {
       PROPERTIES_PAGE,
       [](ByteReader<const Serial>& reader) -> Object {
 
-        uint32_t type, size;
-        reader >> type >> size;
+        uint32_t type;
+        reader >> type;
 
+        uint32_t column_size;
+        reader >> column_size;
+        std::string column;
+        column.reserve(column_size);
+
+        for (uint32_t i = 0; i < column_size; ++i) {
+
+          char b;
+          reader >> b;
+          column += b;
+        }
+
+        uint32_t restrictions_size;
+        reader >> restrictions_size;
         std::string restrictions;
-        restrictions.reserve(size);
+        column.reserve(restrictions_size);
 
-        for (int i = 0; i < size; ++i) {
+        for (int i = 0; i < restrictions_size; ++i) {
 
           char b;
           reader >> b;
@@ -318,6 +336,7 @@ namespace {
 
         return std::make_unique<PropertiesPage>(
           static_cast<EntryType>(type),
+          std::move(column),
           std::move(restrictions)
         );
       }
