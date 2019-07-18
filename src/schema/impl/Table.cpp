@@ -108,7 +108,7 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
   Pager p{data_path};
   cerr << "data path: " << data_path << endl;
 
-  for(auto col:c) {
+  for(auto &col:c) {
     // path for each column
     string col_path = impl_->path_;
     col_path.append("/");
