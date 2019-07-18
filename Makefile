@@ -3,7 +3,7 @@ OBJECTS = $(patsubst %.cpp,%.o,$(SOURCES))
 #DEPENDS = ${OBJECTS:.o=.d}
 
 CXX = g++
-CXX_FLAGS = -g -std=c++17 -Wall -MMD
+CXX_FLAGS = -g -std=c++17 -MMD
 EXEC = loodb
 
 SQLITE_DIR = sqlite
@@ -15,7 +15,7 @@ QUERY_DIR = queries
 -include ${DEPENDS}
 .PHONY: build clean test
 
-build: ${EXEC} clean
+build: bison flex replace ${EXEC} clean
 
 clean:
 	@rm ${OBJECTS}
@@ -32,9 +32,16 @@ dry-run:
 	@echo ${OBJECTS}
 
 ${EXEC}: ${OBJECTS}
-	cd src/interpreter/parser && make sqloo
-	@${CXX} ${CXX_FLAGS} ${OBJECTS} -o ${EXEC}
+	@${CXX} ${CXX_FLAGS} ${OBJECTS} src/interpreter/parser/sqloo.tab.cc src/interpreter/parser/lex.yy.c -o ${EXEC}
 
+bison:
+	cd src/interpreter/parser && bison sqloo.yy
+
+flex:
+	cd src/interpreter/parser && flex sqloo.l
+
+replace:
+	cd src/interpreter/parser && sed -i 's/return \*new (yyas_<T> ()) T (t)/return \*new (yyas_<T> ()) T (std\:\:move((T\&)t))/g' sqloo.tab.hh
 
 # The "sql" set of commands deal with the official SQLite3 database
 
