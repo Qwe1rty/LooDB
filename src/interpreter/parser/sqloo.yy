@@ -130,33 +130,19 @@ columns:
 
 %type <std::tuple<std::string, EntryType, std::string>> column;
 column:
-  STRING INTEGER restrictions {
+  STRING INTEGER restriction {
     $$ = std::make_tuple(std::move($1), EntryType::INTEGER, std::move($3));
   }
-| STRING TEXT restrictions {
+| STRING TEXT restriction {
     $$ = std::make_tuple(std::move($1), EntryType::TEXT, std::move($3));
-  };
-
-%type <std::string> restrictions;
-restrictions:
-  %empty {
-    $$ = "";
-  }
-| restriction {
-    $$ = std::move($1);
-  }
-| restriction restriction {
-    if ($1 != $2) {
-      $$ = $1 + ", " + $2;
-    } else {
-      std::cerr << "Parse error: duplicate restriction" << std::endl;
-      YYERROR;
-    }
   };
 
 %type <std::string> restriction;
 restriction:
-  PRIMARY_KEY {
+  %empty {
+    $$ = "";
+  }
+| PRIMARY_KEY {
     $$ = "primary key";
   }
 | NOT_NULL {
