@@ -6,6 +6,7 @@
 #include "../../filesystem/pagination/interface/api/Pager.h"
 #include <sys/stat.h>
 #include <dirent.h>
+#include <memory>
 #include <iostream>
 #include <string.h>
 #include <exception>
