@@ -8,7 +8,7 @@
 #include <memory>
 
 
-// Decorator interface for Column
+// Decorator abstract interface for Column
 class ColumnRestriction : public Column  {
 
   // Base column
@@ -16,8 +16,8 @@ class ColumnRestriction : public Column  {
 
 protected:
 
-  Column& base() const;
-
+  // Base reference to prevent shenanigans with the unique pointer
+  Column& base;
   ColumnRestriction(std::unique_ptr<Column>);
 };
 
