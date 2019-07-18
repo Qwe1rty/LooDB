@@ -312,6 +312,13 @@ void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
   // std::// cerr << "insert values are valid" << std::endl;
 }
 
+void printSet(std::set<uint32_t>& set) {
+  std::cerr << "Printing set:";
+  for (auto it=set.begin(); it!=set.end(); ++it)
+    std::cerr << ' ' << *it;
+  std::cerr << '\n';
+}
+
 std::set<uint32_t> Table::TableImpl::setUnion(std::set<uint32_t>& set1, std::set<uint32_t>& set2) {
   // Declare union set
   std::set<uint32_t> union_;
@@ -329,7 +336,7 @@ std::set<uint32_t> Table::TableImpl::setIntersection(std::set<uint32_t>& set1, s
   std::set<uint32_t> intersection_;
 
   // Get union of set1 and set2
-  std::set_union(set1.begin(), set1.end(),
+  std::set_intersection(set1.begin(), set1.end(),
                  set2.begin(), set2.end(),
                  std::inserter(intersection_, intersection_.begin()));
 
@@ -475,6 +482,7 @@ void Table::TableImpl::printRow(std::vector<std::unique_ptr<Entry>>& row,
   
   EntryType entryType;
   if (star) { // Print all columns
+    std::cout << "|";
     for (int i = 0; i < row.size(); ++i) {
       entryType = row.at(i)->getType();
       if (entryType == EntryType::NULL_) {
@@ -487,6 +495,7 @@ void Table::TableImpl::printRow(std::vector<std::unique_ptr<Entry>>& row,
       std::cout << "|";
     }
   } else { // Print given columns
+    std::cout << "|";
     for (int i = 0; i < columns.size(); ++i) {
       int columnIndex = this->columnsIndices_.at(columns.at(i));
 

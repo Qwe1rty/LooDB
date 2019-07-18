@@ -40,11 +40,12 @@ int run() {
         // std::cerr << p.result->table_name_;
         // std::cerr << std::endl;
 
-        if (p.result->type_ == StatementType::stmtSelect) {
-          if (static_cast<SQLSelect*>(p.result.get())->hasWhere()) {
-            static_cast<SQLSelect*>(p.result.get())->printWhere();
-          }
-        }
+        // if (p.result->type_ == StatementType::stmtSelect) {
+        //   if (static_cast<SQLSelect*>(p.result.get())->hasWhere()) {
+        //     static_cast<SQLSelect*>(p.result.get())->printWhere();
+        //   }
+        // }
+        
           //create DB 
         Database d;
         v.execute(std::move(p.result), d);
