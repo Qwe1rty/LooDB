@@ -9,10 +9,10 @@
 #include <memory>
 
 void printSet(std::set<uint32_t>& set) {
-  std::cout << "Printing set:";
+  std::cerr << "Printing set:";
   for (auto it=set.begin(); it!=set.end(); ++it)
-    std::cout << ' ' << *it;
-  std::cout << '\n';
+    std::cerr << ' ' << *it;
+  std::cerr << '\n';
 }
 
 std::set<uint32_t> setUnion(std::set<uint32_t>& set1, std::set<uint32_t>& set2) {
@@ -66,10 +66,10 @@ std::set<uint32_t> whereHelper(std::vector<std::pair<std::unique_ptr<Entry>, uin
     // Find entry in column
     auto iter = column.begin();
     while (iter != column.end()) {
-      std::cout << static_cast<IntEntry&>(*((*iter).first)).getVal();
-      std::cout << " == ";
-      std::cout << static_cast<IntEntry&>(*entry).getVal();
-      std::cout << std::endl;
+      std::cerr << static_cast<IntEntry&>(*((*iter).first)).getVal();
+      std::cerr << " == ";
+      std::cerr << static_cast<IntEntry&>(*entry).getVal();
+      std::cerr << std::endl;
       if (*((*iter).first) == *entry) break;
       ++iter;
     }

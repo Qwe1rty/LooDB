@@ -3,11 +3,14 @@
 #include "../api/Column/Column.h"
 #include "../api/Entry/Entry.h"
 #include "../api/Entry/EntryType.h"
+#include "../api/Entry/NullEntry.h"
 #include "../api/Entry/IntEntry.h"
+#include "../api/Entry/StringEntry.h"
 #include "../api/Entry/EntryCodec.h"
 #include "../../filesystem/pagination/interface/api/Pager.h"
 #include "../../filesystem/pagination/page/api/EntryPage.h"
 #include "../../filesystem/pagination/page/api/BPTreeLeafPage.h"
+#include "../../filesystem/pagination/page/api/PropertiesPage.h"
 #include <sys/stat.h>
 #include <dirent.h>
 #include <memory>
@@ -36,7 +39,7 @@ Table::TableImpl::TableImpl(string s) : name_(s)  {
 Table::Table(string s) : impl_{make_unique<TableImpl>(s)} {}
 
 void Table::TableImpl::populateTable(){
-  cerr << "Found table: " << name_ << endl;
+  // cerr << "Found table: " << name_ << endl;
   vector<string> col_files;
   DIR *pDIR;
   struct dirent *entry;
@@ -49,19 +52,19 @@ void Table::TableImpl::populateTable(){
         if ((input.find(data_ext_) != string::npos) 
         && strcmp(input.substr(0, (input.length()-data_ext_.length())).c_str(), name_.c_str()) == 0) {
           data_file_ = input;
-          cerr << "- 0 - found file: " << data_file_<< endl;
+          // cerr << "- 0 - found file: " << data_file_<< endl;
         } else if ((input.find(row_ext_) != string::npos)
           && strcmp(input.substr(0, (input.length()-row_ext_.length())).c_str(), name_.c_str()) == 0) {
           row_file_ = input;
-          cerr << "- 1 - found file: " << row_file_ << endl;
+          // cerr << "- 1 - found file: " << row_file_ << endl;
         } else if ((input.find(prop_ext_) != string::npos)
           && strcmp(input.substr(0, (input.length()-prop_ext_.length())).c_str(), name_.c_str()) == 0) {
           prop_file_ = input;
-          cerr << "- 1 - found file: " << prop_file_ << endl;
+          // cerr << "- 1 - found file: " << prop_file_ << endl;
         }else if (input.find(col_ext_) != string::npos) {
           // TODO: add columns based on this
           col_files.emplace_back(input.substr(0, (input.length()-col_ext_.length())));
-          cerr << "- 2 - found file: " << input.substr(0, (input.length()-col_ext_.length())) << endl;
+          // cerr << "- 2 - found file: " << input.substr(0, (input.length()-col_ext_.length())) << endl;
         }
       }
     }
@@ -83,15 +86,15 @@ void Table::TableImpl::populateHelper(vector<string> & col) {
   prop_path.append(name_);
   prop_path.append(prop_ext_);
   Pager prop{prop_path};
-  cerr << "p: prop path: " << prop_path << endl;
+  // cerr << "p: prop path: " << prop_path << endl;
 
   // create pager to data file
   string data_path = path_;
   data_path.append("/");
   data_path.append(name_);
   data_path.append(data_ext_);
-  Pager p{data_path};
-  cerr << "p: data path: " << data_path << endl;
+  data_pager_ = std::make_unique<Pager>(data_path);
+  // cerr << "p: data path: " << data_path << endl;
   
   if(col.size() != prop.size()) {
     cout << "Error: Columns have been corrupted when building from disk" << endl;
@@ -109,29 +112,29 @@ void Table::TableImpl::populateHelper(vector<string> & col) {
       columns_.insert({col.at(i), 
             make_unique<UniqueRestriction>(
               make_unique<NotNullRestriction>(
-                make_unique<BaseColumn>(col_path,  page->type_ , p)
+                make_unique<BaseColumn>(col_path,  page->type_ , *data_pager_)
               ))});
-      cerr << "p: primary key" << endl;
+      // cerr << "p: primary key" << endl;
     } else if(page->restrictions_ == "not null") {
       columns_.insert({col.at(i), make_unique<NotNullRestriction>(
-            make_unique<BaseColumn>(col_path,page->type_  , p)
+            make_unique<BaseColumn>(col_path,page->type_  , *data_pager_)
             )});
-      cerr << "p: not null" << endl;
+      // cerr << "p: not null" << endl;
     } else {
-      columns_.insert({ col.at(i), make_unique<BaseColumn>(col_path, page->type_ , p)});
-      cerr << "p: no mods" << endl;
+      columns_.insert({ col.at(i), make_unique<BaseColumn>(col_path, page->type_ , *data_pager_)});
+      // cerr << "p: no mods" << endl;
     }
     columnsTypes_.insert({col.at(i), page->type_});
     columnsIndices_.insert({col.at(i), i});
     indexToColumn_.insert({ i, col.at(i)});
   }
-  //cerr << "Help build object representation " << (col.size() == prop.size()) << " " << prop_path<< endl;
+  //// cerr << "Help build object representation " << (col.size() == prop.size()) << " " << prop_path<< endl;
 }
 
 void Table::TableImpl::buildTable() {
   // to be used by create table command
-  cerr << "Build table" << endl;
-  cerr << path_ << endl;
+  // cerr << "Build table" << endl;
+  // cerr << path_ << endl;
 
   string data_path = path_;
   string row_path = path_;
@@ -149,7 +152,7 @@ void Table::TableImpl::buildTable() {
   prop_path.append(name_);
   prop_path.append(prop_ext_);
 
-  cerr << data_path << " - " << row_path << " - " << prop_path << endl;
+  // cerr << data_path << " - " << row_path << " - " << prop_path << endl;
 
   // create directory
   mkdir(path_.c_str(), 0777);
@@ -158,7 +161,7 @@ void Table::TableImpl::buildTable() {
 }
 
 void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::string>>& c){
-  cerr << "insert columns" << endl;
+  // cerr << "insert columns" << endl;
 
   int propIndex = 0;
   // create pager to data file
@@ -166,8 +169,8 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
   data_path.append("/");
   data_path.append(impl_->name_);
   data_path.append(impl_->data_ext_);
-  Pager p{data_path};
-  cerr << "data path: " << data_path << endl;
+  impl_->data_pager_ = std::make_unique<Pager>(data_path);
+  // cerr << "data path: " << data_path << endl;
 
   // create pager to data file
   string prop_path = impl_->path_;
@@ -175,7 +178,7 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
   prop_path.append(impl_->name_);
   prop_path.append(impl_->prop_ext_);
   Pager prop{prop_path};
-  cerr << "prop path: " << prop_path << endl;
+  // cerr << "prop path: " << prop_path << endl;
 
   for(auto &col:c) {
     // path for each column
@@ -190,17 +193,17 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
        impl_->columns_.insert({get<0>(col), 
             make_unique<UniqueRestriction>(
               make_unique<NotNullRestriction>(
-                make_unique<BaseColumn>(col_path, get<1>(col), p)
+                make_unique<BaseColumn>(col_path, get<1>(col), *impl_->data_pager_)
               ))}); 
-      cerr << "primary key" << endl;
+      // cerr << "primary key" << endl;
     } else if(get<2>(col) == "not null") {
        impl_->columns_.insert({get<0>(col), make_unique<NotNullRestriction>(
-            make_unique<BaseColumn>(col_path, get<1>(col), p)
+            make_unique<BaseColumn>(col_path, get<1>(col), *impl_->data_pager_)
             )});
-      cerr << "not null" << endl;
+      // cerr << "not null" << endl;
     }else {
-       impl_->columns_.insert({ get<0>(col), make_unique<BaseColumn>(col_path, get<1>(col), p)});
-      cerr << "no mods" << endl;
+       impl_->columns_.insert({ get<0>(col), make_unique<BaseColumn>(col_path, get<1>(col), *impl_->data_pager_)});
+      // cerr << "no mods" << endl;
     }
     impl_->columnsTypes_.insert({get<0>(col), get<1>(col)});
     impl_->columnsIndices_.insert({get<0>(col), propIndex});
@@ -213,7 +216,7 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
       return;
     }
     ++propIndex;
-    cerr << "col path: " << col_path << endl;
+    // cerr << "col path: " << col_path << endl;
 
   }
 }
@@ -281,7 +284,7 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>>& e) {
     )
   );
 
-  std::cout << "Insert is successful" << std::endl;
+  // std::cerr << "Insert is successful" << std::endl;
 }
 
 void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
@@ -305,7 +308,7 @@ void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
     }
   }
 
-  std::cerr << "insert values are valid" << std::endl;
+  // std::// cerr << "insert values are valid" << std::endl;
 }
 
 std::set<uint32_t> Table::TableImpl::setUnion(std::set<uint32_t>& set1, std::set<uint32_t>& set2) {
@@ -341,30 +344,38 @@ std::set<uint32_t> Table::TableImpl::whereHelper(std::unique_ptr<SQLSelect::Wher
 
   // Is a where expression
   if (root->leaf_) {
+    // std::// cerr << "leaf" << std::endl;
     // Get column name and entry
     const std::string& columnName = std::get<0>(root->expr_);
     const std::unique_ptr<Entry>& entry = std::get<1>(root->expr_);
 
+    // Throw if column doesn't exist
+    if (this->columns_.find(columnName) == this->columns_.end()) {
+      throw std::invalid_argument("Error: Column " + columnName + " doesn't exist.");
+    }
+
     // Throw if entry doesn't match column type
-    if (entry->getType() != this->columnsTypes_[columnName]) {
+    if (entry->getType() != this->columnsTypes_.at(columnName)) {
       // Invariance: column is of type INTEGER or TEXT
-      EntryType columnType = this->columnsTypes_[columnName];
+      EntryType columnType = this->columnsTypes_.at(columnName);
       std::string type = columnType == EntryType::INTEGER ? "integer" : "text";
       throw std::invalid_argument("Error: Column " + columnName + " is of type " + type);
     }
 
-    const std::unique_ptr<Column>& column = this->columns_[columnName];
+    const std::unique_ptr<Column>& column = this->columns_.at(columnName);
 
     // Find entry in column
-    auto iter = column->find(*entry);
+    auto iter = column->begin();//find(*entry);
 
     // While iter meets where condition, insert page index into indices
-    while (*iter != *column->end() && *((**iter).first) == *entry) {
-      std::cout << static_cast<IntEntry&>(*((**iter).first)).getVal();
-      std::cout << " == ";
-      std::cout << static_cast<IntEntry&>(*entry).getVal();
-      std::cout << std::endl;
-      indices.insert((**iter).second);
+    while (*iter != *column->end() ) {
+      // std::// cerr << static_cast<StringEntry&>(*((**iter).first)).getVal();
+      // std::// cerr << " == ";
+      // std::// cerr << static_cast<StringEntry&>(*entry).getVal();
+      // std::// cerr << std::endl;
+      if(*((**iter).first) == *entry) {
+        indices.insert((**iter).second);
+      }
       ++(*iter);
     }
 
@@ -435,7 +446,7 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
   // If where == true, print individual rows
   // Otherwise, print every row using cursor
   if (where) {
-    std::cerr << "Printing table! (where rows)" << std::endl;
+    // std::// cerr << "Printing table! (where rows)" << std::endl;
     for (auto it = pageIndices.begin(); it != pageIndices.end(); ++it) {
       auto cursor = this->find(*it);
       std::vector<std::unique_ptr<Entry>> row = std::move(*cursor);
@@ -443,7 +454,7 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
     }
   } else {
     // Print all rows
-    std::cerr << "Printing table! (all rows)" << std::endl;
+    // std::// cerr << "Printing table! (all rows)" << std::endl;
     for (auto it = this->begin(); it != this->end(); ++it) {
       std::vector<std::unique_ptr<Entry>> row = std::move(*it);
       this->printRow(row, columns, star);
@@ -459,32 +470,32 @@ void Table::printColumns(std::vector<string>& columns, bool where,
 
 void Table::TableImpl::printRow(std::vector<std::unique_ptr<Entry>>& row,
                                            std::vector<string>& columns, bool star) {
-  std::cerr << "printing row" << std::endl;
+  // // std::// cerr << "printing row" << std::endl;
   
   EntryType entryType;
   if (star) { // Print all columns
     for (int i = 0; i < row.size(); ++i) {
-      entryType = row[i]->getType();
+      entryType = row.at(i)->getType();
       if (entryType == EntryType::NULL_) {
-        std::cout << "null" << std::endl;
+        std::cout << "null";
       } else if (entryType == EntryType::INTEGER) {
-        std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
+        std::cout << static_cast<IntEntry&>(*row.at(i)).getVal();
       } else if (entryType == EntryType::TEXT) {
-        std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
+        std::cout << static_cast<StringEntry&>(*row.at(i)).getVal();
       }
       std::cout << "|";
     }
   } else { // Print given columns
     for (int i = 0; i < columns.size(); ++i) {
-      int columnIndex = this->columnsIndices_[columns[i]];
+      int columnIndex = this->columnsIndices_.at(columns.at(i));
 
-      entryType = row[columnIndex]->getType();
+      entryType = row.at(columnIndex)->getType();
       if (entryType == EntryType::NULL_) {
-        std::cout << "null" << std::endl;
+        std::cout << "null";
       } else if (entryType == EntryType::INTEGER) {
-        std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
+        std::cout << static_cast<IntEntry&>(*row.at(columnIndex)).getVal();
       } else if (entryType == EntryType::TEXT) {
-        std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
+        std::cout << static_cast<StringEntry&>(*row.at(columnIndex)).getVal();
       }
       std::cout << "|";
     }
@@ -494,20 +505,47 @@ void Table::TableImpl::printRow(std::vector<std::unique_ptr<Entry>>& row,
 }
 
 Cursor Table::TableImpl::begin() {
-  std::string rowPath = this->data_file_ + this->data_ext_;
-  std::string dataPath = this->row_file_ + this->row_ext_;
-  return Cursor(rowPath, dataPath, 0);
+  std::string row_path = path_;
+  row_path.append("/");
+  row_path.append(row_file_);
+
+
+  std::string data_path = path_;
+  data_path.append("/");
+  data_path.append(data_file_);
+
+  // // std::// cerr << row_path << " " << data_path << std::endl;
+
+  return Cursor(row_path, data_path, 0);
 }
 
 Cursor Table::TableImpl::end() {
-  std::string rowPath = this->data_file_ + this->data_ext_;
-  std::string dataPath = this->row_file_ + this->row_ext_;
-  return Cursor(rowPath, dataPath, -1);
+  std::string row_path = path_;
+  row_path.append("/");
+  row_path.append(row_file_);
+
+
+  std::string data_path = path_;
+  data_path.append("/");
+  data_path.append(data_file_);
+
+  // // std::// cerr << row_path << " " << data_path << std::endl;
+
+  return Cursor(row_path, data_path, -1);
 }
 
 Cursor Table::TableImpl::find(uint32_t pageIndex) {
-  std::string rowPath = this->data_file_ + this->data_ext_;
-  std::string dataPath = this->row_file_ + this->row_ext_;
+  std::string row_path = path_;
+  row_path.append("/");
+  row_path.append(row_file_);
+
+
+  std::string data_path = path_;
+  data_path.append("/");
+  data_path.append(data_file_);
+
+  // // std::// cerr << row_path << " " << data_path << std::endl;
+
   int index = static_cast<int>(pageIndex);
-  return Cursor(rowPath, dataPath, index);
+  return Cursor(row_path, data_path, index);
 }

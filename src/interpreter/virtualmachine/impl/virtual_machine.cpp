@@ -21,7 +21,7 @@ void VM::execute(unique_ptr<SQLStatement> s, Database & db) {
     const SQLSelect& p = static_cast<SQLSelect&>(*s);
     db.select(p);
   } else {
-    cerr << "No commands to execute" << endl;
+    cout << "No commands to execute" << endl;
   }
 
 }

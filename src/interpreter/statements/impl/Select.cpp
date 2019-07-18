@@ -33,15 +33,15 @@ std::unique_ptr<SQLSelect::WhereTree>& SQLSelect::Impl::getWhereTree_() {
 void SQLSelect::Impl::printWhereTreeHelper(std::unique_ptr<SQLSelect::WhereTree>& root) {
   // Base case
   if (root->leaf_) {
-    std::cout << std::get<0>(root->expr_) << " = " << std::get<1>(root->expr_)->getType();
+    std::cerr << std::get<0>(root->expr_) << " = " << std::get<1>(root->expr_)->getType();
     return;
   }
 
-  std::cout << "(";
-  printWhereTreeHelper(root->where1_);
-  std::cout << " " << root->op_ << " ";
-  printWhereTreeHelper(root->where2_);
-  std::cout << ")";
+  // std::cerr << "(";
+  // printWhereTreeHelper(root->where1_);
+  // std::cerr << " " << root->op_ << " ";
+  // printWhereTreeHelper(root->where2_);
+  // std::cerr << ")";
 
   return;
 }

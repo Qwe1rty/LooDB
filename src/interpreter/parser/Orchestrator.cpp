@@ -34,11 +34,11 @@ int run() {
       int res = p.parse(ss.str());
 
       if (res == 0 && p.result) {
-        std::cout << "Received statement of type (";
-        std::cout << p.result->type_;
-        std::cout << ") on table ";
-        std::cout << p.result->table_name_;
-        std::cout << std::endl;
+        // std::cerr << "Received statement of type (";
+        // std::cerr << p.result->type_;
+        // std::cerr << ") on table ";
+        // std::cerr << p.result->table_name_;
+        // std::cerr << std::endl;
 
         if (p.result->type_ == StatementType::stmtSelect) {
           if (static_cast<SQLSelect*>(p.result.get())->hasWhere()) {

@@ -16,17 +16,17 @@ int main() {
   unique_ptr<Entry> null1 = make_unique<NullEntry>();
   unique_ptr<Entry> null2 = make_unique<NullEntry>();
 
-  cout << "int1 type: " << int1->getType() << endl;
-  cout << "int2 type: " << int2->getType() << endl;
-  cout << "int1 == int2: " << (*int1 == *int2) << endl;
+  // std::cerr << "int1 type: " << int1->getType() << endl;
+  // std::cerr << "int2 type: " << int2->getType() << endl;
+  // std::cerr << "int1 == int2: " << (*int1 == *int2) << endl;
 
-  cout << "text1 type: " << text1->getType() << endl;
-  cout << "text2 type: " << text2->getType() << endl;
-  cout << "text1 == text2: " << (*text1 == *text2) << endl;
+  // std::cerr << "text1 type: " << text1->getType() << endl;
+  // std::cerr << "text2 type: " << text2->getType() << endl;
+  // std::cerr << "text1 == text2: " << (*text1 == *text2) << endl;
 
-  cout << "null1 type: " << null1->getType() << endl;
-  cout << "null2 type: " << null2->getType() << endl;
-  cout << "null1 == null2: " << (*null1 == *null2) << endl;
+  // std::cerr << "null1 type: " << null1->getType() << endl;
+  // std::cerr << "null2 type: " << null2->getType() << endl;
+  // std::cerr << "null1 == null2: " << (*null1 == *null2) << endl;
 
-  cout << "int1 == null1: " << (*int1 == *null1) << endl;
+  // std::cerr << "int1 == null1: " << (*int1 == *null1) << endl;
 }

@@ -22,9 +22,9 @@ int main() {
     cache.update(2, 200);
 
     test = cache.seek(1);
-    std::cout << test << std::endl; // 100
+    // std::cout << test << std::endl; // 100
     test = cache.seek(3);
-    std::cout << test << std::endl; // nullptr
+    // std::cout << test << std::endl; // nullptr
 
     cache.update(3, 300);
     cache.update(4, 400);
@@ -32,31 +32,31 @@ int main() {
     cache.update(6, 600);
 
     test = cache.seek(2);
-    std::cout << test << std::endl; // nullptr
+    // std::cout << test << std::endl; // nullptr
     test = cache.seek(1);
-    std::cout << test << std::endl; // 100
+    // std::cout << test << std::endl; // 100
 
     cache.update(6, 60000);
     test = cache.seek(6);
-    std::cout << test << std::endl; // 60000
+    // std::cout << test << std::endl; // 60000
 
     // Divider, testing big 5 operations
-    std::cout << std::endl;
+    // std::cout << std::endl;
 
     Cache<K, V> cash{cache};
 
     cash.update(8, 88);
 
     test = cache.seek(8);
-    std::cout << test << std::endl; // nullptr
+    // std::cout << test << std::endl; // nullptr
     test = cash.seek(8);
-    std::cout << test << std::endl; // 88
+    // std::cout << test << std::endl; // 88
 
     cache = std::move(cash);
 
     cache.update(22, 22222);
     test = cache.seek(22);
-    std::cout << test << std::endl; // 22222
+    // std::cout << test << std::endl; // 22222
 
     cash.update(11, 11111); // may or may not segfault, has been moved
 }

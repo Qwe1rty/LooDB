@@ -46,18 +46,18 @@ void Database::drop_table(const SQLDrop& s) {
     path.append(impl_->name_);
     path.append(string("/"));
     path.append(s.table_name_);
-    cerr << path << endl;
+    // cerr << path << endl;
     if (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode)) {
       if (system(NULL)) {
        impl_->tables_.erase(s.table_name_);
        string rm = string("rm -r ");
        rm.append(path);
        system(rm.c_str());
-       cerr << rm << endl;
+       // cerr << rm << endl;
       } else {
-       cerr << "Command processor doesn't exists" << endl; 
+       // cerr << "Command processor doesn't exists" << endl; 
       }
-      cerr << "Table Found " << endl;
+      // cerr << "Table Found " << endl;
     }
   } else {
     cout << "Error: Table Not Found " << endl;
@@ -69,7 +69,7 @@ void Database::create_table(const SQLCreate& s) {
   if(impl_->tables_.find(s.table_name_) != impl_->tables_.end()) {
     cout << "Error: Table Already Exists" << endl;
   } else {
-    cerr << "Creating Table" << endl;
+    // cerr << "Creating Table" << endl;
 
     struct stat sb;
     string path("./");
@@ -77,14 +77,14 @@ void Database::create_table(const SQLCreate& s) {
     path.append(string("/"));
     path.append(s.table_name_);
 
-    cerr << path << endl;
+    // cerr << path << endl;
     bool valid = checkCreateValid(s.getColumns()); 
     if (valid) {
       impl_->tables_.insert({s.table_name_, Table(s.table_name_)});
       impl_->tables_.at(s.table_name_).createColumns(s.getColumns());
     }
-    cerr << "# of columns " << s.getColumns().size() << endl;
-    cerr << (valid ? "- is valid -" : "- is not valid-") << endl;
+    // cerr << "# of columns " << s.getColumns().size() << endl;
+    // cerr << (valid ? "- is valid -" : "- is not valid-") << endl;
   }
 }
 
@@ -101,7 +101,7 @@ bool Database::checkCreateValid(std::vector<std::tuple<std::string, EntryType, s
   vector<string> tempPkeys, tempnNull;
   for(auto & col : c) {
     get<2>(col) == "primary key" ? tempPkeys.emplace_back(get<2>(col)) : tempnNull.emplace_back(get<2>(col));
-    cerr << get<2>(col) << endl;
+    // cerr << get<2>(col) << endl;
   }
   // remove repeated modification
   sort(tempPkeys.begin(), tempPkeys.end());
@@ -122,7 +122,7 @@ bool Database::checkCreateValid(std::vector<std::tuple<std::string, EntryType, s
 // Insert a row into a database table
 void Database::insert(const SQLInsert& s) {
   if(impl_->tables_.find(s.table_name_) != impl_->tables_.end()) {
-    cerr << "Table Exists" << endl;
+    // cerr << "Table Exists" << endl;
 
     struct stat sb;
     string path("./");
@@ -130,7 +130,7 @@ void Database::insert(const SQLInsert& s) {
     path.append(string("/"));
     path.append(s.table_name_);
 
-    cerr << path << endl;
+    // cerr << path << endl;
     
     impl_->tables_.at(s.table_name_).insertColumns(s.getEntries());
   } else {

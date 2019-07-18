@@ -37,6 +37,7 @@ class Table {
       std::string data_file_ = ".";
       std::string row_file_ = ".";
       std::string prop_file_ = ".";
+      std::unique_ptr<Pager> data_pager_;
 
       // Constructor
       TableImpl(std::string);

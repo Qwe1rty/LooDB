@@ -225,7 +225,7 @@ namespace {
           std::vector<uint64_t> values;
           values.reserve(values_size);
 
-          for (int j = 0; i < values_size; ++j) {
+          for (int j = 0; j < values_size; ++j) {
 
             uint64_t value;
             reader >> value;

@@ -4,6 +4,7 @@
 #include "../../../cache/api/LRUCacheStrategy.h"
 
 #include <fstream>
+#include <iostream>
 
 
 class Pager::Impl final {
@@ -76,13 +77,22 @@ Pager::Pager(const std::string& filename, uint32_t limit) :
 
 std::unique_ptr<Page> Pager::Impl::read(uint32_t index) {
 
+  // std::cerr << "Pager::Impl::read index: " << index << std::endl;
+  // std::cerr << "index * Page::SIZE " << (index * Page::SIZE) << std::endl;
+
   // First check the cache
 //  auto cache_result{cache_.seek(index)};
 //  if (cache_result) return std::move(*cache_result);
 
+
   // Next do a disk seek
   auto disk_result = std::array<char, Page::SIZE>{};
+  // std::cerr << "fuck " << std::flush;
+  // std::cerr << filename_ << std::flush; 
+  // std::cerr << " goodies " << std::flush;
+  // std::cerr << stream_.good() << std::endl;
   stream_.seekg(index * Page::SIZE);
+  // std::cerr << filename_ << " goodies " << stream_.good() << std::endl;
   stream_.read(disk_result.data(), Page::SIZE);
 
   return PageCodec::CODEC.decode(disk_result);

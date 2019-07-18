@@ -2,6 +2,7 @@
 #include "../../api/Entry/IntEntry.h"
 
 #include <stack>
+#include <iostream>
 
 
 class BaseColumn::Impl::Iterator {
@@ -91,6 +92,7 @@ std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::find_(const Entry&
 
       // Find the index where the entry would be located
       uint32_t cell{0};
+      // std::cout << "3874913759832 " << node->node_.at(cell).key_ << std::endl;
       while (cell < node->node_.size() && entry > *fetch_entry(node->node_.at(cell).key_)) {
         ++cell;
       }
@@ -99,6 +101,7 @@ std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::find_(const Entry&
       // If it's been found, return iterator to it. Ensure that this check is only done
       // if the cell value has been found to be in range (i.e. not trying to go to the
       // node->right_ index
+      // std::cout << "3874913759832 " << node->node_.at(cell).key_ << std::endl;
       if (cell < node->node_.size() && entry == *fetch_entry(node->node_.at(cell).key_)) {
         return std::make_unique<BaseColumn::Impl::Iterator>(
           *this,

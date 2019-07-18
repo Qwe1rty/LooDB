@@ -6,6 +6,7 @@
 #include "../../filesystem/pagination/page/api/BPTreeLeafPage.h"
 #include "../../filesystem/pagination/page/api/CellBP.h"
 #include "../../filesystem/pagination/page/api/EntryPage.h"
+#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -26,6 +27,11 @@ Cursor::Cursor(std::string rowPath, std::string dataPath, int pageIndex) :
 
 // Check that row paths aren't not equal or page_index_ aren't equal
 bool Cursor::operator!=(const Cursor& other) const {
+  // std::cerr << "compare row paths : ";
+  // std::cerr << (this->impl_->rowPath_ != other.impl_->rowPath_) << std::endl;
+  // std::cerr << "compare page indices : ";
+  // std::cerr << (this->impl_->page_index_ != other.impl_->page_index_) << std::endl;
+
   return (
     (this->impl_->rowPath_ != other.impl_->rowPath_) ||
     (this->impl_->page_index_ != other.impl_->page_index_)
@@ -41,7 +47,10 @@ Cursor& Cursor::operator++() {
 // Dereference page and return the row as a vector of Entries
 std::vector<std::unique_ptr<Entry>> Cursor::operator*() const {
   // Get B+ leaf page
+  // std::cerr << "page index: " << this->impl_->page_index_;
+  // std::cerr << "row size: " << this->impl_->row_->size();
   std::unique_ptr<BPTreeLeafPage> page = std::move(this->impl_->row_->fetch<BPTreeLeafPage>(this->impl_->page_index_));
+  // std::cerr << "we made it" << std::endl;
 
   // B+ Leaf nodes only have 1 CellBP
   std::vector<uint64_t> entry_indices = page->node_[0].values_;
