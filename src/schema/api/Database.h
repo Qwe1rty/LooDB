@@ -31,6 +31,7 @@ class Database {
 
   // Create a table in database
   void create_table(const SQLCreate&);
+  bool checkCreateValid(std::vector<std::tuple<std::string, EntryType, std::string>> c);
 
     // Drop a table in database
   void drop_table(const SQLDrop& s );

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string.h>
 #include <exception>
-//#include "../../filesystem/pagination/interface/api/Pager.h"
+#include "../../filesystem/pagination/interface/api/Pager.h"
 using namespace std;
 
 Table::TableImpl::TableImpl(string s) : name_(s)  {
@@ -57,23 +57,46 @@ void Table::TableImpl::buildTable(){
   cerr << "Build table" << endl;
   cerr << path_ << endl;
 
-  //mkdir(path_.c_str(), 0777);
-  // write file names using pager {table_name_.data, table_name_.row}
+  string data_path = path_;
+  string row_path = path_;
 
+  data_path.append("/");
+  data_path.append(name_);
+  data_path.append(data_ext_);
+
+  row_path.append("/");
+  row_path.append(name_);
+  row_path.append(row_ext_);
+
+  cerr << data_path << " - " << row_path << endl;
+
+  // create directory
+  mkdir(path_.c_str(), 0777);
+  // write file names using pager 
+  Pager p{data_path}, q{row_path};
 }
 
 void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::string>> c){
   cerr << "insert columns" << endl;
+
   for(auto col:c) {
     // create a column with respective entry type and modifications (decorations)
-  }
-}
+    if(get<2>(col) == "primary key") {
+      impl_->pkey_column_ = get<0>(col);
+      impl_->columns_.insert({get<0>(col), make_unique()});
+    } else {
+      
+    }
 
-bool Table::checkCreateValid(std::vector<std::tuple<std::string, EntryType, std::string>> c) {
-  for(auto col : c) {
-    return false;
+    string col_path = impl_->path_;
+    col_path.append("/");
+    col_path.append(get<0>(col));
+    col_path.append(impl_->col_ext_);
+
+    Pager p{col_path};
+    cerr << "col path: " << col_path << endl;
+
   }
-  return true;
 }
 
 void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
