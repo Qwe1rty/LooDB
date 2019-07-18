@@ -4,7 +4,9 @@
 #include "ColumnRestriction.h"
 #include "../Entry/Entry.h"
 #include "../../../filesystem/pagination/page/api/Page.h"
+
 #include <memory>
+
 
 // Decoration for Column
 class NotNullRestriction : public ColumnRestriction  {
@@ -25,31 +27,9 @@ class NotNullRestriction : public ColumnRestriction  {
   virtual std::unique_ptr<Iterator> end_() override;
   virtual std::unique_ptr<Iterator> find_(const Entry&) override;
 
-  public:
+public:
 
-    // Constructor
-    NotNullRestriction(std::unique_ptr<Column> );
-
-    // NVI for valid_()
-    bool valid(const Entry& entry) const;
-
-    // NVI for read_()
-    uint32_t read(const Entry& entry);
-
-    // NVI for write_()
-    void write(uint32_t entry_index, uint32_t row_index);
-
-    // NVI for empty_()
-    bool empty() const;
-
-    //NVI for begin_()
-    std::unique_ptr<Iterator> begin();
-
-    // NVI for end_()
-    std::unique_ptr<Iterator> end();
-
-    // NVI for find_()
-    std::unique_ptr<Iterator> find(const Entry&);
+  NotNullRestriction(std::unique_ptr<Column>);
 };
 
 #endif // LOODB_NOTNULLRESTRICTION_H
