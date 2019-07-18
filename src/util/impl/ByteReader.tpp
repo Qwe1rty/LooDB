@@ -1,7 +1,5 @@
 #include "../api/ByteReader.h"
 
-#include <iostream>
-
 
 template<typename Datatype>
 class ByteReader<Datatype>::Impl {
