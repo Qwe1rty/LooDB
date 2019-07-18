@@ -48,10 +48,6 @@ std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::begin_() {
     path.push(header->root_);
     cells.push(0);
 
-//    std::cout << "path.top(): " << header->root_ << std::endl;
-//    std::cout << "node_.size(): " << fetch_node(path.top())->node_.size() << std::endl;
-//    std::cout << "child_index: " << fetch_node(path.top())->node_.front().left_ << std::endl;
-
     uint32_t child_index = fetch_node(path.top())->node_.front().left_;
 
     while (child_index > 0) {
