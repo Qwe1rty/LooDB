@@ -248,7 +248,7 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>>& e) {
   uint32_t row_index = row_file.size();
 
   // Record which column is the primary key, and eventually which page index it is
-  uint32_t pkey_column = impl_->columnsIndices_.at(impl_->pkey_column_);
+  uint32_t pkey_column = static_cast<uint32_t>(impl_->columnsIndices_.at(impl_->pkey_column_));
   uint32_t pkey_index{0};
 
   // Append the data entries and then pass the information to each column
@@ -277,7 +277,7 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>>& e) {
     row_index,
     std::make_unique<BPTreeLeafPage>(
       0, // Currently the right_ pointer is unused
-      CellBP{pkey_index, std::move(entry_indexes)}
+      std::vector<CellBP>{CellBP{pkey_index, std::move(entry_indexes)}}
     )
   );
 
