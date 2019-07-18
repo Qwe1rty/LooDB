@@ -32,6 +32,7 @@ dry-run:
 	@echo ${OBJECTS}
 
 ${EXEC}: ${OBJECTS}
+	cd src/interpreter/parser && make sqloo
 	@${CXX} ${CXX_FLAGS} ${OBJECTS} -o ${EXEC}
 
 

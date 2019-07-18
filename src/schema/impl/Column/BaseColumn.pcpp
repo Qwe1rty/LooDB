@@ -3,8 +3,7 @@
 #include "../../../filesystem/pagination/page/api/BTreeNodePage.h"
 #include "../../../filesystem/pagination/page/api/EntryPage.h"
 #include "../../../schema/api/Entry/EntryCodec.h"
-
-#include <iostream>
+#include "../../api/Entry/IntEntry.h"
 
 
 class BaseColumn::Impl {
@@ -68,21 +67,21 @@ std::unique_ptr<Entry> BaseColumn::Impl::fetch_entry(int32_t index) {
 // Split a child node into 2, TODO possibly just pass in the root
 void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNodePage& child, uint32_t child_index) {
 
-  std::cout << "  initial root.node_ elements (key_, value_, left_) and right_:\n";
-  for (int i = 0; i < root.node_.size(); ++i)
-    std::cout << "  (" << root.node_.at(i).key_ << ", " << root.node_.at(i).value_ << ", " << root.node_.at(i).left_ << ") " << std::endl;
-  std::cout << "  " << root.right_ << ", ";
-  std::cout << (root.leaf_ ? "true" : "false");
-  std::cout << std::endl;
-
-  std::cout << "  child_index: " << child_index << std::endl;
-
-  std::cout << "  initial child.node_ elements (key_, value_, left_) and right_:\n";
-  for (int i = 0; i < child.node_.size(); ++i)
-    std::cout << "  (" << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") " << std::endl;
-  std::cout << "  " << child.right_ << ", ";
-  std::cout << (child.leaf_ ? "true" : "false");
-  std::cout << '\n' << std::endl;
+//  std::cout << "  initial root.node_ elements (key_, value_, left_) and right_:\n";
+//  for (int i = 0; i < root.node_.size(); ++i)
+//    std::cout << "  (" << root.node_.at(i).key_ << ", " << root.node_.at(i).value_ << ", " << root.node_.at(i).left_ << ") " << std::endl;
+//  std::cout << "  " << root.right_ << ", ";
+//  std::cout << (root.leaf_ ? "true" : "false");
+//  std::cout << std::endl;
+//
+//  std::cout << "  child_index: " << child_index << std::endl;
+//
+//  std::cout << "  initial child.node_ elements (key_, value_, left_) and right_:\n";
+//  for (int i = 0; i < child.node_.size(); ++i)
+//    std::cout << "  (" << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") " << std::endl;
+//  std::cout << "  " << child.right_ << ", ";
+//  std::cout << (child.leaf_ ? "true" : "false");
+//  std::cout << '\n' << std::endl;
 
   // Copy largest (BTreeNodePage::ORDER - 1) elements of the child into a right counterpart
   auto right_split = std::make_unique<BTreeNodePage>(
@@ -110,12 +109,12 @@ void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNod
   );
   root.node_.at(split_index).left_ = child_index;
 
-  std::cout << "  split.node_ elements (key_, value_, left_) and right_:\n";
-  for (int i = 0; i < right_split->node_.size(); ++i)
-    std::cout << "  (" << right_split->node_.at(i).key_ << ", " << right_split->node_.at(i).value_ << ", " << right_split->node_.at(i).left_ << ") " << std::endl;
-  std::cout << "  " << right_split->right_ << ", ";
-  std::cout << (right_split->leaf_ ? "true" : "false");
-  std::cout << std::endl;
+//  std::cout << "  split.node_ elements (key_, value_, left_) and right_:\n";
+//  for (int i = 0; i < right_split->node_.size(); ++i)
+//    std::cout << "  (" << right_split->node_.at(i).key_ << ", " << right_split->node_.at(i).value_ << ", " << right_split->node_.at(i).left_ << ") " << std::endl;
+//  std::cout << "  " << right_split->right_ << ", ";
+//  std::cout << (right_split->leaf_ ? "true" : "false");
+//  std::cout << std::endl;
 
   // Write the new child's page, and update the split_index+1'th cell in the root to point to the
   // new appended node
@@ -130,19 +129,19 @@ void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNod
   // Erase the middle element of the child now that it's stored in the parent
   child.node_.erase(child.node_.cbegin() + (BTreeNodePage::ORDER - 1));
 
-  std::cout << "  root.node_ elements (key_, value_, left_) and right_:\n";
-  for (int i = 0; i < root.node_.size(); ++i)
-    std::cout << "  (" << root.node_.at(i).key_ << ", " << root.node_.at(i).value_ << ", " << root.node_.at(i).left_ << ") " << std::endl;
-  std::cout << "  " << root.right_ << ", ";
-  std::cout << (root.leaf_ ? "true" : "false");
-  std::cout << std::endl;
-
-  std::cout << "  child.node_ elements (key_, value_, left_) and right_:\n";
-  for (int i = 0; i < child.node_.size(); ++i)
-    std::cout << "  (" << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") " << std::endl;
-  std::cout << "  " << child.right_ << ", ";
-  std::cout << (child.leaf_ ? "true" : "false");
-  std::cout << std::endl;
+//  std::cout << "  root.node_ elements (key_, value_, left_) and right_:\n";
+//  for (int i = 0; i < root.node_.size(); ++i)
+//    std::cout << "  (" << root.node_.at(i).key_ << ", " << root.node_.at(i).value_ << ", " << root.node_.at(i).left_ << ") " << std::endl;
+//  std::cout << "  " << root.right_ << ", ";
+//  std::cout << (root.leaf_ ? "true" : "false");
+//  std::cout << std::endl;
+//
+//  std::cout << "  child.node_ elements (key_, value_, left_) and right_:\n";
+//  for (int i = 0; i < child.node_.size(); ++i)
+//    std::cout << "  (" << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") " << std::endl;
+//  std::cout << "  " << child.right_ << ", ";
+//  std::cout << (child.leaf_ ? "true" : "false");
+//  std::cout << std::endl;
 }
 
 // Inserts a key without a node that is not full (so it doesn't immediately need splitting)
@@ -151,7 +150,8 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
                                        const uint32_t node_index) {
 
   /* DEBUG */
-  std::cout << " insert_capacity with: " << row_index << ", " << entry_index << ", " << node_index << std::endl;
+//  if (node_index == 0) throw "phukc";
+//  std::cout << " insert_capacity with: " << row_index << ", " << entry_index << ", " << node_index << std::endl;
 
   // Fetch pages
   const auto entry = fetch_entry(entry_index);
@@ -171,7 +171,7 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
   uint32_t child_index = index_at(i);
 
   /* DEBUG */
-  std::cout << " i: " << i << ", child_index: " << child_index << std::endl;
+//  std::cout << " i: " << i << ", child_index: " << child_index << std::endl;
 
   if (!node->leaf_) {
 
@@ -196,9 +196,9 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
   else node->node_.insert(node->node_.cbegin() + i, Cell{entry_index, row_index, 0});
 
   /* DEBUG */
-  std::cout << " (insert capacity).node_ keys: ";
-  for (int i = 0; i < node->node_.size(); ++i) std::cout << node->node_.at(i).key_ << ' ';
-  std::cout << std::endl;
+//  std::cout << " (insert capacity).node_ values: ";
+//  for (int i = 0; i < node->node_.size(); ++i) std::cout << node->node_.at(i).value_ << ' ';
+//  std::cout << std::endl;
 
   // Write back changes to the node
   index_file_.write(node_index, std::move(node));
@@ -215,8 +215,6 @@ bool BaseColumn::Impl::valid_(const Entry& entry) const {
 }
 
 void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
-
-  std::cout << "size before: " << index_file_.size() << std::endl;
 
   if (empty_()) {
 
@@ -250,31 +248,26 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
         std::vector<Cell>{}
       );
 
-      // Mark the old root as not a leaf, and then split it
-      old_root->leaf_ = true;
+      // Mark the old root as a leaf if it WAS a leaf, and then split it
       split(0, *new_root, *old_root, header->root_);
-
-      // Compare the key to be inserted and the previous root's middle key
-      uint64_t middle_index{new_root->node_.front().left_};
-      uint64_t lr = *fetch_entry(middle_index) < *fetch_entry(entry_index) ?
-        new_root->right_ :
-        new_root->node_.front().left_;
-      insert_capacity(row_index, entry_index, lr);
 
       // Write back the old root and new root before the header is updated (while old_root
       // index is still known)
       index_file_.write(header->root_, std::move(old_root));
-      index_file_.append(std::move(new_root));
 
-      // Update the header and write it back
-      header->root_ = index_file_.size() - 1;
+      // Compare the key to be inserted and the previous root's middle key
+      uint64_t lr = *fetch_entry(new_root->node_.front().key_) < *fetch_entry(entry_index) ?
+        new_root->right_ :
+        new_root->node_.front().left_;
+      insert_capacity(row_index, entry_index, lr);
+
+      // Update the header and write it back, along with the new root page
+      header->root_ = index_file_.append(std::move(new_root));
       index_file_.write(0, std::move(header));
     }
 
     else insert_capacity(row_index, entry_index, header->root_);
   }
-
-  std::cout << "size after: " << index_file_.size() << std::endl;
 }
 
 bool BaseColumn::Impl::empty_() {
