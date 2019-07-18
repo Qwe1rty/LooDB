@@ -184,6 +184,8 @@ void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
       );
     }
   }
+
+  std::cerr << "insert values are valid" << std::endl;
 }
 
 std::set<uint32_t> Table::TableImpl::setUnion(std::set<uint32_t>& set1, std::set<uint32_t>& set2) {
@@ -284,6 +286,7 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
   if (columns[0] == "*") {
     star = true;
   } else {
+    // Check that columns exist
     for (std::string& column : columns) {
       if (this->columns_.find(column) == this->columns_.end()) {
         // Column doesn't exist, so print error and return
@@ -334,6 +337,8 @@ void Table::printColumns(std::vector<string>& columns, bool where,
 
 void Table::TableImpl::printRow(std::vector<std::unique_ptr<Entry>>& row,
                                            std::vector<string>& columns, bool star) {
+  std::cerr << "printing row" << std::endl;
+  
   EntryType entryType;
   if (star) { // Print all columns
     for (int i = 0; i < row.size(); ++i) {
