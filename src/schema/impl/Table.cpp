@@ -152,7 +152,7 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
 void Table::insertColumns(std::vector<std::unique_ptr<Entry>>& e) {
 
   try {
-    checkInsertValid(e); // TODO change to const ref to avoid move error
+    checkInsertValid(e);
   }
   catch (const std::invalid_argument& e) {
     std::cout << e.what() << std::endl;
@@ -229,7 +229,9 @@ void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
     std::string columnName = this->impl_->indexToColumn_[i];
     if (!this->impl_->columns_.at(columnName)->valid(*e[i])) {
       throw std::invalid_argument(
-        "Error: Value " + std::to_string(i+1) + " is invalid."
+        "Error: Attempted inserted value is invalid for column " +
+        columnName +
+        ", does not meet column restrictions."
       );
     }
   }
