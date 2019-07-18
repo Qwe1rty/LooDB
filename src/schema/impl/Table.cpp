@@ -228,6 +228,7 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>>& e) {
   }
   catch (const std::invalid_argument& e) {
     std::cout << e.what() << std::endl;
+    return;
   }
 
   string data_path = impl_->path_;
