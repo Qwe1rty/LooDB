@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+
 class BaseColumn : public Column  {
 
 public:
@@ -21,7 +22,7 @@ private:
 
   struct Iterator : Column::Iterator {
 
-    uint32_t operator* () override;
+    std::pair<std::unique_ptr<Entry>, uint32_t> operator* () override;
     Iterator& operator++ () override;
     bool operator!= (const Column::Iterator&) override;
     bool operator== (const Column::Iterator&) override;

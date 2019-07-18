@@ -123,7 +123,7 @@ void ByteWriter<Datatype>::Impl::write(const Numeric& item) {
   }
 
   for (uint32_t i = 0; i < item_size; ++i) {
-    bytes_[offset_] = (item >> (i * 8));
+    bytes_[offset_] = static_cast<unsigned char>(item >> (i * 8));
     ++offset_;
   }
 }

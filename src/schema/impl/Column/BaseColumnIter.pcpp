@@ -1,7 +1,7 @@
 #include "../../api/Column/BaseColumn.h"
+#include "../../api/Entry/IntEntry.h"
 
 #include <stack>
-#include <iostream>
 
 
 class BaseColumn::Impl::Iterator {
@@ -14,7 +14,7 @@ private:
 
 public:
 
-  uint32_t operator* ();
+  std::pair<std::unique_ptr<Entry>, uint32_t> operator* ();
   Iterator& operator++ ();
   bool operator!= (const Column::Iterator&);
   bool operator== (const Column::Iterator&);
@@ -48,9 +48,10 @@ std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::begin_() {
     path.push(header->root_);
     cells.push(0);
 
-    std::cout << "path.top(): " << header->root_ << std::endl;
-    std::cout << "node_.size(): " << fetch_node(path.top())->node_.size() << std::endl;
-    std::cout << "child_index: " << fetch_node(path.top())->node_.front().left_ << std::endl;
+//    std::cout << "path.top(): " << header->root_ << std::endl;
+//    std::cout << "node_.size(): " << fetch_node(path.top())->node_.size() << std::endl;
+//    std::cout << "child_index: " << fetch_node(path.top())->node_.front().left_ << std::endl;
+
     uint32_t child_index = fetch_node(path.top())->node_.front().left_;
 
     while (child_index > 0) {
@@ -131,11 +132,16 @@ std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::find_(const Entry&
  * Iterator implementation
  */
 
-uint32_t BaseColumn::Impl::Iterator::operator*() {
+std::pair<std::unique_ptr<Entry>, uint32_t> BaseColumn::Impl::Iterator::operator*() {
 
-  return path_.empty() || cells_.empty() ?
-    0 :
-    parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_;
+  if (path_.empty() || cells_.empty()) return std::make_pair(nullptr, 0);
+  else {
+    auto page = parent_.fetch_node(path_.top())->node_.at(cells_.top());
+    return std::make_pair(
+      parent_.fetch_entry(page.key_),
+      page.value_
+    );
+  }
 }
 
 BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
@@ -143,9 +149,16 @@ BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
   // If it's not already at the end or just empty
   if (!path_.empty() && !cells_.empty()) {
 
-    // DEBUG
-    for (int i = 0; i < path_.size(); ++i) std::cout << ' ';
-    std::cout << "path_.top() page: " << path_.top() << ", cells_.top() index: " << cells_.top() << std::endl;
+    for (int i = 0; i < path_.size(); ++i) std::cout << "  ";
+    std::cout << "path_.top() page: " << std::flush;
+    std::cout << path_.top() << std::flush;
+    std::cout << ", cells_.top() index: " << std::flush;
+    std::cout << cells_.top() << std::flush;
+    std::cout << ", entry index: " << std::flush;
+    std::cout << parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_ << std::flush;
+    std::cout << ", entry value: " << std::flush;
+    std::cout << static_cast<IntEntry*>(parent_.fetch_entry(parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_).get())->getVal() << std::flush;
+    std::cout << std::endl;
 
     // Increment cell value for this B-Tree node
     uint32_t cell = cells_.top() + 1;
@@ -158,15 +171,37 @@ BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
     // If it's not reached the end of the node, increment or increment + recurse
     if (cells_.top() < node->node_.size()) {
 
-      // If there's a child, recurse into it
+      // Keep recursing if there's children
       uint32_t child_index = node->node_.at(cells_.top()).left_;
-      if (child_index > 0) {
+      while (child_index > 0) {
         cells_.push(0);
         path_.push(child_index);
+
+        node = parent_.fetch_node(path_.top());
+        child_index = node->node_.at(cells_.top()).left_;
       }
     }
 
-    // Else backtrack and unwind the stack
+    // See if there's a rightmost child, and recurse into it if it exists
+    else if (node->right_ > 0) {
+      cells_.push(0);
+      path_.push(node->right_);
+
+      // Traverse to the right node
+      node = parent_.fetch_node(path_.top());
+
+      // Keep recursing if there's children
+      uint32_t child_index = node->node_.at(cells_.top()).left_;
+      while (child_index > 0) {
+        cells_.push(0);
+        path_.push(child_index);
+
+        node = parent_.fetch_node(path_.top());
+        child_index = node->node_.at(cells_.top()).left_;
+      }
+    }
+
+    // Otherwise backtrack and unwind the stack
     else {
       while (cells_.top() >= node->node_.size()) {
         cells_.pop();
@@ -211,7 +246,7 @@ BaseColumn::Impl::Iterator::Iterator(BaseColumn::Impl& parent,
  * BaseColumn::Iterator.h implementations
  */
 
-uint32_t BaseColumn::Iterator::operator*() {
+std::pair<std::unique_ptr<Entry>, uint32_t> BaseColumn::Iterator::operator*() {
   return **impl_->impl_;
 }
 
