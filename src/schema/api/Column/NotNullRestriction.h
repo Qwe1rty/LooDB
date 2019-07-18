@@ -18,7 +18,7 @@ class NotNullRestriction : public ColumnRestriction  {
   public:
 
     // Constructor
-    NotNullRestriction( /* params */ );
+    NotNullRestriction(std::unique_ptr<Column> );
 
 };
 

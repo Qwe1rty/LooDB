@@ -26,7 +26,7 @@ class ColumnRestriction : public Column  {
   public:
 
     // Constructor
-    ColumnRestriction( /* params */ );
+    ColumnRestriction(std::unique_ptr<Column>);
 
 };
 

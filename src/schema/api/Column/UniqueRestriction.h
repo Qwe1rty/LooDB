@@ -18,7 +18,7 @@ class UniqueRestriction : public ColumnRestriction  {
   public:
 
     // Constructor
-    UniqueRestriction( /* params */ );
+    UniqueRestriction(std::unique_ptr<Column> );
 
 };
 
