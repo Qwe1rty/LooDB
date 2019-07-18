@@ -31,7 +31,7 @@ Table::Table(string s) : impl_{make_unique<TableImpl>(s)} {}
 
 void Table::TableImpl::populateTable(){
   cerr << "Found table: " << name_ << endl;
-
+  vector<string> col_files;
   DIR *pDIR;
   struct dirent *entry;
   struct stat sb;
@@ -53,8 +53,9 @@ void Table::TableImpl::populateTable(){
           prop_file_ = input;
           cerr << "- 1 - found file: " << prop_file_ << endl;
         }else if (input.find(col_ext_) != string::npos) {
-          // add columns based on this
-          cerr << "- 2 - found file: " << entry->d_name << endl;
+          // TODO: add columns based on this
+          col_files.emplace_back(input.substr(0, (input.length()-col_ext_.length())));
+          cerr << "- 2 - found file: " << input.substr(0, (input.length()-col_ext_.length())) << endl;
         }
       }
     }
@@ -65,6 +66,60 @@ void Table::TableImpl::populateTable(){
     }
     closedir(pDIR);
   }
+
+  populateHelper(col_files);
+}
+
+void Table::TableImpl::populateHelper(vector<string> & col) {
+  // create prop path to read columns in
+  string prop_path = path_;
+  prop_path.append("/");
+  prop_path.append(name_);
+  prop_path.append(prop_ext_);
+  Pager prop{prop_path};
+  cerr << "p: prop path: " << prop_path << endl;
+
+  // create pager to data file
+  string data_path = path_;
+  data_path.append("/");
+  data_path.append(name_);
+  data_path.append(data_ext_);
+  Pager p{data_path};
+  cerr << "p: data path: " << data_path << endl;
+  
+  if(col.size() != prop.size()) {
+    cout << "Error: Columns have been corrupted when building from disk" << endl;
+    return;
+  }
+  for(int i = 0; i < prop.size(); ++i) {
+    const auto page = prop.fetch<PropertiesPage>(i);
+    string col_path = path_;
+    col_path.append("/");
+    col_path.append(col.at(i));
+    col_path.append(col_ext_);
+
+    if(page->restrictions_ == "primary key") {
+      pkey_column_ = col.at(i);
+      columns_.insert({col.at(i), 
+            make_unique<UniqueRestriction>(
+              make_unique<NotNullRestriction>(
+                make_unique<BaseColumn>(col_path,  page->type_ , p)
+              ))});
+      cerr << "p: primary key" << endl;
+    } else if(page->restrictions_ == "not null") {
+      columns_.insert({col.at(i), make_unique<NotNullRestriction>(
+            make_unique<BaseColumn>(col_path,page->type_  , p)
+            )});
+      cerr << "p: not null" << endl;
+    } else {
+      columns_.insert({ col.at(i), make_unique<BaseColumn>(col_path, page->type_ , p)});
+      cerr << "p: no mods" << endl;
+    }
+    columnsTypes_.insert({col.at(i), page->type_});
+    columnsIndices_.insert({col.at(i), i});
+    indexToColumn_.insert({ i, col.at(i)});
+  }
+  //cerr << "Help build object representation " << (col.size() == prop.size()) << " " << prop_path<< endl;
 }
 
 void Table::TableImpl::buildTable() {
@@ -126,21 +181,22 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
     // create a column with respective entry type and modifications (decorations)
     if(get<2>(col) == "primary key") {
       impl_->pkey_column_ = get<0>(col);
-      impl_->columns_.insert({get<0>(col), 
+      /* impl_->columns_.insert({get<0>(col), 
             make_unique<UniqueRestriction>(
               make_unique<NotNullRestriction>(
                 make_unique<BaseColumn>(col_path, get<1>(col), p)
-              ))});
+              ))}); */
       cerr << "primary key" << endl;
     } else if(get<2>(col) == "not null") {
-      impl_->columns_.insert({get<0>(col), make_unique<NotNullRestriction>(
+      /* impl_->columns_.insert({get<0>(col), make_unique<NotNullRestriction>(
             make_unique<BaseColumn>(col_path, get<1>(col), p)
-            )});
+            )}); */
       cerr << "not null" << endl;
     }else {
-      impl_->columns_.insert({ col_path, make_unique<BaseColumn>(col_path, get<1>(col), p)});
+      // impl_->columns_.insert({ get<0>(col), make_unique<BaseColumn>(col_path, get<1>(col), p)});
       cerr << "no mods" << endl;
     }
+    Pager l{col_path}; //
     impl_->columnsTypes_.insert({get<0>(col), get<1>(col)});
     impl_->columnsIndices_.insert({get<0>(col), propIndex});
     impl_->indexToColumn_.insert({ propIndex, get<0>(col)});
@@ -149,6 +205,7 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
     auto index = prop.append(p);
     if (index != propIndex) {
       cout << "Error: Table initialization failed with column (" << get<0>(col) << ")" << endl;
+      return;
     }
     ++propIndex;
     cerr << "col path: " << col_path << endl;

@@ -52,6 +52,7 @@ void Database::drop_table(const SQLDrop& s) {
        string rm = string("rm -r ");
        rm.append(path);
        system(rm.c_str());
+       cerr << rm << endl;
        impl_->tables_.erase(s.table_name_);
       } else {
        cerr << "Command processor doesn't exists" << endl; 
