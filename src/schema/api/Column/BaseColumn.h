@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+
 class BaseColumn : public Column  {
 
 public:

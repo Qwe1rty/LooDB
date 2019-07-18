@@ -10,6 +10,7 @@
 #include "../../page/api/EntryPage.h"
 #include "../../../../util/api/ByteReader.h"
 #include "../../../../util/api/ByteWriter.h"
+#include "../../page/api/PropertiesPage.h"
 
 #include <functional>
 #include <map>
@@ -141,6 +142,21 @@ namespace {
         for (uint32_t i = 0; i < page->value_.size() && writer; ++i) {
 
           writer << page->value_.at(i);
+        }
+      },
+    },
+    {
+      PROPERTIES_PAGE,
+      [](ByteWriter<Serial>& writer, const Object& obj) {
+
+        const auto page = static_cast<PropertiesPage*>(obj.get());
+
+        writer << static_cast<uint32_t>(page->type_);
+        writer << static_cast<uint32_t>(page->restrictions_.size());
+
+        for (uint32_t i = 0; i < page->restrictions_.size() && writer; ++i) {
+
+          writer << page->restrictions_[i];
         }
       }
     }
@@ -282,6 +298,29 @@ namespace {
         }
 
         return std::make_unique<EntryPage>(std::move(bytes), overflow);
+      }
+    },
+    {
+      PROPERTIES_PAGE,
+      [](ByteReader<const Serial>& reader) -> Object {
+
+        uint32_t type, size;
+        reader >> type >> size;
+
+        std::string restrictions;
+        restrictions.reserve(size);
+
+        for (int i = 0; i < size; ++i) {
+
+          char b;
+          reader >> b;
+          restrictions += b;
+        }
+
+        return std::make_unique<PropertiesPage>(
+          static_cast<EntryType>(type),
+          std::move(restrictions)
+        );
       }
     }
   };
