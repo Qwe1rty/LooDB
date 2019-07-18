@@ -2,6 +2,7 @@
 #include "../api/Cursor.h"
 #include "../api/Column/Column.h"
 #include "../api/Entry/Entry.h"
+#include "../api/Entry/EntryType.h"
 #include "../api/Entry/IntEntry.h"
 #include "../../filesystem/pagination/interface/api/Pager.h"
 #include <sys/stat.h>
@@ -9,9 +10,11 @@
 #include <memory>
 #include <iostream>
 #include <string.h>
+#include <string>
 #include <exception>
 #include <algorithm>
 #include <iterator>
+#include <vector>
 #include <set>
 #include <tuple>
 using namespace std;
@@ -96,7 +99,7 @@ void Table::TableImpl::buildTable() {
   Pager d{data_path}, r{row_path}, p{prop_path};
 }
 
-void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::string>> c){
+void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::string>>& c){
   cerr << "insert columns" << endl;
 
   int propIndex = 0;
@@ -143,7 +146,7 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
   }
 }
 
-void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
+void Table::insertColumns(std::vector<std::unique_ptr<Entry>>& e) {
 
   string data_path = impl_->path_;
   string row_path = impl_->path_;
@@ -162,8 +165,25 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
   
 }
 
-bool Table::checkInsertValid(std::vector<std::unique_ptr<Entry>> e) {
-  return true;
+void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
+  // Check correct number of values
+  if (e.size() != this->impl_->columns_.size()) {
+    throw std::invalid_argument(
+      "Error: Column " + this->impl_->name_ + " expects "
+      + std::to_string(this->impl_->columns_.size()) + " values."
+    );
+  }
+
+  // Check values match column type
+  for (int i = 0; i < this->impl_->columns_.size(); ++i) {
+    EntryType columnType = this->impl_->columnsTypes_[this->impl_->indexToColumn_[i]];
+    if (e[i]->getType() != columnType) {
+      throw std::invalid_argument(
+        "Error: Value " + std::to_string(i+1) + " should be of type "
+        + (columnType == EntryType::INTEGER ? "integer" : "text") + "."
+      );
+    }
+  }
 }
 
 std::set<uint32_t> Table::TableImpl::setUnion(std::set<uint32_t>& set1, std::set<uint32_t>& set2) {
