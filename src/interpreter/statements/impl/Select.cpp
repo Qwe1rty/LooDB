@@ -20,7 +20,15 @@ SQLSelect::SQLSelect(std::string tableName, std::vector<std::string> columns,
   bool where, unique_ptr<SQLSelect::WhereTree> whereTree) : 
   SQLStatement(tableName, stmtSelect), impl_{make_unique<Impl>(move(columns), where, move(whereTree))} {}
 
+std::vector<std::string>& SQLSelect::Impl::getColumns_() {
+  return this->columns_;
+}
+
 bool SQLSelect::Impl::getWhere() { return where_; }
+
+std::unique_ptr<SQLSelect::WhereTree>& SQLSelect::Impl::getWhereTree_() {
+  return this->whereTree_;
+}
 
 void SQLSelect::Impl::printWhereTreeHelper(std::unique_ptr<SQLSelect::WhereTree>& root) {
   // Base case
@@ -42,8 +50,16 @@ void SQLSelect::Impl::printWhereTree() {
   printWhereTreeHelper(whereTree_);
 }
 
-bool SQLSelect::hasWhere() {
+std::vector<std::string>& SQLSelect::getColumns() const {
+  return this->impl_->getColumns_();
+}
+
+bool SQLSelect::hasWhere() const {
   return impl_->getWhere();
+}
+
+std::unique_ptr<SQLSelect::WhereTree>& SQLSelect::getWhereTree() const {
+  return this->impl_->getWhereTree_();
 }
 
 void SQLSelect::printWhere() {

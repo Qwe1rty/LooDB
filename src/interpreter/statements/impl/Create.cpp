@@ -6,11 +6,10 @@ SQLCreate::Impl::Impl(std::vector<std::tuple<std::string, EntryType, std::string
 SQLCreate::SQLCreate(std::string t, std::vector<std::tuple<std::string, EntryType, std::string>> c) : 
   SQLStatement(t, stmtCreate), impl_{std::make_unique<Impl>(c)} {}
 
-std::vector<std::tuple<std::string, EntryType, std::string>> SQLCreate::getColumns() const {
-  return impl_->columnGetter();
+std::vector<std::tuple<std::string, EntryType, std::string>>& SQLCreate::Impl::columnGetter()  {
+  return columns_;
 }
 
-
-std::vector<std::tuple<std::string, EntryType, std::string>> SQLCreate::Impl::columnGetter() const {
-  return columns_;
+std::vector<std::tuple<std::string, EntryType, std::string>>& SQLCreate::getColumns() const {
+  return impl_->columnGetter();
 }

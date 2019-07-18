@@ -15,7 +15,7 @@ class SQLCreate : public SQLStatement {
     std::vector<std::tuple<std::string, EntryType, std::string>> columns_;
   public:
     Impl(std::vector<std::tuple<std::string, EntryType, std::string>> c);
-    std::vector<std::tuple<std::string, EntryType, std::string>> columnGetter() const;
+    std::vector<std::tuple<std::string, EntryType, std::string>>& columnGetter();
   };
 
   // pImpl for SQLCreate
@@ -26,7 +26,7 @@ class SQLCreate : public SQLStatement {
   // Constructor
   SQLCreate(std::string, std::vector<std::tuple<std::string, EntryType, std::string>>);
 
-  std::vector<std::tuple<std::string, EntryType, std::string>> getColumns() const;
+  std::vector<std::tuple<std::string, EntryType, std::string>>& getColumns() const;
 
 };
 

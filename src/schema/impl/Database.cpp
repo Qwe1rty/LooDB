@@ -88,9 +88,9 @@ void Database::create_table(const SQLCreate& s) {
 }
 
 
-bool Database::checkCreateValid(std::vector<std::tuple<std::string, EntryType, std::string>> c) {
+bool Database::checkCreateValid(std::vector<std::tuple<std::string, EntryType, std::string>>& c) {
   vector<string> tempColumns;
-  for(auto col : c) {
+  for(auto & col : c) {
     tempColumns.emplace_back(get<0>(col));
   }
   // remove repeated columns
@@ -98,7 +98,7 @@ bool Database::checkCreateValid(std::vector<std::tuple<std::string, EntryType, s
   tempColumns.erase(unique(tempColumns.begin(), tempColumns.end()), tempColumns.end());
   
   vector<string> tempPkeys, tempnNull;
-  for(auto col : c) {
+  for(auto & col : c) {
     get<2>(col) == "primary key" ? tempPkeys.emplace_back(get<2>(col)) : tempnNull.emplace_back(get<2>(col));
     cerr << get<2>(col) << endl;
   }
@@ -128,8 +128,7 @@ void Database::insert(const SQLInsert& s) {
 
     cerr << path << endl;
     
-    //bool valid = impl_->tables_.at(s.table_name_.c_str()).checkInsertValid(s.getEntries());
-    //impl_->tables_.at(s.table_name_.c_str()).createColumns(s.getEntries());
+    impl_->tables_.at(s.table_name_).insertColumns(s.getEntries());
   } else {
     cout << "Error: Table does not exist" << endl;
   }
@@ -137,8 +136,11 @@ void Database::insert(const SQLInsert& s) {
 
 void Database::select(const SQLSelect& s) {
   if(impl_->tables_.find(s.table_name_) != impl_->tables_.end()) {
-    cerr << "Table Exists" << endl;
-
+    impl_->tables_.at(s.table_name_).printColumns(
+      s.getColumns(),
+      s.hasWhere(),
+      s.getWhereTree()
+    );
   } else {
     cout << "Error: Table does not exist" << endl;
   }
