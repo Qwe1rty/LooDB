@@ -1,8 +1,11 @@
 #ifndef LOODB_TABLE_H
 #define LOODB_TABLE_H
 
-//#include "Column/Column.h"
-//#include "Column/BaseColumn.h"
+#include "Column/Column.h"
+#include "Column/BaseColumn.h"
+#include "Column/ColumnRestriction.h"
+#include "Column/NotNullRestriction.h"
+#include "Column/UniqueRestriction.h"
 #include "Cursor.h"
 #include "Column/Column.h"
 #include "Entry/Entry.h"
@@ -72,20 +75,20 @@ class Table {
   // Constructor
   Table(std::string);
 
+  // Create Column
+  void createColumns(std::vector<std::tuple<std::string, EntryType, std::string>>);
+
+  // Insert row into Columns
+  void insertColumns(std::vector<std::unique_ptr<Entry>> e);
+
+  // Check if inserting row is valid
+  bool checkInsertValid(std::vector<std::unique_ptr<Entry>> e);
+
   // Print rows given select statement criteria
   // Prints nothing if table is empty
   // Prints error if where clauses don't match column type
   void printColumns(std::vector<string>& columns, bool where,
                     unique_ptr<SQLSelect::WhereTree>& whereTree);
-
-  // Return a Cursor to row at Entry in table column
-  //Cursor find(std::string, Entry);
-
-  // Return a Cursor to the beginning of table
-  //Cursor begin();
-
-  // Return a Cursor to the end of table
-  //Cursor end();
 
 };
 
