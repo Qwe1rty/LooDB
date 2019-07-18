@@ -8,13 +8,15 @@
 #include <memory>
 
 
-// Decorator for Column
+// Decorator interface for Column
 class ColumnRestriction : public Column  {
+
+  // Base column
+  const std::unique_ptr<Column> base_;
 
 protected:
 
-  // Base column, and its constructor
-  std::unique_ptr<Column> base_;
+  Column& base() const;
 
   ColumnRestriction(std::unique_ptr<Column>);
 };
