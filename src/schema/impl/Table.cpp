@@ -2,6 +2,7 @@
 #include "../api/Cursor.h"
 #include "../api/Column/Column.h"
 #include "../api/Entry/Entry.h"
+#include "../api/Entry/EntryType.h"
 #include "../api/Entry/IntEntry.h"
 #include "../../filesystem/pagination/interface/api/Pager.h"
 #include <sys/stat.h>
@@ -9,9 +10,11 @@
 #include <memory>
 #include <iostream>
 #include <string.h>
+#include <string>
 #include <exception>
 #include <algorithm>
 #include <iterator>
+#include <vector>
 #include <set>
 #include <tuple>
 using namespace std;
@@ -96,7 +99,7 @@ void Table::TableImpl::buildTable() {
   Pager d{data_path}, r{row_path}, p{prop_path};
 }
 
-void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::string>> c){
+void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::string>>& c){
   cerr << "insert columns" << endl;
 
   int propIndex = 0;
@@ -143,7 +146,7 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
   }
 }
 
-void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
+void Table::insertColumns(std::vector<std::unique_ptr<Entry>>& e) {
 
   string data_path = impl_->path_;
   string row_path = impl_->path_;
@@ -162,8 +165,26 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
   
 }
 
-bool Table::checkInsertValid(std::vector<std::unique_ptr<Entry>> e) {
-  return true;
+void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
+  // Check correct number of values
+  if (e.size() != this->impl_->columns_.size()) {
+    throw std::invalid_argument(
+      "Error: Column " + this->impl_->name_ + " expects "
+      + std::to_string(this->impl_->columns_.size()) + " values."
+    );
+  }
+
+  // Check that values are valid column entries
+  for (int i = 0; i < this->impl_->columns_.size(); ++i) {
+    std::string columnName = this->impl_->indexToColumn_[i];
+    if (!this->impl_->columns_.at(columnName)->valid(*e[i])) {
+      throw std::invalid_argument(
+        "Error: Value " + std::to_string(i+1) + " is invalid."
+      );
+    }
+  }
+
+  std::cerr << "insert values are valid" << std::endl;
 }
 
 std::set<uint32_t> Table::TableImpl::setUnion(std::set<uint32_t>& set1, std::set<uint32_t>& set2) {
@@ -264,6 +285,7 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
   if (columns[0] == "*") {
     star = true;
   } else {
+    // Check that columns exist
     for (std::string& column : columns) {
       if (this->columns_.find(column) == this->columns_.end()) {
         // Column doesn't exist, so print error and return
@@ -292,6 +314,7 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
   // If where == true, print individual rows
   // Otherwise, print every row using cursor
   if (where) {
+    std::cerr << "Printing table! (where rows)" << std::endl;
     for (auto it = pageIndices.begin(); it != pageIndices.end(); ++it) {
       auto cursor = this->find(*it);
       std::vector<std::unique_ptr<Entry>> row = std::move(*cursor);
@@ -299,6 +322,7 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
     }
   } else {
     // Print all rows
+    std::cerr << "Printing table! (all rows)" << std::endl;
     for (auto it = this->begin(); it != this->end(); ++it) {
       std::vector<std::unique_ptr<Entry>> row = std::move(*it);
       this->printRow(row, columns, star);
@@ -314,6 +338,8 @@ void Table::printColumns(std::vector<string>& columns, bool where,
 
 void Table::TableImpl::printRow(std::vector<std::unique_ptr<Entry>>& row,
                                            std::vector<string>& columns, bool star) {
+  std::cerr << "printing row" << std::endl;
+  
   EntryType entryType;
   if (star) { // Print all columns
     for (int i = 0; i < row.size(); ++i) {
