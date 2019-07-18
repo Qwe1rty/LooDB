@@ -17,17 +17,21 @@ class Cursor {
         // loc == true -> end
         bool loc_;
 
-        // Pager for B+tree and data files
-        Pager& bptree_;
-        Pager& data_;
+        // Paths for row and data files
+        std::string rowPath_;
+        std::string dataPath_;
+
+        // Pager for row and data files
+        std::unique_ptr<Pager> row_;
+        std::unique_ptr<Pager> data_;
 
         // Page index
         uint32_t page_index_;
 
         // Constructor
-        // Takes in path to B+tree and bool loc
+        // Takes in path to row and bool loc
         // loc == false -> start, loc == true -> end
-        Impl(Pager& bptree, Pager& data, bool loc);
+        Impl(std::string rowPath, std::string dataPath, bool loc);
     };
 
     // pImpl for Cursor
@@ -36,9 +40,9 @@ class Cursor {
   public:
 
     // Constructor
-    // Takes in path to B+tree and bool loc
+    // Takes in path to row and bool loc
     // loc == false -> start, loc == true -> end
-    Cursor(Pager& bptree, Pager& data, bool loc);
+    Cursor(std::string rowPath, std::string dataPath, bool loc);
 
     // Check if this is equal to other
     bool operator!=(const Cursor& other) const;
