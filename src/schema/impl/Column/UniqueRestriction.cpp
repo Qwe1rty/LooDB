@@ -1,3 +1,4 @@
+#include <iostream>
 #include "../../api/Column/UniqueRestriction.h"
 
 
@@ -8,7 +9,7 @@ UniqueRestriction::UniqueRestriction(std::unique_ptr<Column> base) :
 // Validate an Entry before writing to Column
 bool UniqueRestriction::valid_(const Entry& entry) const {
 
-  return base().find(entry) != base().end() &&
+  return *base().find(entry) == *base().end() &&
          base().valid(entry);
 }
 
