@@ -27,7 +27,7 @@ Cursor::Cursor(std::string rowPath, std::string dataPath, int pageIndex) :
 // Check that row paths aren't not equal or page_index_ aren't equal
 bool Cursor::operator!=(const Cursor& other) const {
   return (
-    (this->impl_->rowPath_ != other.impl_->rowPath_) &&
+    (this->impl_->rowPath_ != other.impl_->rowPath_) ||
     (this->impl_->page_index_ != other.impl_->page_index_)
   );
 }

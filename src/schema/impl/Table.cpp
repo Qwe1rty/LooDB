@@ -302,13 +302,13 @@ void Table::TableImpl::printRow(std::vector<std::unique_ptr<Entry>>& row,
 Cursor Table::TableImpl::begin() {
   std::string rowPath = this->data_file_ + this->data_ext_;
   std::string dataPath = this->row_file_ + this->row_ext_;
-  return Cursor(rowPath, dataPath, -1);
+  return Cursor(rowPath, dataPath, 0);
 }
 
 Cursor Table::TableImpl::end() {
   std::string rowPath = this->data_file_ + this->data_ext_;
   std::string dataPath = this->row_file_ + this->row_ext_;
-  return Cursor(rowPath, dataPath, 0);
+  return Cursor(rowPath, dataPath, -1);
 }
 
 Cursor Table::TableImpl::find(uint32_t pageIndex) {
