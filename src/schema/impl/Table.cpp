@@ -314,6 +314,7 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
   // If where == true, print individual rows
   // Otherwise, print every row using cursor
   if (where) {
+    std::cerr << "Printing table! (where rows)" << std::endl;
     for (auto it = pageIndices.begin(); it != pageIndices.end(); ++it) {
       auto cursor = this->find(*it);
       std::vector<std::unique_ptr<Entry>> row = std::move(*cursor);
@@ -321,6 +322,7 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
     }
   } else {
     // Print all rows
+    std::cerr << "Printing table! (all rows)" << std::endl;
     for (auto it = this->begin(); it != this->end(); ++it) {
       std::vector<std::unique_ptr<Entry>> row = std::move(*it);
       this->printRow(row, columns, star);
