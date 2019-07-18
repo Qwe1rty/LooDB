@@ -51,13 +51,19 @@ void Table::TableImpl::populateTable(){
           && strcmp(input.substr(0, (input.length()-row_ext_.length())).c_str(), name_.c_str()) == 0) {
           row_file_ = input;
           cerr << "- 1 - found file: " << row_file_ << endl;
-        } else if (input.find(col_ext_) != string::npos) {
+        } else if ((input.find(prop_ext_) != string::npos)
+          && strcmp(input.substr(0, (input.length()-prop_ext_.length())).c_str(), name_.c_str()) == 0) {
+          prop_file_ = input;
+          cerr << "- 1 - found file: " << prop_file_ << endl;
+        }else if (input.find(col_ext_) != string::npos) {
           // add columns based on this
           cerr << "- 2 - found file: " << entry->d_name << endl;
         }
       }
     }
-    if(strcmp(data_file_.c_str(), ".") == 0 || strcmp(row_file_.c_str(),".") == 0 ) {
+    if(strcmp(data_file_.c_str(), ".") == 0 
+      || strcmp(row_file_.c_str(),".") == 0 
+      || strcmp(prop_file_.c_str(),".") == 0 ) {
       throw domain_error("Invalid State with Default Files in Table " + name_);
     }
     closedir(pDIR);
@@ -71,6 +77,7 @@ void Table::TableImpl::buildTable() {
 
   string data_path = path_;
   string row_path = path_;
+  string prop_path = path_;
 
   data_path.append("/");
   data_path.append(name_);
@@ -80,35 +87,60 @@ void Table::TableImpl::buildTable() {
   row_path.append(name_);
   row_path.append(row_ext_);
 
-  cerr << data_path << " - " << row_path << endl;
+  prop_path.append("/");
+  prop_path.append(name_);
+  prop_path.append(prop_ext_);
+
+  cerr << data_path << " - " << row_path << " - " << prop_path << endl;
 
   // create directory
   mkdir(path_.c_str(), 0777);
   // write file names using pager 
-  Pager p{data_path}, q{row_path};
+  Pager d{data_path}, r{row_path}, p{prop_path};
 }
 
 void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::string>> c){
   cerr << "insert columns" << endl;
 
-  for(auto col:c) {
+  int propIndex = 0;
+  // create pager to data file
+  string data_path = impl_->path_;
+  data_path.append("/");
+  data_path.append(impl_->name_);
+  data_path.append(impl_->data_ext_);
+  Pager p{data_path};
+  cerr << "data path: " << data_path << endl;
+
+  for(auto &col:c) {
+    // path for each column
     string col_path = impl_->path_;
     col_path.append("/");
     col_path.append(get<0>(col));
     col_path.append(impl_->col_ext_);
-
-    Pager p{col_path};
+ 
     // create a column with respective entry type and modifications (decorations)
     if(get<2>(col) == "primary key") {
       impl_->pkey_column_ = get<0>(col);
       impl_->columns_.insert({get<0>(col), 
             make_unique<UniqueRestriction>(
               make_unique<NotNullRestriction>(
-                make_unique<BaseColumn>(get<0>(col), get<1>(col), p)
+                make_unique<BaseColumn>(col_path, get<1>(col), p)
               ))});
-    } else {
-      
+      // insert type info into properties page
+      cerr << "primary key" << endl;
+    } else if(get<2>(col) == "not null") {
+      impl_->columns_.insert({get<0>(col), make_unique<NotNullRestriction>(
+            make_unique<BaseColumn>(col_path, get<1>(col), p)
+            )});
+      cerr << "not null" << endl;
+    }else {
+      impl_->columns_.insert({ col_path, make_unique<BaseColumn>(col_path, get<1>(col), p)});
+      cerr << "no mods" << endl;
     }
+    impl_->columnsTypes_.insert({get<0>(col), get<1>(col)});
+    impl_->columnsIndices_.insert({get<0>(col), propIndex});
+    impl_->indexToColumn_.insert({ propIndex, get<0>(col)});
+    ++propIndex;
     cerr << "col path: " << col_path << endl;
 
   }
