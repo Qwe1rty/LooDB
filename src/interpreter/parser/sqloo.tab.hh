@@ -286,7 +286,6 @@ namespace yy {
       char dummy1[sizeof(int)];
 
       // STRING
-      // restrictions
       // restriction
       // col
       // text
@@ -788,7 +787,7 @@ namespace yy {
     {
       yyeof_ = 0,
       yylast_ = 58,     ///< Last index in yytable_.
-      yynnts_ = 20,  ///< Number of nonterminal symbols.
+      yynnts_ = 19,  ///< Number of nonterminal symbols.
       yyfinal_ = 18, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
@@ -875,10 +874,9 @@ namespace yy {
         break;
 
       case 27: // STRING
-      case 37: // restrictions
-      case 38: // restriction
-      case 42: // col
-      case 47: // text
+      case 37: // restriction
+      case 41: // col
+      case 46: // text
         value.copy< std::string > (other.value);
         break;
 
@@ -886,13 +884,13 @@ namespace yy {
         value.copy< std::tuple<std::string, EntryType, std::string> > (other.value);
         break;
 
-      case 46: // entry
+      case 45: // entry
         value.copy< std::unique_ptr<Entry> > (other.value);
         break;
 
-      case 43: // whereExpr
-      case 44: // whereTerm
-      case 45: // whereFactor
+      case 42: // whereExpr
+      case 43: // whereTerm
+      case 44: // whereFactor
         value.copy< std::unique_ptr<SQLSelect::WhereTree> > (other.value);
         break;
 
@@ -904,7 +902,7 @@ namespace yy {
         value.copy< std::unique_ptr<SQLStatement> > (other.value);
         break;
 
-      case 41: // cols
+      case 40: // cols
         value.copy< std::vector<std::string> > (other.value);
         break;
 
@@ -912,8 +910,8 @@ namespace yy {
         value.copy< std::vector<std::tuple<std::string, EntryType, std::string>> > (other.value);
         break;
 
-      case 39: // row
-      case 40: // entries
+      case 38: // row
+      case 39: // entries
         value.copy< std::vector<std::unique_ptr<Entry>> > (other.value);
         break;
 
@@ -938,10 +936,9 @@ namespace yy {
         break;
 
       case 27: // STRING
-      case 37: // restrictions
-      case 38: // restriction
-      case 42: // col
-      case 47: // text
+      case 37: // restriction
+      case 41: // col
+      case 46: // text
         value.copy< std::string > (v);
         break;
 
@@ -949,13 +946,13 @@ namespace yy {
         value.copy< std::tuple<std::string, EntryType, std::string> > (v);
         break;
 
-      case 46: // entry
+      case 45: // entry
         value.copy< std::unique_ptr<Entry> > (v);
         break;
 
-      case 43: // whereExpr
-      case 44: // whereTerm
-      case 45: // whereFactor
+      case 42: // whereExpr
+      case 43: // whereTerm
+      case 44: // whereFactor
         value.copy< std::unique_ptr<SQLSelect::WhereTree> > (v);
         break;
 
@@ -967,7 +964,7 @@ namespace yy {
         value.copy< std::unique_ptr<SQLStatement> > (v);
         break;
 
-      case 41: // cols
+      case 40: // cols
         value.copy< std::vector<std::string> > (v);
         break;
 
@@ -975,8 +972,8 @@ namespace yy {
         value.copy< std::vector<std::tuple<std::string, EntryType, std::string>> > (v);
         break;
 
-      case 39: // row
-      case 40: // entries
+      case 38: // row
+      case 39: // entries
         value.copy< std::vector<std::unique_ptr<Entry>> > (v);
         break;
 
@@ -1079,10 +1076,9 @@ namespace yy {
         break;
 
       case 27: // STRING
-      case 37: // restrictions
-      case 38: // restriction
-      case 42: // col
-      case 47: // text
+      case 37: // restriction
+      case 41: // col
+      case 46: // text
         value.template destroy< std::string > ();
         break;
 
@@ -1090,13 +1086,13 @@ namespace yy {
         value.template destroy< std::tuple<std::string, EntryType, std::string> > ();
         break;
 
-      case 46: // entry
+      case 45: // entry
         value.template destroy< std::unique_ptr<Entry> > ();
         break;
 
-      case 43: // whereExpr
-      case 44: // whereTerm
-      case 45: // whereFactor
+      case 42: // whereExpr
+      case 43: // whereTerm
+      case 44: // whereFactor
         value.template destroy< std::unique_ptr<SQLSelect::WhereTree> > ();
         break;
 
@@ -1108,7 +1104,7 @@ namespace yy {
         value.template destroy< std::unique_ptr<SQLStatement> > ();
         break;
 
-      case 41: // cols
+      case 40: // cols
         value.template destroy< std::vector<std::string> > ();
         break;
 
@@ -1116,8 +1112,8 @@ namespace yy {
         value.template destroy< std::vector<std::tuple<std::string, EntryType, std::string>> > ();
         break;
 
-      case 39: // row
-      case 40: // entries
+      case 38: // row
+      case 39: // entries
         value.template destroy< std::vector<std::unique_ptr<Entry>> > ();
         break;
 
@@ -1149,10 +1145,9 @@ namespace yy {
         break;
 
       case 27: // STRING
-      case 37: // restrictions
-      case 38: // restriction
-      case 42: // col
-      case 47: // text
+      case 37: // restriction
+      case 41: // col
+      case 46: // text
         value.move< std::string > (s.value);
         break;
 
@@ -1160,13 +1155,13 @@ namespace yy {
         value.move< std::tuple<std::string, EntryType, std::string> > (s.value);
         break;
 
-      case 46: // entry
+      case 45: // entry
         value.move< std::unique_ptr<Entry> > (s.value);
         break;
 
-      case 43: // whereExpr
-      case 44: // whereTerm
-      case 45: // whereFactor
+      case 42: // whereExpr
+      case 43: // whereTerm
+      case 44: // whereFactor
         value.move< std::unique_ptr<SQLSelect::WhereTree> > (s.value);
         break;
 
@@ -1178,7 +1173,7 @@ namespace yy {
         value.move< std::unique_ptr<SQLStatement> > (s.value);
         break;
 
-      case 41: // cols
+      case 40: // cols
         value.move< std::vector<std::string> > (s.value);
         break;
 
@@ -1186,8 +1181,8 @@ namespace yy {
         value.move< std::vector<std::tuple<std::string, EntryType, std::string>> > (s.value);
         break;
 
-      case 39: // row
-      case 40: // entries
+      case 38: // row
+      case 39: // entries
         value.move< std::vector<std::unique_ptr<Entry>> > (s.value);
         break;
 
@@ -1411,7 +1406,7 @@ namespace yy {
 
 
 } // yy
-#line 1415 "sqloo.tab.hh" // lalr1.cc:377
+#line 1410 "sqloo.tab.hh" // lalr1.cc:377
 
 
 

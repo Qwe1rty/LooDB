@@ -40,6 +40,4 @@ private:
 
 #include "../impl/Pager.tpp"
 
-#include "../impl/Pager.tpp"
-
 #endif //LOODB_PAGER_H
