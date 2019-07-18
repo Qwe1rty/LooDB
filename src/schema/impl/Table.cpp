@@ -3,7 +3,10 @@
 #include "../api/Column/Column.h"
 #include "../api/Entry/Entry.h"
 #include "../api/Entry/IntEntry.h"
+#include "../api/Entry/EntryCodec.h"
 #include "../../filesystem/pagination/interface/api/Pager.h"
+#include "../../filesystem/pagination/page/api/EntryPage.h"
+#include "../../filesystem/pagination/page/api/BPTreeLeafPage.h"
 #include <sys/stat.h>
 #include <dirent.h>
 #include <memory>
@@ -127,7 +130,28 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
   Pager data_file{data_path};
   Pager row_file{row_path};
 
-  
+  const EntryCodec entry_codec{};
+
+  // Tobys validations
+
+  // Create row page's CellBP vector, and determine the location of where the row page will be entered
+  std::vector<CellBP> cells{};
+  uint32_t row_index = row_file.size();
+
+  // Append the data entries and then pass the information to each column
+  for (const auto& entry : e) {
+
+    const std::unique_ptr<Page> entry_page = std::make_unique<EntryPage>(
+      entry_codec.encode(entry),
+      0
+    );
+
+    uint32_t entry_index = data_file.append(std::move(entry_page));
+
+    // TODO insert to the column
+  }
+
+  row_file.write();
 }
 
 bool Table::checkInsertValid(std::vector<std::unique_ptr<Entry>> e) {
