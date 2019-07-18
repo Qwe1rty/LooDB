@@ -181,22 +181,21 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
     // create a column with respective entry type and modifications (decorations)
     if(get<2>(col) == "primary key") {
       impl_->pkey_column_ = get<0>(col);
-      /* impl_->columns_.insert({get<0>(col), 
+       impl_->columns_.insert({get<0>(col), 
             make_unique<UniqueRestriction>(
               make_unique<NotNullRestriction>(
                 make_unique<BaseColumn>(col_path, get<1>(col), p)
-              ))}); */
+              ))}); 
       cerr << "primary key" << endl;
     } else if(get<2>(col) == "not null") {
-      /* impl_->columns_.insert({get<0>(col), make_unique<NotNullRestriction>(
+       impl_->columns_.insert({get<0>(col), make_unique<NotNullRestriction>(
             make_unique<BaseColumn>(col_path, get<1>(col), p)
-            )}); */
+            )});
       cerr << "not null" << endl;
     }else {
-      // impl_->columns_.insert({ get<0>(col), make_unique<BaseColumn>(col_path, get<1>(col), p)});
+       impl_->columns_.insert({ get<0>(col), make_unique<BaseColumn>(col_path, get<1>(col), p)});
       cerr << "no mods" << endl;
     }
-    Pager l{col_path}; //
     impl_->columnsTypes_.insert({get<0>(col), get<1>(col)});
     impl_->columnsIndices_.insert({get<0>(col), propIndex});
     impl_->indexToColumn_.insert({ propIndex, get<0>(col)});
