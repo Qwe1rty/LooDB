@@ -1,5 +1,7 @@
 #include "../api/ByteReader.h"
 
+#include <iostream>
+
 
 template<typename Datatype>
 class ByteReader<Datatype>::Impl {
@@ -108,7 +110,7 @@ void ByteReader<Datatype>::Impl::read(Numeric& item) {
 
   item = 0;
   for (uint32_t i = 0; i < item_size; ++i) {
-    item |= (bytes_[offset_] << (i * 8));
+    item |= static_cast<unsigned char>(bytes_[offset_] << (i * 8));
     ++offset_;
   }
 }
