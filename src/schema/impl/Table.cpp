@@ -113,6 +113,21 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
 
 void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
 
+  string data_path = impl_->path_;
+  string row_path = impl_->path_;
+
+  data_path.append("/");
+  data_path.append(impl_->name_);
+  data_path.append(impl_->data_ext_);
+
+  row_path.append("/");
+  row_path.append(impl_->name_);
+  row_path.append(impl_->row_ext_);
+
+  Pager data_file{data_path};
+  Pager row_file{row_path};
+
+  
 }
 
 bool Table::checkInsertValid(std::vector<std::unique_ptr<Entry>> e) {
