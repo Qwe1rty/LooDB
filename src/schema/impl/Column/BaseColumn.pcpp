@@ -35,7 +35,10 @@ private:
   std::unique_ptr<BTreeNodePage> fetch_node(int32_t);
   std::unique_ptr<Entry> fetch_entry(int32_t);
 
-  void split(uint32_t, BTreeNodePage& root, BTreeNodePage& child);
+  void split(uint32_t,
+             BTreeNodePage& root,
+             BTreeNodePage& child,
+             uint32_t child_index);
   void insert_capacity(uint32_t row_index, 
                        uint32_t entry_index, 
                        uint32_t node_index);
@@ -97,9 +100,7 @@ void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNod
     root.node_.cbegin() + split_index,
     child.node_.at(BTreeNodePage::ORDER - 1)
   );
-  if (split_index < root.node_.size() - 1) { // TODO VERIFY CORRECTNESS HERE
-    root.node_.at(split_index).left_ = root.node_.at(split_index + 1).left_;
-  }
+  root.node_.at(split_index).left_ = child_index;
 
 
   std::cout << "  split.node_ elements (key_, value_, left_) and right_:\n  ";
@@ -174,7 +175,7 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
     if (child->node_.size() >= 2 * BTreeNodePage::SIZE - 1) {
 
       // Split, and write back results of the modified child
-      split(i, *node, *child);
+      split(i, *node, *child, child_index);
       index_file_.write(child_index, std::move(child));
 
       // Determine which of the two splitted children should contain the inserted entry
@@ -239,13 +240,13 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
       // Create a new root with the old root as its first child
       auto new_root = std::make_unique<BTreeNodePage>(
         false,
-        0, /// TODO FIGURE OUT THIS
+        0,
         std::vector<Cell>{}
       );
 
       // Mark the old root as not a leaf, and then split it
       old_root->leaf_ = true;
-      split(0, *new_root, *old_root);
+      split(0, *new_root, *old_root, header->root_);
 
       // Compare the key to be inserted and the previous root's middle key
       uint64_t middle_index{new_root->node_.front().left_};
@@ -302,7 +303,7 @@ bool BaseColumn::valid_(const Entry& entry) const {
 }
 
 uint32_t BaseColumn::read_(const Entry& entry) {
-  return **find_(entry);
+  return (**find_(entry)).second;
 }
 
 void BaseColumn::write_(uint32_t entry_index, uint32_t row_index) {
