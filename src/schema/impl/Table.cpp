@@ -108,6 +108,14 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
   Pager p{data_path};
   cerr << "data path: " << data_path << endl;
 
+  // create pager to data file
+  string prop_path = impl_->path_;
+  prop_path.append("/");
+  prop_path.append(impl_->name_);
+  prop_path.append(impl_->prop_ext_);
+  Pager prop{prop_path};
+  cerr << "prop path: " << prop_path << endl;
+
   for(auto &col:c) {
     // path for each column
     string col_path = impl_->path_;
@@ -123,7 +131,6 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
               make_unique<NotNullRestriction>(
                 make_unique<BaseColumn>(col_path, get<1>(col), p)
               ))});
-      // insert type info into properties page
       cerr << "primary key" << endl;
     } else if(get<2>(col) == "not null") {
       impl_->columns_.insert({get<0>(col), make_unique<NotNullRestriction>(
@@ -137,6 +144,12 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
     impl_->columnsTypes_.insert({get<0>(col), get<1>(col)});
     impl_->columnsIndices_.insert({get<0>(col), propIndex});
     impl_->indexToColumn_.insert({ propIndex, get<0>(col)});
+
+    unique_ptr<Page> p = make_unique<PropertiesPage>(get<1>(col), get<0>(col), get<2>(col));
+    auto index = prop.append(p);
+    if (index != propIndex) {
+      cout << "Error: Table initialization failed with column (" << get<0>(col) << ")" << endl;
+    }
     ++propIndex;
     cerr << "col path: " << col_path << endl;
 

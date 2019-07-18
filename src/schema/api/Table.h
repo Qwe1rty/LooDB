@@ -11,6 +11,7 @@
 #include "Entry/Entry.h"
 #include "Entry/EntryType.h"
 #include "../../interpreter/statements/api/Select.h"
+#include "../../filesystem/pagination/page/api/PropertiesPage.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
