@@ -15,7 +15,7 @@ class SQLInsert : public SQLStatement {
       std::vector<std::unique_ptr<Entry>> entries_;
     public:
       Impl(std::vector<std::unique_ptr<Entry>> e);
-      std::vector<std::unique_ptr<Entry>> entryGetter() const;
+ //     std::vector<std::unique_ptr<Entry>> entryGetter() const;
   };
 
   std::unique_ptr<Impl> impl_;
@@ -23,8 +23,9 @@ class SQLInsert : public SQLStatement {
  public:
 
   SQLInsert(std::string table_name, std::vector<std::unique_ptr<Entry>>);
-
+/* 
   std::vector<std::unique_ptr<Entry>> getEntries() const;
+*/
 };
 
 #endif
