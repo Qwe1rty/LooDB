@@ -8,7 +8,7 @@
 
 int main() {
 
-  const int NUMBER = 10;
+  const int NUMBER = 100;
 
   EntryCodec codec{};
   Pager data{"data.txt"};
