@@ -128,8 +128,7 @@ void Database::insert(const SQLInsert& s) {
 
     cerr << path << endl;
     
-    //bool valid = impl_->tables_.at(s.table_name_.c_str()).checkInsertValid(s.getEntries());
-    //impl_->tables_.at(s.table_name_.c_str()).createColumns(s.getEntries());
+    impl_->tables_[s.table_name_].insertColumns(s.getEntries());
   } else {
     cout << "Error: Table does not exist" << endl;
   }
@@ -137,8 +136,11 @@ void Database::insert(const SQLInsert& s) {
 
 void Database::select(const SQLSelect& s) {
   if(impl_->tables_.find(s.table_name_) != impl_->tables_.end()) {
-    cerr << "Table Exists" << endl;
-
+    impl_->tables_[s.table_name_].printColumns(
+      s.getColumns(),
+      s.hasWhere(),
+      s.getWhereTree()
+    );
   } else {
     cout << "Error: Table does not exist" << endl;
   }
