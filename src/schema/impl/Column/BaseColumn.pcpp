@@ -68,12 +68,21 @@ std::unique_ptr<Entry> BaseColumn::Impl::fetch_entry(int32_t index) {
 // Split a child node into 2, TODO possibly just pass in the root
 void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNodePage& child, uint32_t child_index) {
 
-  std::cout << "  initial child.node_ elements (key_, value_, left_) and right_:\n  ";
-  for (int i = 0; i < child.node_.size(); ++i)
-    std::cout << '(' << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") ";
-  std::cout << child.right_ << ", ";
-  std::cout << (child.leaf_ ? "true" : "false");
+  std::cout << "  initial root.node_ elements (key_, value_, left_) and right_:\n";
+  for (int i = 0; i < root.node_.size(); ++i)
+    std::cout << "  (" << root.node_.at(i).key_ << ", " << root.node_.at(i).value_ << ", " << root.node_.at(i).left_ << ") " << std::endl;
+  std::cout << "  " << root.right_ << ", ";
+  std::cout << (root.leaf_ ? "true" : "false");
   std::cout << std::endl;
+
+  std::cout << "  child_index: " << child_index << std::endl;
+
+  std::cout << "  initial child.node_ elements (key_, value_, left_) and right_:\n";
+  for (int i = 0; i < child.node_.size(); ++i)
+    std::cout << "  (" << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") " << std::endl;
+  std::cout << "  " << child.right_ << ", ";
+  std::cout << (child.leaf_ ? "true" : "false");
+  std::cout << '\n' << std::endl;
 
   // Copy largest (BTreeNodePage::ORDER - 1) elements of the child into a right counterpart
   auto right_split = std::make_unique<BTreeNodePage>(
@@ -101,10 +110,10 @@ void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNod
   );
   root.node_.at(split_index).left_ = child_index;
 
-  std::cout << "  split.node_ elements (key_, value_, left_) and right_:\n  ";
+  std::cout << "  split.node_ elements (key_, value_, left_) and right_:\n";
   for (int i = 0; i < right_split->node_.size(); ++i)
-    std::cout << '(' << right_split->node_.at(i).key_ << ", " << right_split->node_.at(i).value_ << ", " << right_split->node_.at(i).left_ << ") ";
-  std::cout << right_split->right_ << ", ";
+    std::cout << "  (" << right_split->node_.at(i).key_ << ", " << right_split->node_.at(i).value_ << ", " << right_split->node_.at(i).left_ << ") " << std::endl;
+  std::cout << "  " << right_split->right_ << ", ";
   std::cout << (right_split->leaf_ ? "true" : "false");
   std::cout << std::endl;
 
@@ -121,17 +130,17 @@ void BaseColumn::Impl::split(uint32_t split_index, BTreeNodePage& root, BTreeNod
   // Erase the middle element of the child now that it's stored in the parent
   child.node_.erase(child.node_.cbegin() + (BTreeNodePage::ORDER - 1));
 
-  std::cout << "  root.node_ elements (key_, value_, left_) and right_:\n  ";
+  std::cout << "  root.node_ elements (key_, value_, left_) and right_:\n";
   for (int i = 0; i < root.node_.size(); ++i)
-    std::cout << '(' << root.node_.at(i).key_ << ", " << root.node_.at(i).value_ << ", " << root.node_.at(i).left_ << ") ";
-  std::cout << root.right_ << ", ";
+    std::cout << "  (" << root.node_.at(i).key_ << ", " << root.node_.at(i).value_ << ", " << root.node_.at(i).left_ << ") " << std::endl;
+  std::cout << "  " << root.right_ << ", ";
   std::cout << (root.leaf_ ? "true" : "false");
   std::cout << std::endl;
 
-  std::cout << "  child.node_ elements (key_, value_, left_) and right_:\n  ";
+  std::cout << "  child.node_ elements (key_, value_, left_) and right_:\n";
   for (int i = 0; i < child.node_.size(); ++i)
-    std::cout << '(' << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") ";
-  std::cout << child.right_ << ", ";
+    std::cout << "  (" << child.node_.at(i).key_ << ", " << child.node_.at(i).value_ << ", " << child.node_.at(i).left_ << ") " << std::endl;
+  std::cout << "  " << child.right_ << ", ";
   std::cout << (child.leaf_ ? "true" : "false");
   std::cout << std::endl;
 }

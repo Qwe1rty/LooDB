@@ -171,18 +171,34 @@ BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
     // If it's not reached the end of the node, increment or increment + recurse
     if (cells_.top() < node->node_.size()) {
 
-      // If there's a child, recurse into it
+      // Keep recursing if there's children
       uint32_t child_index = node->node_.at(cells_.top()).left_;
-      if (child_index > 0) {
+      while (child_index > 0) {
         cells_.push(0);
         path_.push(child_index);
+
+        node = parent_.fetch_node(path_.top());
+        child_index = node->node_.at(cells_.top()).left_;
       }
     }
 
     // See if there's a rightmost child, and recurse into it if it exists
     else if (node->right_ > 0) {
+      cells_.push(0);
+      path_.push(node->right_);
+
+      // Traverse to the right node
+      node = parent_.fetch_node(path_.top());
+
+      // Keep recursing if there's children
+      uint32_t child_index = node->node_.at(cells_.top()).left_;
+      while (child_index > 0) {
         cells_.push(0);
-        path_.push(node->right_);
+        path_.push(child_index);
+
+        node = parent_.fetch_node(path_.top());
+        child_index = node->node_.at(cells_.top()).left_;
+      }
     }
 
     // Otherwise backtrack and unwind the stack
