@@ -121,7 +121,8 @@ select:
 %type <std::vector<std::tuple<std::string, EntryType, std::string>>> columns;
 columns:
   columns COMMA column {
-    $$.emplace_back(std::move($3));
+    $1.emplace_back(std::move($3));
+    $$ = std::move($1);
   }
 | column {
     $$.emplace_back(std::move($1));
@@ -129,33 +130,19 @@ columns:
 
 %type <std::tuple<std::string, EntryType, std::string>> column;
 column:
-  STRING INTEGER restrictions {
+  STRING INTEGER restriction {
     $$ = std::make_tuple(std::move($1), EntryType::INTEGER, std::move($3));
   }
-| STRING TEXT restrictions {
+| STRING TEXT restriction {
     $$ = std::make_tuple(std::move($1), EntryType::TEXT, std::move($3));
-  };
-
-%type <std::string> restrictions;
-restrictions:
-  %empty {
-    $$ = "";
-  }
-| restriction {
-    $$ = std::move($1);
-  }
-| restriction restriction {
-    if ($1 != $2) {
-      $$ = $1 + ", " + $2;
-    } else {
-      std::cerr << "Parse error: duplicate restriction" << std::endl;
-      YYERROR;
-    }
   };
 
 %type <std::string> restriction;
 restriction:
-  PRIMARY_KEY {
+  %empty {
+    $$ = "";
+  }
+| PRIMARY_KEY {
     $$ = "primary key";
   }
 | NOT_NULL {
@@ -171,7 +158,8 @@ row:
 %type <std::vector<std::unique_ptr<Entry>>> entries;
 entries:
   entries COMMA entry {
-    $$.emplace_back(std::move($3));
+    $1.emplace_back(std::move($3));
+    $$ = std::move($1);
   }
 | entry {
     $$.emplace_back(std::move($1));
@@ -183,7 +171,8 @@ cols:
     $$.emplace_back("*");
   }
 | cols COMMA col {
-    $$.emplace_back(std::move($3));
+    $1.emplace_back(std::move($3));
+    $$ = std::move($1);
   }
 | col {
     $$.emplace_back(std::move($1));
@@ -216,7 +205,6 @@ whereTerm:
 %type<std::unique_ptr<SQLSelect::WhereTree>> whereFactor;
 whereFactor:
   STRING EQUAL entry {
-    // std::cout << $1 << "=" << $3->getType() << std::endl;
     $$ = std::make_unique<SQLSelect::WhereTree>(std::move($1), std::move($3));
   }
 | LPAREN whereExpr RPAREN {
@@ -239,6 +227,9 @@ entry:
 text:
   DASH STRING DASH {
     $$ = std::move($2);
+  }
+| DASH INT DASH {
+    $$ = std::to_string($2);
   };
 
 %%
