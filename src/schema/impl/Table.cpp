@@ -166,8 +166,8 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
 
   // Tobys validations
 
-  // Create row page's CellBP vector, and determine the location of where the row page will be entered
-  std::vector<CellBP> cells{};
+  // Create row page's entry index vector, and determine the location of where the row page will be entered
+  std::vector<uint64_t> entry_indexes{};
   uint32_t row_index = row_file.size();
 
   // Append the data entries and then pass the information to each column
@@ -183,7 +183,10 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
     // TODO insert to the column
   }
 
-  row_file.write();
+  row_file.write(std::make_unique<BPTreeLeafPage>(
+    0, // Currently the right_ pointer is unused
+    CellBP{1234, }
+  ));
 }
 
 bool Table::checkInsertValid(std::vector<std::unique_ptr<Entry>> e) {
