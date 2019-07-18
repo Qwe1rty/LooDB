@@ -8,11 +8,12 @@
 
 int main() {
 
-  const uint32_t NUMBER = 33;
+//  const uint32_t NUMBER = 33;
+  const uint32_t NUMBER = 100;
+  const bool MODE = true;
 
   EntryCodec codec{};
   Pager data{"data.txt"};
-  BaseColumn col{"toast.txt", EntryType::INTEGER, data};
 
   for (uint32_t i = 0; i < NUMBER; ++i) {
 
@@ -28,24 +29,52 @@ int main() {
     data.append(pkp);
   }
 
-  for (uint32_t i = 0; i < NUMBER; i++) {
+  if (MODE) {
+    BaseColumn col{"toast.txt", EntryType::INTEGER, data};
+    for (uint32_t i = 0; i < NUMBER; i++) {
 
-    // Insert the element;
-    std::cout << "Attempting insert of: " << i << ' ' << i + NUMBER << std::endl;
-    col.write(i, i + NUMBER);
-    std::cout << "Insertion complete with: " << i << ' ' << i + NUMBER << '\n' << std::endl;
+      // Insert the element;
+      std::cout << "Attempting insert of: " << i << ' ' << i + NUMBER << std::endl;
+      col.write(i, i + NUMBER);
+      std::cout << "Insertion complete with: " << i << ' ' << i + NUMBER << '\n' << std::endl;
 
-    // Iterate through the whole tree
-    int limit = 0; // incase of infinite loop
-    for (auto pk = col.begin(); *pk != *col.end(); ++(*pk)) {
+      // Iterate through the whole tree
+      int limit = 0; // incase of infinite loop
+      for (auto pk = col.begin(); *pk != *col.end(); ++(*pk)) {
+      std::cout << "\nPrimary key: " << std::flush;
+      std::cout << (**pk).second << ", next iteration: " << (*pk != *col.end());
+        ++limit;
+        if (limit >= NUMBER + 5) {
+          std::cout << "INFINITE LOOP" << std::endl;
+          break;
+        }
+      }
+      std::cout << "\n\n" << std::endl;
+    }
+  }
+
+  else {
+    BaseColumn coll{"butter.txt", EntryType::INTEGER, data};
+    for (uint32_t i = NUMBER - 1; i < NUMBER; --i) {
+
+      // Insert the element;
+      std::cout << "Attempting insert of: " << i << ' ' << i + NUMBER << std::endl;
+      coll.write(i, i + NUMBER);
+      std::cout << "Insertion complete with: " << i << ' ' << i + NUMBER << '\n' << std::endl;
+
+      // Iterate through the whole tree
+      int limit = 0; // incase of infinite loop
+      for (auto pk = coll.begin(); *pk != *coll.end(); ++(*pk)) {
 //      std::cout << "\nPrimary key: " << std::flush;
 //      std::cout << (**pk).second << ", next iteration: " << (*pk != *col.end());
-      ++limit;
-      if (limit >= NUMBER + 5) {
-        std::cout << "INFINITE LOOP" << std::endl;
-        break;
+        ++limit;
+        if (limit >= NUMBER + 5) {
+          std::cout << "INFINITE LOOP" << std::endl;
+          break;
+        }
       }
+      std::cout << "\n\n" << std::endl;
     }
-    std::cout << "\n\n" << std::endl;
   }
+
 }

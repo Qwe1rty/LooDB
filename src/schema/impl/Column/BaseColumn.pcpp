@@ -3,6 +3,7 @@
 #include "../../../filesystem/pagination/page/api/BTreeNodePage.h"
 #include "../../../filesystem/pagination/page/api/EntryPage.h"
 #include "../../../schema/api/Entry/EntryCodec.h"
+#include "../../api/Entry/IntEntry.h"
 
 #include <iostream>
 
@@ -151,6 +152,7 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
                                        const uint32_t node_index) {
 
   /* DEBUG */
+  if (node_index == 0) throw "phukc";
   std::cout << " insert_capacity with: " << row_index << ", " << entry_index << ", " << node_index << std::endl;
 
   // Fetch pages
@@ -196,8 +198,8 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
   else node->node_.insert(node->node_.cbegin() + i, Cell{entry_index, row_index, 0});
 
   /* DEBUG */
-  std::cout << " (insert capacity).node_ keys: ";
-  for (int i = 0; i < node->node_.size(); ++i) std::cout << node->node_.at(i).key_ << ' ';
+  std::cout << " (insert capacity).node_ values: ";
+  for (int i = 0; i < node->node_.size(); ++i) std::cout << node->node_.at(i).value_ << ' ';
   std::cout << std::endl;
 
   // Write back changes to the node
@@ -215,8 +217,6 @@ bool BaseColumn::Impl::valid_(const Entry& entry) const {
 }
 
 void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
-
-  std::cout << "size before: " << index_file_.size() << std::endl;
 
   if (empty_()) {
 
@@ -250,31 +250,26 @@ void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
         std::vector<Cell>{}
       );
 
-      // Mark the old root as not a leaf, and then split it
-      old_root->leaf_ = true;
+      // Mark the old root as a leaf if it WAS a leaf, and then split it
       split(0, *new_root, *old_root, header->root_);
-
-      // Compare the key to be inserted and the previous root's middle key
-      uint64_t middle_index{new_root->node_.front().left_};
-      uint64_t lr = *fetch_entry(middle_index) < *fetch_entry(entry_index) ?
-        new_root->right_ :
-        new_root->node_.front().left_;
-      insert_capacity(row_index, entry_index, lr);
 
       // Write back the old root and new root before the header is updated (while old_root
       // index is still known)
       index_file_.write(header->root_, std::move(old_root));
-      index_file_.append(std::move(new_root));
 
-      // Update the header and write it back
-      header->root_ = index_file_.size() - 1;
+      // Compare the key to be inserted and the previous root's middle key
+      uint64_t lr = *fetch_entry(new_root->node_.front().key_) < *fetch_entry(entry_index) ?
+        new_root->right_ :
+        new_root->node_.front().left_;
+      insert_capacity(row_index, entry_index, lr);
+
+      // Update the header and write it back, along with the new root page
+      header->root_ = index_file_.append(std::move(new_root));
       index_file_.write(0, std::move(header));
     }
 
     else insert_capacity(row_index, entry_index, header->root_);
   }
-
-  std::cout << "size after: " << index_file_.size() << std::endl;
 }
 
 bool BaseColumn::Impl::empty_() {

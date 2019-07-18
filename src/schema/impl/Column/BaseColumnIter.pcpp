@@ -149,16 +149,16 @@ BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
   // If it's not already at the end or just empty
   if (!path_.empty() && !cells_.empty()) {
 
-    for (int i = 0; i < path_.size(); ++i) std::cout << "  ";
-    std::cout << "path_.top() page: " << std::flush;
-    std::cout << path_.top() << std::flush;
-    std::cout << ", cells_.top() index: " << std::flush;
-    std::cout << cells_.top() << std::flush;
-    std::cout << ", entry index: " << std::flush;
-    std::cout << parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_ << std::flush;
-    std::cout << ", entry value: " << std::flush;
-    std::cout << static_cast<IntEntry*>(parent_.fetch_entry(parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_).get())->getVal() << std::flush;
-    std::cout << std::endl;
+//    for (int i = 0; i < path_.size(); ++i) std::cout << "  ";
+//    std::cout << "path_.top() page: " << std::flush;
+//    std::cout << path_.top() << std::flush;
+//    std::cout << ", cells_.top() index: " << std::flush;
+//    std::cout << cells_.top() << std::flush;
+//    std::cout << ", row/PK index: " << std::flush;
+//    std::cout << parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_ << std::flush;
+//    std::cout << ", row/PK value: " << std::flush;
+//    std::cout << static_cast<IntEntry*>(parent_.fetch_entry(parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_).get())->getVal() << std::flush;
+//    std::cout << std::endl;
 
     // Increment cell value for this B-Tree node
     uint32_t cell = cells_.top() + 1;
