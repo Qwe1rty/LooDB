@@ -11,6 +11,7 @@
 #include "Entry/Entry.h"
 #include "Entry/EntryType.h"
 #include "../../interpreter/statements/api/Select.h"
+#include "../../filesystem/pagination/page/api/PropertiesPage.h"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -42,6 +43,7 @@ class Table {
 
       // Populate table with existing ones in the directory
       void populateTable();
+      void populateHelper(std::vector<std::string> &);
       // Build table from command (create table ...)
       void buildTable();
       // Print tables given select criteria

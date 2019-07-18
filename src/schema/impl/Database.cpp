@@ -49,10 +49,11 @@ void Database::drop_table(const SQLDrop& s) {
     cerr << path << endl;
     if (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode)) {
       if (system(NULL)) {
+       impl_->tables_.erase(s.table_name_);
        string rm = string("rm -r ");
        rm.append(path);
        system(rm.c_str());
-       impl_->tables_.erase(s.table_name_);
+       cerr << rm << endl;
       } else {
        cerr << "Command processor doesn't exists" << endl; 
       }
