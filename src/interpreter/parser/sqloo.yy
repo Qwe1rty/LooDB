@@ -235,5 +235,5 @@ text:
 %%
 
 void yy::parser::error (const std::string& m) {
-  std::cerr << "Parse error: " << m << std::endl;
+  std::cout << "Parse error: " << m << std::endl;
 }
