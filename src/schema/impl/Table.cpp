@@ -362,12 +362,9 @@ std::set<uint32_t> Table::TableImpl::whereHelper(std::unique_ptr<SQLSelect::Wher
       throw std::invalid_argument("Error: Column " + columnName + " doesn't exist.");
     }
 
-    // Throw if entry doesn't match column type
-    if (entry->getType() != this->columnsTypes_.at(columnName)) {
-      // Invariance: column is of type INTEGER or TEXT
-      EntryType columnType = this->columnsTypes_.at(columnName);
-      std::string type = columnType == EntryType::INTEGER ? "integer" : "text";
-      throw std::invalid_argument("Error: Column " + columnName + " is of type " + type);
+    // Throw if entry isn't a valid column value
+    if (!this->columns_.at(columnName)->valid(*entry)) {
+      throw std::invalid_argument("Error: Invalid where expression for column " + columnName);
     }
 
     const std::unique_ptr<Column>& column = this->columns_.at(columnName);

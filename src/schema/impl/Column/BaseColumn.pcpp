@@ -2,6 +2,7 @@
 #include "../../../filesystem/pagination/page/api/BTreeHeaderPage.h"
 #include "../../../filesystem/pagination/page/api/BTreeNodePage.h"
 #include "../../../filesystem/pagination/page/api/EntryPage.h"
+#include "../../../schema/api/Entry/EntryType.h"
 #include "../../../schema/api/Entry/EntryCodec.h"
 #include "../../api/Entry/IntEntry.h"
 
@@ -211,7 +212,7 @@ void BaseColumn::Impl::insert_capacity(const uint32_t row_index,
 
 bool BaseColumn::Impl::valid_(const Entry& entry) const {
 
-  return entry.getType() == entry_type_;
+  return entry.getType() == entry_type_ || entry.getType() == EntryType::NULL_;
 }
 
 void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {

@@ -4,4 +4,4 @@ CMakeLists.txt
 .vscode/
 sqlite/
 loodb
-loo/*
+loo/
