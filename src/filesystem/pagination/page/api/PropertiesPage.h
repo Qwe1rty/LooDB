@@ -8,9 +8,12 @@
 struct PropertiesPage : public Page {
 
   EntryType type_;
+  std::string column_;
   std::string restrictions_;
 
-  PropertiesPage(EntryType, const std::string&);
+  PropertiesPage(EntryType,
+                 const std::string& column,
+                 const std::string& restrictions);
 };
 
 #endif //LOODB_PROPERTIESPAGE_H
