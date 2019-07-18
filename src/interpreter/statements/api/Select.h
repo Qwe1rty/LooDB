@@ -42,9 +42,14 @@ class SQLSelect : public SQLStatement {
     // Constructor
     SQLSelect(std::string, std::vector<std::string>, bool, unique_ptr<SQLSelect::WhereTree>);
 
-    // Return if statement has a where
-    bool hasWhere();
+    // Get columns
+    std::vector<std::string>& getColumns() const;
 
+    // Return if statement has a where
+    bool hasWhere() const;
+    // Get where tree
+    unique_ptr<SQLSelect::WhereTree>& getWhereTree() const;
+    // Print where tree
     void printWhere();
   
   private:
@@ -66,9 +71,12 @@ class SQLSelect : public SQLStatement {
         // Impl Constructor
         Impl(vector<string> columns, bool where, unique_ptr<SQLSelect::WhereTree> whereTree);
 
+        // Get columns
+        std::vector<std::string>& getColumns_();
         // Get where_
         bool getWhere();
-
+        // Get whereTree_
+        unique_ptr<SQLSelect::WhereTree>& getWhereTree_();
         // Print whereTree_
         void printWhereTree();
     };
