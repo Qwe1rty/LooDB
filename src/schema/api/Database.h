@@ -14,34 +14,34 @@
 
 class Database {
 
-  // Private members of Database
-  struct DatabaseImpl {
-    std::string name_ = "loo";
-    std::map<std::string, Table> tables_;
-    DatabaseImpl();
-    void helper();
-  };
-    
-  // pImpl for Database
-  std::unique_ptr<DatabaseImpl> impl_;
+    // Private members of Database
+    struct DatabaseImpl {
+      std::string name_ = "loo";
+      std::map<std::string, Table> tables_;
+      DatabaseImpl();
+      void helper();
+    };
+      
+    // pImpl for Database
+    std::unique_ptr<DatabaseImpl> impl_;
 
- public:
+  public:
    
-  Database();
+    Database();
 
-  // Create a table in database
-  void create_table(const SQLCreate&);
-  bool checkCreateValid(std::vector<std::tuple<std::string, EntryType, std::string>> c);
+    // Create a table in database
+    void create_table(const SQLCreate&);
+    bool checkCreateValid(std::vector<std::tuple<std::string, EntryType, std::string>>& c);
 
     // Drop a table in database
-  void drop_table(const SQLDrop& s );
+    void drop_table(const SQLDrop& s);
 
     // Select rows from a table
     // Prints resulting object
-  void select(const SQLSelect& s );
+    void select(const SQLSelect& s);
 
     // Insert a row into a database table
-  void insert(const SQLInsert& s);
+    void insert(const SQLInsert& s);
 
 };
 

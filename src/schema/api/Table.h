@@ -81,13 +81,13 @@ class Table {
   Table(std::string);
 
   // Create Column
-  void createColumns(std::vector<std::tuple<std::string, EntryType, std::string>>);
+  void createColumns(std::vector<std::tuple<std::string, EntryType, std::string>>&);
 
   // Insert row into Columns
-  void insertColumns(std::vector<std::unique_ptr<Entry>> e);
+  void insertColumns(std::vector<std::unique_ptr<Entry>>& e);
 
   // Check if inserting row is valid
-  bool checkInsertValid(std::vector<std::unique_ptr<Entry>> e);
+  void checkInsertValid(std::vector<std::unique_ptr<Entry>>& e);
 
   // Print rows given select statement criteria
   // Prints nothing if table is empty
