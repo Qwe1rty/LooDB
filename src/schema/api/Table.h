@@ -24,15 +24,18 @@ class Table {
       const std::string data_ext_ = ".data";
       const std::string col_ext_ = ".col";
       const std::string row_ext_ = ".row";
+      const std::string prop_ext_ = ".prop";
 
       // Private variables
       std::string name_;
       std::unordered_map<std::string, std::unique_ptr<Column>> columns_;
       std::unordered_map<std::string, EntryType> columnsTypes_;
       std::unordered_map<std::string, int> columnsIndices_;
+      std::unordered_map<int, std::string> indexToColumn_;
       std::string pkey_column_;
       std::string data_file_ = ".";
       std::string row_file_ = ".";
+      std::string prop_file_ = ".";
 
       // Constructor
       TableImpl(std::string);

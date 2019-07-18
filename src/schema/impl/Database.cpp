@@ -84,7 +84,6 @@ void Database::create_table(const SQLCreate& s) {
     }
     cerr << "# of columns " << s.getColumns().size() << endl;
     cerr << (valid ? "- is valid -" : "- is not valid-") << endl;
-    //impl_->tables_.find(s->table_name_).insert(s->columns_);
   }
 }
 
