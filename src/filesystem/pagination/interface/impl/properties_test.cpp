@@ -6,13 +6,14 @@
 //
 //int main() {
 //
-//  std::unique_ptr<Page> p = std::make_unique<PropertiesPage>(EntryType::TEXT, "primary key");
+//  std::unique_ptr<Page> p = std::make_unique<PropertiesPage>(EntryType::TEXT, "col", "primary key");
 //
 //  Pager pager{"chicken"};
 //
 //  auto index = pager.append(p);
 //  const auto pp = pager.fetch<PropertiesPage>(index);
 //
-//  std::cout << pp->restrictions_ << std::endl;
 //  std::cout << pp->type_ << std::endl;
+//  std::cout << pp->column_ << std::endl;
+//  std::cout << pp->restrictions_ << std::endl;
 //}
