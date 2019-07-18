@@ -155,13 +155,19 @@ std::set<uint32_t> Table::TableImpl::where(std::unique_ptr<SQLSelect::WhereTree>
 // Print rows given select statement criteria
 void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
                                      unique_ptr<SQLSelect::WhereTree>& whereTree) {
-  // Check that columns exist
-  for (std::string& column : columns) {
-    if (this->columns_.find(column) == this->columns_.end()) {
-      // Column doesn't exist, so print error and return
-      std::cout << "Error: Column \"" << column << "\"";
-      std::cout << " doesn't exist in " << this->name_ << std::endl;
-      return;
+  
+  // Check if select *
+  bool star = false;
+  if (columns[0] == "*") {
+    star = true;
+  } else {
+    for (std::string& column : columns) {
+      if (this->columns_.find(column) == this->columns_.end()) {
+        // Column doesn't exist, so print error and return
+        std::cout << "Error: Column \"" << column << "\"";
+        std::cout << " doesn't exist in " << this->name_ << std::endl;
+        return;
+      }
     }
   }
 
@@ -183,26 +189,16 @@ void Table::TableImpl::printColumns_(std::vector<string>& columns, bool where,
   // If where == true, print individual rows
   // Otherwise, print every row using cursor
   if (where) {
-    std::cout << "where" << std::endl;
+    for (auto it = pageIndices.begin(); it != pageIndices.end(); ++it) {
+      auto cursor = this->find(*it);
+      std::vector<std::unique_ptr<Entry>> row = std::move(*cursor);
+      this->printRow(row, columns, star);
+    }
   } else {
+    // Print all rows
     for (auto it = this->begin(); it != this->end(); ++it) {
       std::vector<std::unique_ptr<Entry>> row = std::move(*it);
-
-      // Print given columns
-      // EntryType entryType;
-      // for (int i = 0; i < .size(); ++i) {
-      //   entryType = row[i]->getType();
-      //   if (entryType == EntryType::NULL_) {
-      //     std::cout << "null" << std::endl;
-      //   } else if (entryType == EntryType::INTEGER) {
-      //     std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
-      //   } else if (entryType == EntryType::TEXT) {
-      //     std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
-      //   }
-      //   std::cout << 
-      // }
-
-      std::cout << "no where" << std::endl;
+      this->printRow(row, columns, star);
     }
   }
 }
@@ -213,14 +209,55 @@ void Table::printColumns(std::vector<string>& columns, bool where,
   this->impl_->printColumns_(columns, where, whereTree);
 }
 
+void Table::TableImpl::printRow(std::vector<std::unique_ptr<Entry>>& row,
+                                           std::vector<string>& columns, bool star) {
+  EntryType entryType;
+  if (star) { // Print all columns
+    for (int i = 0; i < row.size(); ++i) {
+      entryType = row[i]->getType();
+      if (entryType == EntryType::NULL_) {
+        std::cout << "null" << std::endl;
+      } else if (entryType == EntryType::INTEGER) {
+        std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
+      } else if (entryType == EntryType::TEXT) {
+        std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
+      }
+      std::cout << "|";
+    }
+  } else { // Print given columns
+    for (int i = 0; i < columns.size(); ++i) {
+      int columnIndex = this->columnsIndices_[columns[i]];
+
+      entryType = row[columnIndex]->getType();
+      if (entryType == EntryType::NULL_) {
+        std::cout << "null" << std::endl;
+      } else if (entryType == EntryType::INTEGER) {
+        std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
+      } else if (entryType == EntryType::TEXT) {
+        std::cout << static_cast<IntEntry&>(*row[i]).getVal() << std::endl;
+      }
+      std::cout << "|";
+    }
+  }
+
+  std::cout << std::endl;
+}
+
 Cursor Table::TableImpl::begin() {
   std::string rowPath = this->data_file_ + this->data_ext_;
   std::string dataPath = this->row_file_ + this->row_ext_;
-  return Cursor(rowPath, dataPath, false);
+  return Cursor(rowPath, dataPath, -1);
 }
 
 Cursor Table::TableImpl::end() {
   std::string rowPath = this->data_file_ + this->data_ext_;
   std::string dataPath = this->row_file_ + this->row_ext_;
-  return Cursor(rowPath, dataPath, true);
+  return Cursor(rowPath, dataPath, 0);
+}
+
+Cursor Table::TableImpl::find(uint32_t pageIndex) {
+  std::string rowPath = this->data_file_ + this->data_ext_;
+  std::string dataPath = this->row_file_ + this->row_ext_;
+  int index = static_cast<int>(pageIndex);
+  return Cursor(rowPath, dataPath, index);
 }

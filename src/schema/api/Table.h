@@ -50,6 +50,7 @@ class Table {
       // Begin and end for Cursor
       Cursor begin();
       Cursor end();
+      Cursor find(uint32_t pageIndex);
 
     private:
 
@@ -57,6 +58,10 @@ class Table {
       std::set<uint32_t> whereHelper(std::unique_ptr<SQLSelect::WhereTree>& root);
       std::set<uint32_t> setUnion(std::set<uint32_t>& set1, std::set<uint32_t>& set2);
       std::set<uint32_t> setIntersection(std::set<uint32_t>& set1, std::set<uint32_t>& set2);
+
+      // Helper function for printColumns_()
+      void printRow(std::vector<std::unique_ptr<Entry>>& row,
+                    std::vector<string>& columns, bool star);
   };
 
   // pImpl for Table
