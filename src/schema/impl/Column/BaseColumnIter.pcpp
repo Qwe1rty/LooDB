@@ -96,8 +96,10 @@ std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::find_(const Entry&
       }
       cells.push(cell);
 
-      // If it's been found, return iterator to it
-      if (entry == *fetch_entry(node->node_.at(cell).key_)) {
+      // If it's been found, return iterator to it. Ensure that this check is only done
+      // if the cell value has been found to be in range (i.e. not trying to go to the
+      // node->right_ index
+      if (cell < node->node_.size() && entry == *fetch_entry(node->node_.at(cell).key_)) {
         return std::make_unique<BaseColumn::Impl::Iterator>(
           *this,
           std::move(path),
