@@ -24,3 +24,7 @@ std::unique_ptr<Column::Iterator> Column::end() {
 std::unique_ptr<Column::Iterator> Column::find(const Entry& entry) {
   return find_(entry);
 }
+
+bool Column::empty() const {
+  return empty_();
+}

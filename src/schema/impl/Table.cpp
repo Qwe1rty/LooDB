@@ -80,20 +80,23 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
   cerr << "insert columns" << endl;
 
   for(auto col:c) {
-    // create a column with respective entry type and modifications (decorations)
-    if(get<2>(col) == "primary key") {
-      impl_->pkey_column_ = get<0>(col);
-      impl_->columns_.insert({get<0>(col), make_unique()});
-    } else {
-      
-    }
-
     string col_path = impl_->path_;
     col_path.append("/");
     col_path.append(get<0>(col));
     col_path.append(impl_->col_ext_);
 
     Pager p{col_path};
+    // create a column with respective entry type and modifications (decorations)
+    if(get<2>(col) == "primary key") {
+      impl_->pkey_column_ = get<0>(col);
+      impl_->columns_.insert({get<0>(col), 
+            make_unique<UniqueRestriction>(
+              make_unique<NotNullRestriction>(
+                make_unique<BaseColumn>(get<0>(col), get<1>(col), p)
+              ))});
+    } else {
+      
+    }
     cerr << "col path: " << col_path << endl;
 
   }
