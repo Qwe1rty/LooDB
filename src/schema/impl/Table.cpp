@@ -148,6 +148,13 @@ void Table::createColumns(std::vector<std::tuple<std::string, EntryType, std::st
 
 void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
 
+  try {
+    checkInsertValid(e); // TODO change to const ref to avoid move error
+  }
+  catch (const std::invalid_argument& e) {
+    std::cout << e.what() << std::endl;
+  }
+
   string data_path = impl_->path_;
   string row_path = impl_->path_;
 
@@ -164,29 +171,45 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>> e) {
 
   const EntryCodec entry_codec{};
 
-  // Tobys validations
-
   // Create row page's entry index vector, and determine the location of where the row page will be entered
   std::vector<uint64_t> entry_indexes{};
   uint32_t row_index = row_file.size();
 
-  // Append the data entries and then pass the information to each column
-  for (const auto& entry : e) {
+  // Record which column is the primary key, and eventually which page index it is
+  uint32_t pkey_column = impl_->columnsIndices_.at(impl_->pkey_column_);
+  uint32_t pkey_index{0};
 
+  // Append the data entries and then pass the information to each column
+  for (int i = 0; i < e.size(); ++i) {
+
+    // Write entry and get its index
     const std::unique_ptr<Page> entry_page = std::make_unique<EntryPage>(
-      entry_codec.encode(entry),
+      entry_codec.encode(e.at(i)),
       0
     );
-
     uint32_t entry_index = data_file.append(std::move(entry_page));
 
-    // TODO insert to the column
+    // Add the pair to the column
+    Column& column = *impl_->columns_.at(impl_->indexToColumn_.at(i));
+    column.write(entry_index, row_index);
+
+    // Add the pair to the entry_indexes vector
+    entry_indexes.emplace_back(entry_index);
+
+    // If it's the primary key column, record the primary key's entry page index
+    if (i == pkey_column) pkey_index = entry_index;
   }
 
-  row_file.write(std::make_unique<BPTreeLeafPage>(
-    0, // Currently the right_ pointer is unused
-    CellBP{1234, }
-  ));
+  // Write back the modified row file
+  row_file.write(
+    row_index,
+    std::make_unique<BPTreeLeafPage>(
+      0, // Currently the right_ pointer is unused
+      CellBP{pkey_index, std::move(entry_indexes)}
+    )
+  );
+
+  std::cout << "Insert is successful" << std::endl;
 }
 
 bool Table::checkInsertValid(std::vector<std::unique_ptr<Entry>> e) {
