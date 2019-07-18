@@ -174,13 +174,12 @@ void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
     );
   }
 
-  // Check values match column type
+  // Check that values are valid column entries
   for (int i = 0; i < this->impl_->columns_.size(); ++i) {
-    EntryType columnType = this->impl_->columnsTypes_[this->impl_->indexToColumn_[i]];
-    if (e[i]->getType() != columnType) {
+    std::string columnName = this->impl_->indexToColumn_[i];
+    if (!this->impl_->columns_.at(columnName)->valid(*e[i])) {
       throw std::invalid_argument(
-        "Error: Value " + std::to_string(i+1) + " should be of type "
-        + (columnType == EntryType::INTEGER ? "integer" : "text") + "."
+        "Error: Value " + std::to_string(i+1) + " is invalid."
       );
     }
   }
