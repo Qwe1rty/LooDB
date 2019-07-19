@@ -363,7 +363,7 @@ std::set<uint32_t> Table::TableImpl::whereHelper(std::unique_ptr<SQLSelect::Wher
     }
 
     // Throw if entry isn't a valid column value
-    if (!this->columns_.at(columnName)->valid(*entry)) {
+    if (entry->getType() != this->columnsTypes_.at(columnName) && entry->getType() != EntryType::NULL_) {
       throw std::invalid_argument("Error: Invalid where expression for column " + columnName);
     }
 
