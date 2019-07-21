@@ -221,7 +221,7 @@ bool BaseColumn::Impl::valid_(const Entry& entry) const {
   return entry.getType() == entry_type_ || entry.getType() == EntryType::NULL_;
 }
 
-void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
+void BaseColumn::Impl::write_(const uint32_t entry_index, const uint32_t row_index) {
 
   if (empty_()) {
 
