@@ -10,27 +10,31 @@ LooDB is a lightweight SQL database based on SQLite3.
 
 LooDB features its own flavor of SQL, which can currently support queries as specified below:
 
-###### **`create`**
-`create table [table name] ( [col name] [type] [restriction], …);`
-- Where `[table name]` is the name of your table
-- `[col]` name is the name of your column
-- `[type]` is either `integer` or `text`
-- `[restriction]` is either `primary key` or `not null`
-    
-###### **`drop`**
-`drop table [table_name];`
-- Where `[table name]` is the name of your table
+| Command     | **`create table`** |
+| ----------- | ------------------ |
+| Syntax      | `create table [table name] ( [col name] [type] [restriction], …);` |
+| Explanation | `[table name]` is the name of your table |
+|             | `[col]` name is the name of your column |
+|             | `[type]` is either `integer` or `text` | 
+|             | `[restriction]` is either `primary key` or `not null` |
 
-###### **`insert`**
-`insert into [table name] values ([value], …);`
-- Where `[table name]` is the name of your table
-- Where `[value]` is either a null, text, or integer type
+| Command     | **`drop table`** |
+| ----------- | ---------------- |
+| Syntax      | `drop table [table_name];` |
+| Explanation | `[table name]` is the name of your table |
 
-###### **`select`**
-`select [cols] from [table name] where [wheres];`
-- Where `[cols]` is either a list of valid column names or “*”
-- Where `[table name]` is the name of your table
-- Where is an expression of logical equalities, e.g. `(a = 'hello' and (b = 5 or c = null))`
+| Command     | **`insert`** |
+| ----------- | ------------ |
+| Syntax      | `insert into [table name] values ([value], …);` |
+| Explanation | `[table name]` is the name of your table |
+|             | `[value]` is either a null, text, or integer type |
+
+| Command     | **`select`** |
+| ----------- | ------------ |
+| Syntax      | `select [cols] from [table name] where [wheres];` |
+| Explanation | `[cols]` is either a list of valid column names or “*” |
+|             | `[table name]` is the name of your table |
+|             | is an expression of logical equalities, e.g. `(a = 'hello' and (b = 5 or c = null))` |
 
 There are currently some limitations to the parser, as it will not accept:
 - Negative integers
@@ -40,4 +44,22 @@ There are currently some limitations to the parser, as it will not accept:
 
 ### Installation Instructions
 
-TODO
+_**NOTE:** these instructions are currently only written for Ubuntu_
+
+Before compiling the project, you will need to ensure that the prerequisites are correctly installed first.
+
+Flex & Bison is the parser generator used to create the SQLoo interpreter. To install Flex & Bison,
+run the following commands:
+
+```
+sudo apt update
+sudo apt install flex bison
+```
+
+To compile LooDB, please ensure that your system has a version of the `g++` compiler that can support C++17.
+Then, clone the repository and head to the project's root directory and run the command:
+```
+make
+```
+...and as long as there's a `loodb` executable produced, you're done! Simply run the `loodb` executable 
+wherever you'd like to create a local `./loo` database directory 
