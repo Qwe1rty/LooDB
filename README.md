@@ -28,7 +28,7 @@ LooDB features its own flavor of SQL, which can currently support queries as spe
 | Command     | **`select`** |
 | ----------- | ------------ |
 | Syntax      | `select [cols] from [table name] where [wheres];` |
-| Explanation | `[cols]` is either a list of valid column names or "*"<br>`[table name]` is the name of your table<br>is an expression of logical equalities, e.g. `(a = 'hello' and (b = 5 or c = null))` |
+| Explanation | `[cols]` is either a list of valid column names or `*`<br>`[table name]` is the name of your table<br>`[wheres]` is an expression of logical equalities, e.g. `(a = 'hello' and (b = 5 or c = null))` |
 
 There are currently some limitations to the parser, as it will not accept:
 - Negative integers
