@@ -9,11 +9,16 @@ EXEC = loodb
 SQLITE_DIR = sqlite
 SQLITE_BIN = sqlite3
 
+PARSER_DIR = src/interpreter/parser
 QUERY_DIR = queries
 
 
 -include ${DEPENDS}
 .PHONY: build clean test
+
+
+## Application build/utility commands
+##########################################################
 
 build: bison flex replace ${EXEC} clean
 
@@ -32,18 +37,24 @@ dry-run:
 	@echo ${OBJECTS}
 
 ${EXEC}: ${OBJECTS}
-	@${CXX} ${CXX_FLAGS} ${OBJECTS} src/interpreter/parser/sqloo.tab.cc src/interpreter/parser/lex.yy.c -o ${EXEC}
+	@${CXX} ${CXX_FLAGS} ${OBJECTS} ${PARSER_DIR}/sqloo.tab.cc ${PARSER_DIR}/lex.yy.c -o ${EXEC}
+
+
+## Parser related build/utility commands
+##########################################################
 
 bison:
-	cd src/interpreter/parser && bison sqloo.yy
+	cd ${PARSER_DIR} && bison sqloo.yy
 
 flex:
-	cd src/interpreter/parser && flex sqloo.l
+	cd ${PARSER_DIR} && flex sqloo.l
 
 replace:
-	cd src/interpreter/parser && sed -i 's/return \*new (yyas_<T> ()) T (t)/return \*new (yyas_<T> ()) T (std\:\:move((T\&)t))/g' sqloo.tab.hh
+	cd ${PARSER_DIR} && sed -i 's/return \*new (yyas_<T> ()) T (t)/return \*new (yyas_<T> ()) T (std\:\:move((T\&)t))/g' sqloo.tab.hh
 
-# The "sql" set of commands deal with the official SQLite3 database
+
+## The "sql" set of commands deal with the official SQLite3 database
+##########################################################
 
 sql:
 	${SQLITE_DIR}/${SQLITE_BIN}

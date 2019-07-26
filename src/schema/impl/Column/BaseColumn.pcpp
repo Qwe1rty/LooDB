@@ -6,6 +6,8 @@
 #include "../../../schema/api/Entry/EntryCodec.h"
 #include "../../api/Entry/IntEntry.h"
 
+#include <stack>
+
 
 class BaseColumn::Impl {
 
@@ -42,6 +44,10 @@ private:
   void insert_capacity(uint32_t row_index, 
                        uint32_t entry_index, 
                        uint32_t node_index);
+  bool backtrack(const Entry& entry,
+                 std::stack<uint32_t>& path,
+                 std::stack<uint32_t>& cells,
+                 uint32_t node_index);
 };
 
 void BaseColumn::ImplDeleter::operator()(Impl* impl) {
@@ -215,7 +221,7 @@ bool BaseColumn::Impl::valid_(const Entry& entry) const {
   return entry.getType() == entry_type_ || entry.getType() == EntryType::NULL_;
 }
 
-void BaseColumn::Impl::write_(uint32_t entry_index, uint32_t row_index) {
+void BaseColumn::Impl::write_(const uint32_t entry_index, const uint32_t row_index) {
 
   if (empty_()) {
 

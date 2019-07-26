@@ -285,7 +285,10 @@ void Table::insertColumns(std::vector<std::unique_ptr<Entry>>& e) {
     )
   );
 
-  // std::cerr << "Insert is successful" << std::endl;
+   std::cerr << "Successfully inserted entries into table \""
+             << impl_->name_
+             << '\"'
+             << std::endl;
 }
 
 void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
@@ -302,9 +305,9 @@ void Table::checkInsertValid(std::vector<std::unique_ptr<Entry>>& e) {
     std::string columnName = this->impl_->indexToColumn_[i];
     if (!this->impl_->columns_.at(columnName)->valid(*e[i])) {
       throw std::invalid_argument(
-        "Error: Attempted inserted value is invalid for column " +
+        "Error: Attempted inserted value is invalid for column \"" +
         columnName +
-        ", does not meet column restrictions."
+        "\", as it does not meet its column restrictions."
       );
     }
   }
@@ -363,25 +366,21 @@ std::set<uint32_t> Table::TableImpl::whereHelper(std::unique_ptr<SQLSelect::Wher
     }
 
     // Throw if entry isn't a valid column value
-    if (!this->columns_.at(columnName)->valid(*entry)) {
-      throw std::invalid_argument("Error: Invalid where expression for column " + columnName);
-    }
+    //
+    // TODO found a bug with this, currently this is not guaranteed to work because it is
+    //  only applicable for inserts.
+    //  For example, a where clause specifying by primary key will not work because valid(...)
+    //  return false: this is correct for inserts, but not select queries
+//    if (!this->columns_.at(columnName)->valid(*entry)) {
+//      throw std::invalid_argument("Error: Invalid where expression for column " + columnName);
+//    }
 
-    const std::unique_ptr<Column>& column = this->columns_.at(columnName);
+    Column& column = *this->columns_.at(columnName);
 
-    // Find entry in column
-    auto iter = column->begin();//find(*entry);
-
-    // While iter meets where condition, insert page index into indices
-    while (*iter != *column->end() ) {
-      // std::// cerr << static_cast<StringEntry&>(*((**iter).first)).getVal();
-      // std::// cerr << " == ";
-      // std::// cerr << static_cast<StringEntry&>(*entry).getVal();
-      // std::// cerr << std::endl;
-      if(*((**iter).first) == *entry) {
-        indices.insert((**iter).second);
-      }
-      ++(*iter);
+    // Find first occurring element for this entry in the column, and append all primary keys
+    // associated with the entry
+    for (auto iter = column.find(*entry); *iter != *column.end() && *((**iter).first) == *entry; ++(*iter)) {
+      indices.insert((**iter).second);
     }
 
     return indices;

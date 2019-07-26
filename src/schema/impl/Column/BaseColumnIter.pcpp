@@ -2,16 +2,9 @@
 #include "../../api/Entry/IntEntry.h"
 
 #include <stack>
-#include <iostream>
 
 
 class BaseColumn::Impl::Iterator {
-
-private:
-
-  Impl& parent_;
-  std::stack<uint32_t> path_;
-  std::stack<uint32_t> cells_;
 
 public:
 
@@ -21,6 +14,12 @@ public:
   bool operator== (const Column::Iterator&);
 
   Iterator(Impl&, std::stack<uint32_t> path, std::stack<uint32_t> cells);
+
+private:
+
+  Impl& parent_;
+  std::stack<uint32_t> path_;
+  std::stack<uint32_t> cells_;
 };
 
 struct BaseColumn::Iterator::Impl {
@@ -34,7 +33,7 @@ struct BaseColumn::Iterator::Impl {
 
 
 /*
- * Public member functions
+ * Public methods
  */
 
 std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::begin_() {
@@ -80,52 +79,69 @@ std::unique_ptr<BaseColumn::Impl::Iterator> BaseColumn::Impl::find_(const Entry&
 
   const auto header = fetch_header();
 
-  if (!header->empty_) {
+  std::stack<uint32_t> path{};
+  std::stack<uint32_t> cells{};
 
-    std::stack<uint32_t> path{};
-    std::stack<uint32_t> cells{};
+  if (!header->empty_) backtrack(entry, path, cells, header->root_);
 
-    path.push(header->root_);
-    auto node = fetch_node(header->root_);
+  // Return the created iterator. If the entry was not found, the returned iterator will be
+  // equivalent to the end iterator: end_()
+  return std::make_unique<BaseColumn::Impl::Iterator>(
+    *this,
+    std::move(path),
+    std::move(cells)
+  );
+}
 
-    while (true) {
 
-      // Find the index where the entry would be located
-      uint32_t cell{0};
-      // std::cout << "3874913759832 " << node->node_.at(cell).key_ << std::endl;
-      while (cell < node->node_.size() && entry > *fetch_entry(node->node_.at(cell).key_)) {
-        ++cell;
-      }
-      cells.push(cell);
+/*
+ * Private methods
+ */
 
-      // If it's been found, return iterator to it. Ensure that this check is only done
-      // if the cell value has been found to be in range (i.e. not trying to go to the
-      // node->right_ index
-      // std::cout << "3874913759832 " << node->node_.at(cell).key_ << std::endl;
-      if (cell < node->node_.size() && entry == *fetch_entry(node->node_.at(cell).key_)) {
-        return std::make_unique<BaseColumn::Impl::Iterator>(
-          *this,
-          std::move(path),
-          std::move(cells)
-        );
-      }
 
-      // If it hasn't been found, try to see if it's contained in a child node, and if it is,
-      // then "recurse" to that node (AKA not a leaf). Otherwise, you're done, as it's not in the tree
-      uint32_t child_index = cell < node->node_.size() ?
-        node->node_.at(cell).left_ :
-        node->right_;
+// The backtrack(...) method will attempt to find the first instance where the entry `const Entry& entry`
+// parameter is found.
+//
+// The function returns true if there was an element in the subtree provided by `node_index` that equals
+// `entry`, with the `path` and `cells` variables updated accordingly to point to it. If the function
+// returns false, that means that no such entry was found, and the `path` and `cells` variables remain
+// unchanged.
+bool BaseColumn::Impl::backtrack(const Entry& entry,
+                                 std::stack<uint32_t>& path,
+                                 std::stack<uint32_t>& cells,
+                                 const uint32_t node_index) {
 
-      if (child_index > 0) {
-        path.push(child_index);
-        node = fetch_node(child_index);
-      }
-      else break;
-    }
+  if (node_index == 0) return false; // Return false if a leaf tried to recurse deeper
+
+  // Record current node
+  path.push(node_index);
+  auto node = fetch_node(node_index);
+
+  // Find the index where the entry would be located, if it's in this node
+  uint32_t cell{0};
+  while (cell < node->node_.size() && entry > *fetch_entry(node->node_.at(cell).key_)) {
+    ++cell;
   }
+  cells.push(cell);
 
-  // Return the end iterator if it's not found or tree is empty
-  return end_();
+  // If it's been found, then mark this function to return true. Even if there's no further
+  // equal entries found in further recursive calls, we can always return to this current node.
+  bool current_found = cell < node->node_.size() && entry == *fetch_entry(node->node_.at(cell).key_);
+
+  // Try to see if the entry is found deeper within the tree structure
+  uint32_t child_index = cell < node->node_.size() ?
+    node->node_.at(cell).left_ :
+    node->right_;
+  bool descendents_found = backtrack(entry, path, cells, child_index);
+
+  // If the entry hasn't been found within the current node or any of its descendents, then pop
+  // out the current node's entry in the stack
+  bool found = current_found || descendents_found;
+  if (!found) {
+    path.pop();
+    cells.pop();
+  }
+  return found;
 }
 
 
@@ -155,7 +171,11 @@ BaseColumn::Impl::Iterator& BaseColumn::Impl::Iterator::operator++() {
 //    std::cout << path_.top() << std::flush;
 //    std::cout << ", cells_.top() index: " << std::flush;
 //    std::cout << cells_.top() << std::flush;
-//    std::cout << ", row/PK index: " << std::flush;
+//    std::cout << ",  entry index: " << std::flush;
+//    std::cout << parent_.fetch_node(path_.top())->node_.at(cells_.top()).key_ << std::flush;
+//    std::cout << ", entry value: " << std::flush;
+//    std::cout << static_cast<IntEntry*>(parent_.fetch_entry(parent_.fetch_node(path_.top())->node_.at(cells_.top()).key_).get())->getVal() << std::flush;
+//    std::cout << ",  row/PK index: " << std::flush;
 //    std::cout << parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_ << std::flush;
 //    std::cout << ", row/PK value: " << std::flush;
 //    std::cout << static_cast<IntEntry*>(parent_.fetch_entry(parent_.fetch_node(path_.top())->node_.at(cells_.top()).value_).get())->getVal() << std::flush;
